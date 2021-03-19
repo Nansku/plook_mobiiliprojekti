@@ -11,7 +11,7 @@
         android:theme="@style/Theme.Plook">
         <activity android:name=".ImageEditActivity"></activity>
         <activity android:name=".ImageUploadActivity" />
-        <activity android:name=".FeedActivity" />
+        <activity android:name=".FeedActivity" android:exported="true" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
