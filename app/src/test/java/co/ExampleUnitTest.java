@@ -1,4 +1,4 @@
-package com.example.plook;
+package co;
 
 import org.junit.Test;
 

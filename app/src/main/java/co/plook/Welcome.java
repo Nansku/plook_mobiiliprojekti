@@ -1,16 +1,15 @@
-package com.example.plook;
+package co.plook;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class ImageUploadActivity extends AppCompatActivity
+public class Welcome extends AppCompatActivity
 {
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_upload);
+        setContentView(R.layout.activity_welcome);
     }
 }

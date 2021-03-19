@@ -1,4 +1,4 @@
-package com.example.plook;
+package co.plook;
 
 import androidx.appcompat.app.AppCompatActivity;
 
