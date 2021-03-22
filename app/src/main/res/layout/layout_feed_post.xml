@@ -24,9 +24,10 @@
             android:id="@+id/post_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HELLO WORLD"
+            android:text="Hello World"
             android:textColor="@color/white"
             android:textStyle="bold"
+            android:textSize="18sp"
             android:padding="10dp"
         />
 

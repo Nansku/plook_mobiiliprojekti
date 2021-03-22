@@ -57,6 +57,10 @@ public class FeedActivity extends AppCompatActivity
         TextView textView_caption = child.findViewById(R.id.post_caption);
         TextView textView_description = child.findViewById(R.id.post_description);
 
-        //textView_caption.setText(data.get());
+        String caption = data.get("caption").toString();
+        String description = data.get("description").toString();
+
+        textView_caption.setText(caption);
+        textView_description.setText(description);
     }
 }
