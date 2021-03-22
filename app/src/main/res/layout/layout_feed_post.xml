@@ -29,6 +29,8 @@
             android:textStyle="bold"
             android:textSize="18sp"
             android:padding="10dp"
+            android:shadowColor="@color/black"
+            android:shadowRadius="30"
         />
 
         <TextView
