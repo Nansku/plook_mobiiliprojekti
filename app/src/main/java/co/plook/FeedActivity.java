@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 public class FeedActivity extends AppCompatActivity
 {
     int postAmount = 5;
-
+    // dadasdsadadasdasd
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
