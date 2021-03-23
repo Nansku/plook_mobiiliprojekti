@@ -8,12 +8,27 @@
 
     <ImageView
         android:id="@+id/profilePic"
+        android:layout_width="252dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="31dp"
+        android:contentDescription="TODO"
+        app:layout_constraintBottom_toTopOf="@+id/button3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+    <Button
+        android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="123dp"
+        android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/backgrounds/scenic"
-        android:contentDescription="TODO" />
+        app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

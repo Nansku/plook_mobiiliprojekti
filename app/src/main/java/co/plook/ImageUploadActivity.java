@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -67,9 +68,9 @@ public class ImageUploadActivity extends AppCompatActivity
     }
 
     private void uploadPicture() {
-        final ProgressDialog pd = new ProgressDialog(this);
-        pd.setTitle("Lataa kuvaa....");
-        pd.show();
+        final ProgressBar pd = new ProgressBar(this);
+        //pd.sett("Lataa kuvaa....");
+        //pd.show();
 
         final String randomKey = UUID.randomUUID().toString();
         StorageReference riversRef = storageReference.child("images/"+ randomKey);
@@ -79,22 +80,22 @@ public class ImageUploadActivity extends AppCompatActivity
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Snackbar.make(findViewById(android.R.id.content), "Kuva ladattu", Snackbar.LENGTH_LONG).show();
-                        pd.dismiss();
+                       // pd.dismiss();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        pd.dismiss();
+                       // pd.dismiss();
                         Toast.makeText(getApplicationContext(), "Lataus epäonnistui", Toast.LENGTH_LONG).show();
                     }
                 })
                 .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                        double progressPercent = (100.00 * taskSnapshot.getBytesTransferred()/ taskSnapshot.getTotalByteCount());
-                        pd.setMessage("Percentage: " + (int) progressPercent + "%");
+                        //double progressPercent = (100.00 * taskSnapshot.getBytesTransferred()/ taskSnapshot.getTotalByteCount());
+                        //pd.setMessage("Percentage: " + (int) progressPercent + "%");
                     }
-                })
+                });
     }
 }
