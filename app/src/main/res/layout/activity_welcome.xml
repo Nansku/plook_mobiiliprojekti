@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    >
+    android:theme="@style/CustomTheme">
 
     <ImageView
         android:id="@+id/background"
@@ -59,7 +59,7 @@
 
         <Button
             android:id="@+id/log_in"
-            android:text=""
+            android:text="@string/log_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/button"

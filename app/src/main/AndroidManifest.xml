@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
 
+        <activity android:name=".ProfileActivity" android:exported="true"/>
         <activity android:name=".ImageEditActivity"/>
         <activity android:name=".ImageUploadActivity" />
         <activity android:name=".FeedActivity" android:exported="true" />
