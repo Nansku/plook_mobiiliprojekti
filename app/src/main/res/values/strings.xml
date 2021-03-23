@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">plook</string>
     <string name="logo">logo</string>
+    <string name="background">background</string>
+    <string name="create_account">Etkö omista tiliä? Rekisteröidy tästä.</string>
+    <string name="log_in">Kirjaudu sisään</string>
 </resources>
