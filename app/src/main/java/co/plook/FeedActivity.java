@@ -1,9 +1,7 @@
 package co.plook;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+
 
 import java.util.Map;
 
@@ -26,9 +17,7 @@ public class FeedActivity extends AppCompatActivity
 {
     private ViewGroup content;
 
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
+    private DatabaseDownloader dbDownloader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,32 +25,24 @@ public class FeedActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
+        dbDownloader = new DatabaseDownloader();
+
         content = findViewById(R.id.feed_content);
 
-        // Access Firebase.
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+        Post[] posts = dbDownloader.getPosts();
+        System.out.println();
+        System.out.println("GETPOSTS CALLED");
+        System.out.println();
 
-        db.collection("posts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        System.out.println("\nPOSTS LENGTH" + posts.length);
+        for (Post post : posts)
         {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
-            {
-                if(task.isSuccessful())
-                {
-                    for(QueryDocumentSnapshot document : task.getResult())
-                    {
-                        addPost(document.getData());
-                    }
-                }
-                else
-                    System.out.println(task.getException());
-            }
-        });
+            showPost(post);
+            System.out.println("SHOWPOST CALLED");
+        }
     }
 
-    private void addPost(Map data)
+    private void showPost(Post post)
     {
         View child = getLayoutInflater().inflate(R.layout.layout_feed_post, content, false);
         content.addView(child);
@@ -70,24 +51,10 @@ public class FeedActivity extends AppCompatActivity
         TextView textView_description = child.findViewById(R.id.post_description);
         ImageView imageView_image = child.findViewById(R.id.image);
 
-        String caption = data.get("caption").toString();
-        String description = data.get("description").toString();
-        String imageUrl = data.get("url").toString();
+        textView_caption.setText(post.getCaption());
+        textView_description.setText(post.getDescription());
+        System.out.println("\nADDED TEXT\n");
 
-        textView_caption.setText(caption);
-        textView_description.setText(description);
-
-        StorageReference gsReference = storage.getReferenceFromUrl(imageUrl);
-
-        gsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
-        {
-            @Override
-            public void onSuccess(Uri uri)
-            {
-                String imageUri = uri.toString();
-
-                Glide.with(getApplicationContext()).load(imageUri).into(imageView_image);
-            }
-        });
+        Glide.with(getApplicationContext()).load(post.getImageUrl()).into(imageView_image);
     }
 }

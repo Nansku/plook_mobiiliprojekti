@@ -28,10 +28,12 @@ public class DatabaseUploader
         post.put("caption", caption);
         post.put("description", description);
 
+        addToCollection(post, "posts");
+
         return true;
     }
 
-    /*public boolean addComment()
+    public boolean addComment()
     {
 
         return true;
@@ -47,7 +49,7 @@ public class DatabaseUploader
     {
 
         return true;
-    }*/
+    }
 
     private void addToCollection(Map document, String collectionPath)
     {
