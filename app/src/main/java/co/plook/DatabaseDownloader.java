@@ -26,6 +26,7 @@ public class DatabaseDownloader
 
     //MAKE GETTER
     public boolean isRunning;
+    private OnLoadedListener listener;
 
     private Map[] maps;
     private String imageUri;
@@ -73,8 +74,11 @@ public class DatabaseDownloader
                     Log.d(tag, "Exception: " + task.getException());
 
                 Log.d(tag, "For looppi käyty");
+
                 Map[] maps = new Map[mapArrayList.size()];
                 mapArrayList.toArray(maps);
+                listener.onLoaded(maps);
+
                 Log.d(tag, "Laitetaan isRunning falseksi");
                 isRunning = false;
             }
@@ -95,5 +99,16 @@ public class DatabaseDownloader
                 isRunning = false;
             }
         });
+    }
+
+    public interface OnLoadedListener
+    {
+        void onLoaded(Object[] o);
+        void onFailure();
+    }
+
+    public void setOnLoadedListener(OnLoadedListener eventListener)
+    {
+        listener = eventListener;
     }
 }

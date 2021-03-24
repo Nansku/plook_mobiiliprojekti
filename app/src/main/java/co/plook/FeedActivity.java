@@ -21,6 +21,8 @@ public class FeedActivity extends AppCompatActivity
 
     final String tag = "TULOSTUS";
 
+    final String urli = "https://firebasestorage.googleapis.com/v0/b/plook-67980.appspot.com/o/flower.jpg?alt=media&token=2a9a0e69-decf-4733-9306-f3848f8ae3f6";
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -31,17 +33,34 @@ public class FeedActivity extends AppCompatActivity
 
         content = findViewById(R.id.feed_content);
 
-        content.post(timer);
-
-        /*Post[] posts = dbDownloader.getPosts();
-        System.out.println("POSTS LENGTH " + posts.length);
-
-
-        //SHOW POSTS
-        for (Post post : posts)
+        dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
         {
-            showPost(post);
-        }*/
+            @Override
+            public void onLoaded(Object[] o)
+            {
+                for (int i = 0; i < o.length; i++)
+                {
+                    Map map = (Map) o[i];
+
+                    Post post = new Post();
+                    post.setCaption(map.get("caption").toString());
+                    post.setDescription(map.get("description").toString());
+                    post.setImageUrl(map.get("url").toString());
+
+                    showPost(post);
+                }
+            }
+
+            @Override
+            public void onFailure()
+            {
+
+            }
+        });
+
+
+        dbDownloader.loadCollection("posts");
+
     }
 
     private void showPost(Post post)
@@ -58,34 +77,4 @@ public class FeedActivity extends AppCompatActivity
 
         Glide.with(getApplicationContext()).load(post.getImageUrl()).into(imageView_image);
     }
-
-    private final Runnable timer = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            dbDownloader.loadCollection("posts");
-            Log.d(tag, "ENNEN WHILEA");
-
-            Map[] maps = dbDownloader.getMaps();
-            //Log.d(tag, "MAPS LENGTH: " + maps.length);
-            //int mapCount = maps.length;
-            /*Post[] posts = new Post[mapCount];
-
-            for (int i = 0; i < mapCount; i++)
-            {
-                Post post = new Post();
-                post.setCaption(maps[i].get("caption").toString());
-                post.setDescription(maps[i].get("description").toString());
-
-                dbDownloader.url2Uri(maps[i].get("url").toString());
-
-                post.setImageUrl(dbDownloader.getUri());
-
-                posts[i] = post;
-
-                showPost(posts[i]);
-            }*/
-        }
-    };
 }
