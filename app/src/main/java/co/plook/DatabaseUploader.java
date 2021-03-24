@@ -21,12 +21,15 @@ public class DatabaseUploader
 
 
 
-    public boolean addPost(String userID, String caption, String description) //WIP image??
+    public boolean addPost(String userID, String caption, String description, String[] tags) //WIP image??
     {
-        // Create a new post with a caption and a description  WIP: IMAGE URL
+        //First upload the picture to storage and return the imageurl
+        //Then add a post document
+
         Map<String, Object> post = new HashMap<>();
         post.put("caption", caption);
         post.put("description", description);
+        post.put("tags", tags);
 
         addToCollection(post, "posts");
 

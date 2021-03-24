@@ -58,7 +58,6 @@ public class FeedActivity extends AppCompatActivity
             }
         });
 
-
         dbDownloader.loadCollection("posts");
     }
 
@@ -86,18 +85,22 @@ public class FeedActivity extends AppCompatActivity
     public void button1(View v)
     {
         removePosts();
-        dbDownloader.loadCollection("posts");
+        dbDownloader.loadCollection("posts", "tags", "rose");
     }
 
     public void button2(View v)
     {
         removePosts();
-        dbDownloader.loadCollection("posts");
+        /*ArrayList<String> list = new ArrayList<>();
+        list.add("red");
+        list.add("blue");*/
+        String[] list = {"red", "blue"};
+        dbDownloader.loadCollection("posts", "tags", list);
     }
 
     public void button3(View v)
     {
         removePosts();
-        dbDownloader.loadCollection("posts");
+        dbDownloader.loadCollection("posts", "tags", "outdoors");
     }
 }

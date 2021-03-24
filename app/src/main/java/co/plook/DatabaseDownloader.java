@@ -1,104 +1,114 @@
 package co.plook;
 
-import android.net.Uri;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 public class DatabaseDownloader
 {
     private FirebaseFirestore db;
-    private FirebaseStorage storage;
-    private StorageReference gsReference;
-
-    //MAKE GETTER
-    public boolean isRunning;
+    private CollectionReference collRef;
     private OnLoadedListener listener;
-
-    private Map[] maps;
-    private String imageUri;
-    final String tag = "TULOSTUS";
 
     public DatabaseDownloader()
     {
         db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
     }
 
-    public Map[] getMaps()
-    {
-        return maps;
-    }
+    //WIP logic that determines what the type of queried field is
 
-    public String getUri()
+    public void loadCollection(String collectionPath, String field, String[] query)
     {
-        return imageUri;
-    }
+        collRef = db.collection(collectionPath);
 
-    public void loadCollection(String collectionPath)
-    {
-        isRunning = true;
-
-        storage = FirebaseStorage.getInstance();
         ArrayList<Map> mapArrayList = new ArrayList<>();
 
-        Log.d(tag, "Asetetaan db-kuuntelija");
-        db.collection(collectionPath).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        Query q = collRef.whereArrayContainsAny(field, Arrays.asList(query));
+
+        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
-                Log.d(tag, "Ennen taskia");
                 if (task.isSuccessful())
                 {
-                    Log.d(tag, "db task successfull!!");
                     for (QueryDocumentSnapshot document : task.getResult())
-                    {
                         mapArrayList.add(document.getData());
-                    }
+
+                    Map[] maps = new Map[mapArrayList.size()];
+                    mapArrayList.toArray(maps);
+
+                    listener.onLoaded(maps);
                 }
                 else
-                    Log.d(tag, "Exception: " + task.getException());
-
-                Log.d(tag, "For looppi käyty");
-
-                Map[] maps = new Map[mapArrayList.size()];
-                mapArrayList.toArray(maps);
-                listener.onLoaded(maps);
-
-                Log.d(tag, "Laitetaan isRunning falseksi");
-                isRunning = false;
+                    listener.onFailure();
             }
         });
     }
 
-    public void url2Uri(String url)
+    public void loadCollection(String collectionPath, String field, String query)
     {
-        isRunning = true;
+        collRef = db.collection(collectionPath);
+        Query q = collRef.whereArrayContains(field, query);
 
-        gsReference = storage.getReferenceFromUrl(url);
-        gsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
-            public void onSuccess(Uri uri)
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
-                imageUri = uri.toString();
-                isRunning = false;
+                if (task.isSuccessful())
+                {
+                    ArrayList<Map> mapArrayList = new ArrayList<>();
+
+                    for (QueryDocumentSnapshot document : task.getResult())
+                        mapArrayList.add(document.getData());
+
+                    Map[] maps = new Map[mapArrayList.size()];
+                    mapArrayList.toArray(maps);
+
+                    listener.onLoaded(maps);
+                }
+                else
+                    listener.onFailure();
             }
         });
+    }
+
+    public void loadCollection(String collectionPath)
+    {
+        db.collection(collectionPath)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+                            ArrayList<Map> mapArrayList = new ArrayList<>();
+
+                            for (QueryDocumentSnapshot document : task.getResult())
+                                mapArrayList.add(document.getData());
+
+                            Map[] maps = new Map[mapArrayList.size()];
+                            mapArrayList.toArray(maps);
+
+                            listener.onLoaded(maps);
+                        }
+                        else
+                            listener.onFailure();
+                    }
+                });
     }
 
     public interface OnLoadedListener
@@ -111,4 +121,6 @@ public class DatabaseDownloader
     {
         listener = eventListener;
     }
+
+
 }
