@@ -1,24 +1,15 @@
 package co.plook;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.Map;
 
@@ -26,9 +17,11 @@ public class FeedActivity extends AppCompatActivity
 {
     private ViewGroup content;
 
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
+    private DatabaseDownloader dbDownloader;
+
+    final String tag = "TULOSTUS";
+
+    final String urli = "https://firebasestorage.googleapis.com/v0/b/plook-67980.appspot.com/o/flower.jpg?alt=media&token=2a9a0e69-decf-4733-9306-f3848f8ae3f6";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,32 +29,41 @@ public class FeedActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
+        dbDownloader = new DatabaseDownloader();
+
         content = findViewById(R.id.feed_content);
 
-        // Access Firebase.
-        db = FirebaseFirestore.getInstance();
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
-
-        db.collection("posts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
         {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            public void onLoaded(Object[] o)
             {
-                if(task.isSuccessful())
+                for (int i = 0; i < o.length; i++)
                 {
-                    for(QueryDocumentSnapshot document : task.getResult())
-                    {
-                        addPost(document.getData());
-                    }
+                    Map map = (Map) o[i];
+
+                    Post post = new Post();
+                    post.setCaption(map.get("caption").toString());
+                    post.setDescription(map.get("description").toString());
+                    post.setImageUrl(map.get("url").toString());
+
+                    showPost(post);
                 }
-                else
-                    System.out.println(task.getException());
+            }
+
+            @Override
+            public void onFailure()
+            {
+
             }
         });
+
+
+        dbDownloader.loadCollection("posts");
+
     }
 
-    private void addPost(Map data)
+    private void showPost(Post post)
     {
         View child = getLayoutInflater().inflate(R.layout.layout_feed_post, content, false);
         content.addView(child);
@@ -70,24 +72,9 @@ public class FeedActivity extends AppCompatActivity
         TextView textView_description = child.findViewById(R.id.post_description);
         ImageView imageView_image = child.findViewById(R.id.image);
 
-        String caption = data.get("caption").toString();
-        String description = data.get("description").toString();
-        String imageUrl = data.get("url").toString();
+        textView_caption.setText(post.getCaption());
+        textView_description.setText(post.getDescription());
 
-        textView_caption.setText(caption);
-        textView_description.setText(description);
-
-        StorageReference gsReference = storage.getReferenceFromUrl(imageUrl);
-
-        gsReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
-        {
-            @Override
-            public void onSuccess(Uri uri)
-            {
-                String imageUri = uri.toString();
-
-                Glide.with(getApplicationContext()).load(imageUri).into(imageView_image);
-            }
-        });
+        Glide.with(getApplicationContext()).load(post.getImageUrl()).into(imageView_image);
     }
 }
