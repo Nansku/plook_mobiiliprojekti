@@ -9,21 +9,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Plook">
+      
         <activity android:name=".SignupActivity">
+          
+        <activity android:name=".ImageEditActivity"/>
+          
+        <activity android:name=".Welcome"
+            android:exported="true">
+        </activity>
+
+        <activity android:name=".ImageUploadActivity" />
+
+        <activity android:name=".FeedActivity" android:exported="true" />
+
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".ImageEditActivity" />
-        <activity android:name=".ImageUploadActivity" />
-        <activity
-            android:name=".FeedActivity"
-            android:exported="true" />
-        <activity android:name=".MainActivity">
-
-
         </activity>
     </application>
 
