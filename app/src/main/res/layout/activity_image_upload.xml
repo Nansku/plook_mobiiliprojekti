@@ -21,7 +21,7 @@
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
 
-    //jostain syystä ei toimi ilman buttonin läsnäoloa :D
+    //jostain syystä ei toimi ilman buttonin läsnäoloa :DD
     <Button
         android:id="@+id/button3"
         android:layout_width="wrap_content"
