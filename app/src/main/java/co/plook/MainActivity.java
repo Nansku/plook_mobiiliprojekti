@@ -15,9 +15,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        uploader = new DatabaseUploader();
-
-        uploader.addPost("Iikka", "Mun kasvi :3", "Tässä tää nyt on");
+        //Postin luonti tietokantaan
+        /*uploader = new DatabaseUploader();
+        uploader.addPost("Iikka", "Mun kasvi :3", "Tässä tää nyt on");*/
 
     }
 }

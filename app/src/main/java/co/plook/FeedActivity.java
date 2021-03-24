@@ -19,10 +19,6 @@ public class FeedActivity extends AppCompatActivity
 
     private DatabaseDownloader dbDownloader;
 
-    final String tag = "TULOSTUS";
-
-    final String urli = "https://firebasestorage.googleapis.com/v0/b/plook-67980.appspot.com/o/flower.jpg?alt=media&token=2a9a0e69-decf-4733-9306-f3848f8ae3f6";
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -54,12 +50,11 @@ public class FeedActivity extends AppCompatActivity
             @Override
             public void onFailure()
             {
-
+                //DB collection query failure
             }
         });
 
-
-        dbDownloader.loadCollection("posts");
+        dbDownloader.loadCollection("posts", "tag", "");
 
     }
 
