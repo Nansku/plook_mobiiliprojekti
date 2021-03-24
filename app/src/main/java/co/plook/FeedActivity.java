@@ -3,7 +3,6 @@ package co.plook;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class FeedActivity extends AppCompatActivity
@@ -19,9 +19,7 @@ public class FeedActivity extends AppCompatActivity
 
     private DatabaseDownloader dbDownloader;
 
-    final String tag = "TULOSTUS";
-
-    final String urli = "https://firebasestorage.googleapis.com/v0/b/plook-67980.appspot.com/o/flower.jpg?alt=media&token=2a9a0e69-decf-4733-9306-f3848f8ae3f6";
+    private ArrayList<Post> allPosts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,6 +30,7 @@ public class FeedActivity extends AppCompatActivity
         dbDownloader = new DatabaseDownloader();
 
         content = findViewById(R.id.feed_content);
+        allPosts = new ArrayList<>();
 
         dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
         {
@@ -47,6 +46,7 @@ public class FeedActivity extends AppCompatActivity
                     post.setDescription(map.get("description").toString());
                     post.setImageUrl(map.get("url").toString());
 
+                    allPosts.add(post);
                     showPost(post);
                 }
             }
@@ -60,7 +60,6 @@ public class FeedActivity extends AppCompatActivity
 
 
         dbDownloader.loadCollection("posts");
-
     }
 
     private void showPost(Post post)
@@ -76,5 +75,29 @@ public class FeedActivity extends AppCompatActivity
         textView_description.setText(post.getDescription());
 
         Glide.with(getApplicationContext()).load(post.getImageUrl()).into(imageView_image);
+    }
+
+    private void removePosts()
+    {
+        content.removeAllViews();
+        allPosts.removeAll(allPosts);
+    }
+
+    public void button1(View v)
+    {
+        removePosts();
+        dbDownloader.loadCollection("posts");
+    }
+
+    public void button2(View v)
+    {
+        removePosts();
+        dbDownloader.loadCollection("posts");
+    }
+
+    public void button3(View v)
+    {
+        removePosts();
+        dbDownloader.loadCollection("posts");
     }
 }
