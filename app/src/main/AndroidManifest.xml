@@ -9,9 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Plook">
+      
+        <activity android:name=".SignupActivity">
+          
         <activity android:name=".ImageEditActivity"/>
-        <activity
-            android:name=".Welcome"
+          
+        <activity android:name=".Welcome"
             android:exported="true">
         </activity>
 
