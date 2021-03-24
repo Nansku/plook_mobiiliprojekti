@@ -31,7 +31,7 @@
             android:layout_weight="1"
             android:layout_margin="5dp"
             android:onClick="button1"
-            android:text="test 1"
+            android:text="rose"
         />
 
         <Button
@@ -40,7 +40,7 @@
             android:layout_weight="1"
             android:layout_margin="5dp"
             android:onClick="button2"
-            android:text="test 2"
+            android:text="red or blue"
         />
 
         <Button
@@ -49,7 +49,7 @@
             android:layout_weight="1"
             android:layout_margin="5dp"
             android:onClick="button3"
-            android:text="test 3"
+            android:text="outdoors"
         />
 
     </LinearLayout>
