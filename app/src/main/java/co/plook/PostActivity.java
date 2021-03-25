@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -16,6 +17,7 @@ public class PostActivity extends AppCompatActivity
 
     private Context context;
     private ImageView imageView;
+    private String postID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -28,8 +30,9 @@ public class PostActivity extends AppCompatActivity
         imageView = findViewById(R.id.image);
 
         Bundle extras = getIntent().getExtras();
-        String postID = extras.getString("postID");
+        postID = extras.getString("postID");
 
+        /*
         dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
         {
             @Override
@@ -48,6 +51,8 @@ public class PostActivity extends AppCompatActivity
             }
         });
 
-        //dbDownloader.loadCollection("posts", "__name__", postID);
+         */
+
+
     }
 }

@@ -44,6 +44,8 @@ public class FeedActivity extends AppCompatActivity
             @Override
             public void onLoaded(QuerySnapshot documentSnapshots)
             {
+                removePosts();
+
                 for (QueryDocumentSnapshot document : documentSnapshots)
                 {
                     Post post = new Post();
@@ -117,20 +119,17 @@ public class FeedActivity extends AppCompatActivity
 
     public void button1(View v)
     {
-        removePosts();
         dbDownloader.loadCollection("posts");
     }
 
     public void button2(View v)
     {
-        removePosts();
         String[] list = {"red", "blue"};
         dbDownloader.loadCollection("posts", "tags", list);
     }
 
     public void button3(View v)
     {
-        removePosts();
         dbDownloader.loadCollection("posts", "tags", "outdoors");
     }
 }
