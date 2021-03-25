@@ -16,13 +16,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class FeedActivity extends AppCompatActivity
 {
     private ViewGroup content;
 
-    private DatabaseDownloader dbDownloader;
+    private DatabaseReader dbDownloader;
 
     private ArrayList<Post> allPosts;
 
@@ -40,13 +39,13 @@ public class FeedActivity extends AppCompatActivity
 
         textView = findViewById(R.id.textView);
 
-        dbDownloader = new DatabaseDownloader();
+        dbDownloader = new DatabaseReader();
 
         content = findViewById(R.id.feed_content);
         allPosts = new ArrayList<>();
 
 
-        dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
+        dbDownloader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
         {
             //Onloaded function for POSTS specifically
             @Override
@@ -67,11 +66,11 @@ public class FeedActivity extends AppCompatActivity
             }
 
             @Override
-            public void onLoadedComments(Map[] m)
+            public void onLoadedComments(QuerySnapshot documentSnapshots)
             {
-                for (Map map : m)
+                for (QueryDocumentSnapshot doc : documentSnapshots)
                 {
-                    textView.append(map.get("text").toString() + " ");
+                    textView.append(doc.get("text").toString() + " ");
                     //Log.d("MAP", map.get("text").toString());
                 }
 

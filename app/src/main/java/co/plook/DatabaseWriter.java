@@ -12,14 +12,14 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DatabaseUploader
+public class DatabaseWriter
 {
 
     FirebaseFirestore db;
     FirebaseStorage storage;
 
 
-    public DatabaseUploader()
+    public DatabaseWriter()
     {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();

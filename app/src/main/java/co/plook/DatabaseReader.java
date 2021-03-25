@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-public class DatabaseDownloader
+public class DatabaseReader
 {
     private FirebaseFirestore db;
     private CollectionReference collRef;
     private OnLoadedListener listener;
 
-    public DatabaseDownloader()
+    public DatabaseReader()
     {
         db = FirebaseFirestore.getInstance();
     }
@@ -38,9 +38,7 @@ public class DatabaseDownloader
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
                 if (task.isSuccessful())
-                {
                     listener.onLoaded(task.getResult());
-                }
                 else
                     listener.onFailure(task.getException().toString());
             }
@@ -58,9 +56,7 @@ public class DatabaseDownloader
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
                 if (task.isSuccessful())
-                {
                     listener.onLoaded(task.getResult());
-                }
                 else
                     listener.onFailure(task.getException().toString());
             }
@@ -77,9 +73,7 @@ public class DatabaseDownloader
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
                     {
                         if (task.isSuccessful())
-                        {
                             listener.onLoaded(task.getResult());
-                        }
                         else
                             listener.onFailure(task.getException().toString());
                     }
@@ -98,17 +92,7 @@ public class DatabaseDownloader
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
                     {
                         if (task.isSuccessful())
-                        {
-                            ArrayList<Map> mapArrayList = new ArrayList<>();
-
-                            for (QueryDocumentSnapshot doc : task.getResult())
-                                mapArrayList.add(doc.getData());
-
-                            Map[] maps = new Map[mapArrayList.size()];
-                            mapArrayList.toArray(maps);
-
-                            listener.onLoadedComments(maps);
-                        }
+                            listener.onLoadedComments(task.getResult());
                         else
                             listener.onFailure(task.getException().toString());
                     }
@@ -118,7 +102,7 @@ public class DatabaseDownloader
     public interface OnLoadedListener
     {
         void onLoaded(QuerySnapshot documentSnapshots);
-        void onLoadedComments(Map[] m);
+        void onLoadedComments(QuerySnapshot documentSnapshots);
         void onFailure(String error);
     }
 
