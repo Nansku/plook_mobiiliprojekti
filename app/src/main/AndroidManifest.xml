@@ -20,8 +20,6 @@
       
         <activity android:name=".SignupActivity" />
       
-        <activity android:name=".ImageUploadActivity" />
-      
         <activity android:name=".FeedActivity" android:exported="true" />
       
         <activity android:name=".WelcomeActivity" android:exported="true" />
