@@ -3,6 +3,7 @@ package co.plook;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +16,15 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class FeedActivity extends AppCompatActivity
 {
-    private ViewGroup content;
-
     private DatabaseDownloader dbDownloader;
 
     private ArrayList<Post> allPosts;
 
     private Context context;
+    private ViewGroup content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -96,8 +95,18 @@ public class FeedActivity extends AppCompatActivity
                 int i = content.indexOfChild(v);
 
                 Toast.makeText(context, allPosts.get(i).getPostID(), Toast.LENGTH_SHORT).show();
+                openPostActivity(allPosts.get(i).getPostID());
             }
         });
+    }
+
+    private void openPostActivity(String postID)
+    {
+        Intent intent = new Intent(this, PostActivity.class);
+
+        intent.putExtra("post_id", postID);
+
+        startActivity(intent);
     }
 
     private void removePosts()
