@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -29,12 +30,14 @@ public class DatabaseDownloader
 
     public void loadCollection(String collectionPath, String field, String[] query)
     {
-        collRef = db.collection(collectionPath);
-
         ArrayList<Map> mapArrayList = new ArrayList<>();
 
+        collRef = db.collection(collectionPath);
         Query q = collRef.whereArrayContainsAny(field, Arrays.asList(query));
 
+        //this doesnt work for some reason
+        /*db.collection(collectionPath)
+                .whereArrayContains(field, Arrays.asList(query))*/
         q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
@@ -51,17 +54,19 @@ public class DatabaseDownloader
                     listener.onLoaded(maps);
                 }
                 else
-                    listener.onFailure();
+                    listener.onFailure(task.getException().toString());
             }
         });
     }
 
     public void loadCollection(String collectionPath, String field, String query)
     {
-        collRef = db.collection(collectionPath);
-        Query q = collRef.whereArrayContains(field, query);
-
-        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+/*        collRef = db.collection(collectionPath);
+        Query q = collRef.whereArrayContains();*/
+        db.collection(collectionPath)
+                .whereArrayContains(field, query)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
@@ -70,8 +75,8 @@ public class DatabaseDownloader
                 {
                     ArrayList<Map> mapArrayList = new ArrayList<>();
 
-                    for (QueryDocumentSnapshot document : task.getResult())
-                        mapArrayList.add(document.getData());
+                    for (QueryDocumentSnapshot doc : task.getResult())
+                        mapArrayList.add(doc.getData());
 
                     Map[] maps = new Map[mapArrayList.size()];
                     mapArrayList.toArray(maps);
@@ -79,7 +84,7 @@ public class DatabaseDownloader
                     listener.onLoaded(maps);
                 }
                 else
-                    listener.onFailure();
+                    listener.onFailure(task.getException().toString());
             }
         });
     }
@@ -106,7 +111,36 @@ public class DatabaseDownloader
                             listener.onLoaded(maps);
                         }
                         else
-                            listener.onFailure();
+                            listener.onFailure(task.getException().toString());
+                    }
+                });
+    }
+
+    public void loadComments(String postId)
+    {
+        db.collection("comment_sections")
+                .document(postId)
+                .collection("comments")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+                            ArrayList<Map> mapArrayList = new ArrayList<>();
+
+                            for (QueryDocumentSnapshot doc : task.getResult())
+                                mapArrayList.add(doc.getData());
+
+                            Map[] maps = new Map[mapArrayList.size()];
+                            mapArrayList.toArray(maps);
+
+                            listener.onLoadedComments(maps);
+                        }
+                        else
+                            listener.onFailure(task.getException().toString());
                     }
                 });
     }
@@ -114,7 +148,10 @@ public class DatabaseDownloader
     public interface OnLoadedListener
     {
         void onLoaded(Object[] o);
-        void onFailure();
+
+        void onLoadedComments(Map[] m);
+
+        void onFailure(String errorMessage);
     }
 
     public void setOnLoadedListener(OnLoadedListener eventListener)

@@ -3,12 +3,15 @@ package co.plook;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -21,11 +24,17 @@ public class FeedActivity extends AppCompatActivity
 
     private ArrayList<Post> allPosts;
 
+    private TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
+
+        textView = findViewById(R.id.textView);
+
+
 
         dbDownloader = new DatabaseDownloader();
 
@@ -34,6 +43,7 @@ public class FeedActivity extends AppCompatActivity
 
         dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
         {
+            //Onloaded function for POSTS specifically
             @Override
             public void onLoaded(Object[] o)
             {
@@ -52,13 +62,26 @@ public class FeedActivity extends AppCompatActivity
             }
 
             @Override
-            public void onFailure()
+            public void onLoadedComments(Map[] m)
             {
+                for (Map map : m)
+                {
+                    textView.append(map.get("text").toString() + " ");
+                    //Log.d("MAP", map.get("text").toString());
+                }
 
+            }
+
+            @Override
+            public void onFailure(String errorMessage)
+            {
+                Log.d("onLoadedListener", errorMessage);
             }
         });
 
         dbDownloader.loadCollection("posts");
+
+        dbDownloader.loadComments("<postID>");
     }
 
     private void showPost(Post post)
