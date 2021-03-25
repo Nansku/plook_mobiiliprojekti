@@ -91,9 +91,6 @@ public class FeedActivity extends AppCompatActivity
     public void button2(View v)
     {
         removePosts();
-        /*ArrayList<String> list = new ArrayList<>();
-        list.add("red");
-        list.add("blue");*/
         String[] list = {"red", "blue"};
         dbDownloader.loadCollection("posts", "tags", list);
     }
