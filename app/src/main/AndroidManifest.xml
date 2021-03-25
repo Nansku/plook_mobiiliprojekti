@@ -9,19 +9,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
-        <activity android:name=".PostActivity"></activity>
-        <activity
-            android:name=".ProfileActivity"
-            android:exported="true" />
+
+        <activity android:name=".ImageUploadActivity" android:exported="true"/>
+  
+        <activity android:name=".PostActivity" />
+      
+        <activity android:name=".ProfileActivity" android:exported="true" />
+      
         <activity android:name=".ImageEditActivity" />
+      
         <activity android:name=".SignupActivity" />
+      
         <activity android:name=".ImageUploadActivity" />
-        <activity
-            android:name=".FeedActivity"
-            android:exported="true" />
-        <activity
-            android:name=".WelcomeActivity"
-            android:exported="true" />
+      
+        <activity android:name=".FeedActivity" android:exported="true" />
+      
+        <activity android:name=".WelcomeActivity" android:exported="true" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
