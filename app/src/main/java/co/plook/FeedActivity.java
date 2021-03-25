@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,6 +26,8 @@ public class FeedActivity extends AppCompatActivity
 
     private ArrayList<Post> allPosts;
 
+    private TextView textView;
+
     private Context context;
 
     @Override
@@ -35,13 +38,17 @@ public class FeedActivity extends AppCompatActivity
 
         context = getApplicationContext();
 
+        textView = findViewById(R.id.textView);
+
         dbDownloader = new DatabaseDownloader();
 
         content = findViewById(R.id.feed_content);
         allPosts = new ArrayList<>();
 
+
         dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
         {
+            //Onloaded function for POSTS specifically
             @Override
             public void onLoaded(QuerySnapshot documentSnapshots)
             {
@@ -60,13 +67,26 @@ public class FeedActivity extends AppCompatActivity
             }
 
             @Override
-            public void onFailure()
+            public void onLoadedComments(Map[] m)
             {
+                for (Map map : m)
+                {
+                    textView.append(map.get("text").toString() + " ");
+                    //Log.d("MAP", map.get("text").toString());
+                }
 
+            }
+
+            @Override
+            public void onFailure(String error)
+            {
+                Log.d("onLoadedListener error", error);
             }
         });
 
         dbDownloader.loadCollection("posts");
+        dbDownloader.loadComments("<postID>");
+
     }
 
     private void showPost(Post post)

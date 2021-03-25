@@ -42,7 +42,7 @@ public class DatabaseDownloader
                     listener.onLoaded(task.getResult());
                 }
                 else
-                    listener.onFailure();
+                    listener.onFailure(task.getException().toString());
             }
         });
     }
@@ -62,7 +62,7 @@ public class DatabaseDownloader
                     listener.onLoaded(task.getResult());
                 }
                 else
-                    listener.onFailure();
+                    listener.onFailure(task.getException().toString());
             }
         });
     }
@@ -81,7 +81,36 @@ public class DatabaseDownloader
                             listener.onLoaded(task.getResult());
                         }
                         else
-                            listener.onFailure();
+                            listener.onFailure(task.getException().toString());
+                    }
+                });
+    }
+
+    public void loadComments(String postId)
+    {
+        db.collection("comment_sections")
+                .document(postId)
+                .collection("comments")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+                            ArrayList<Map> mapArrayList = new ArrayList<>();
+
+                            for (QueryDocumentSnapshot doc : task.getResult())
+                                mapArrayList.add(doc.getData());
+
+                            Map[] maps = new Map[mapArrayList.size()];
+                            mapArrayList.toArray(maps);
+
+                            listener.onLoadedComments(maps);
+                        }
+                        else
+                            listener.onFailure(task.getException().toString());
                     }
                 });
     }
@@ -89,7 +118,8 @@ public class DatabaseDownloader
     public interface OnLoadedListener
     {
         void onLoaded(QuerySnapshot documentSnapshots);
-        void onFailure();
+        void onLoadedComments(Map[] m);
+        void onFailure(String error);
     }
 
     public void setOnLoadedListener(OnLoadedListener eventListener)
