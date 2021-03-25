@@ -23,11 +23,15 @@ public class Post
         this.postID = postID;
     }
 
+    public void setPostID(String postID) { this.postID = postID; }
+
     public void setCaption(String caption) { this.caption = caption; }
 
     public void setDescription(String description) { this.description = description; }
 
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public String getPostID() { return postID; }
 
     public String getCaption() { return caption; }
 
