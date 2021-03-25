@@ -14,7 +14,7 @@
         <activity android:name=".ProfileActivity" android:exported="true"/>
         <activity android:name=".ImageEditActivity"/>
    
-        <activity android:name=".SignupActivity">
+        <activity android:name=".SignupActivity" />
 
         <activity android:name=".ImageUploadActivity" />
 

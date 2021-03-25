@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".FeedActivity">
 
+    <include layout="@layout/appbar"/>
+
+
+
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -18,40 +23,5 @@
         />
 
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:onClick="button1"
-            android:text="rose"
-        />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:onClick="button2"
-            android:text="red or blue"
-        />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
-            android:onClick="button3"
-            android:text="outdoors"
-        />
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
