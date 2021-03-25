@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/CustomTheme">
@@ -12,23 +11,23 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
-        <include
-        layout="@layout/appbar"/>
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <include layout="@layout/appbar"/>
     </LinearLayout>
 
 
     <FrameLayout android:id="@+id/frame"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_marginTop="30dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linear"
-        app:layout_constraintBottom_toBottomOf="@id/bio">
+        app:layout_constraintBottom_toTopOf="@id/bio">
 
 
-        <ImageView android:id="@+id/pic"
+        <ImageView android:id="@+id/profilePic"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/user_icon" />
@@ -40,7 +39,6 @@
     </FrameLayout>
 
     <RelativeLayout
-
         android:orientation="vertical"
         android:id="@+id/bio"
         android:layout_width="match_parent"
@@ -51,52 +49,60 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/frame"
-        app:layout_constraintBottom_toTopOf="@id/post_grid"
+        app:layout_constraintBottom_toTopOf="@id/postGrid"
         android:background="@drawable/bio">
 
         <TextView
-            android:id="@+id/bio_txt"
+            android:id="@+id/bioTxt"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:text="BIO"
             android:background="@drawable/bio"
-            android:textAlignment="center"
             />
 
         <RelativeLayout
-            android:layout_below="@+id/bio_txt"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/bioTxt"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/country"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/country"
+                android:layout_marginStart="5dp"
+                android:layout_marginBottom="5dp"
                 android:text="MAA"
-                android:gravity="start"
-                />
+                android:layout_alignParentLeft="true"
+                android:gravity="start" />
+
 
             <Button
-                android:layout_below="@+id/bio_txt"
+                android:id="@+id/editProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="275dp"
-                android:layout_toRightOf="@id/country"
-                android:gravity="end" />
-
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_alignParentRight="true"
+                android:text="edit profile"
+                 />
         </RelativeLayout>
 
 
     </RelativeLayout>
-
     <GridView
-        android:id="@+id/post_grid"
+        android:id="@+id/postGrid"
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bio">
+        app:layout_constraintTop_toBottomOf="@id/bio"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:background="@drawable/bio">
 
     </GridView>
 </androidx.constraintlayout.widget.ConstraintLayout>
