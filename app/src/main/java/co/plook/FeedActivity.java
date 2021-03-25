@@ -15,6 +15,10 @@ import java.util.Map;
 
 public class FeedActivity extends AppCompatActivity
 {
+
+    int postAmount = 5;
+
+
     private ViewGroup content;
 
     private DatabaseDownloader dbDownloader;
