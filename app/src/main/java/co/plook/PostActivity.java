@@ -11,9 +11,11 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.concurrent.CountDownLatch;
+
 public class PostActivity extends AppCompatActivity
 {
-    private DatabaseDownloader dbDownloader;
+    private DatabaseReader dbDownloader;
 
     private Context context;
     private ImageView imageView;
@@ -25,15 +27,16 @@ public class PostActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
-        dbDownloader = new DatabaseDownloader();
+        context = getApplicationContext();
+
+        dbDownloader = new DatabaseReader();
 
         imageView = findViewById(R.id.image);
 
         Bundle extras = getIntent().getExtras();
-        postID = extras.getString("postID");
+        postID = extras.getString("post_id");
 
-        /*
-        dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
+        dbDownloader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
         {
             @Override
             public void onLoaded(QuerySnapshot documentSnapshots)
@@ -51,8 +54,6 @@ public class PostActivity extends AppCompatActivity
             }
         });
 
-         */
-
-
+        dbDownloader.findById("posts", postID);
     }
 }

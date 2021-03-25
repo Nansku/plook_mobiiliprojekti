@@ -11,12 +11,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
 
-public class DatabaseDownloader
+public class DatabaseReader
 {
     private FirebaseFirestore db;
     private OnLoadedListener listener;
 
-    public DatabaseDownloader()
+    public DatabaseReader()
     {
         db = FirebaseFirestore.getInstance();
     }
@@ -43,6 +43,14 @@ public class DatabaseDownloader
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef;
+
+        queryData(q);
+    }
+
+    public void findById(String collectionPath, String id)
+    {
+        CollectionReference collRef = db.collection(collectionPath);
+        Query q = collRef.whereEqualTo("__name__", id);
 
         queryData(q);
     }

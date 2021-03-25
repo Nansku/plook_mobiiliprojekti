@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class FeedActivity extends AppCompatActivity
 {
-    private DatabaseDownloader dbDownloader;
+    private DatabaseReader dbDownloader;
 
     private ArrayList<Post> allPosts;
 
@@ -47,7 +47,6 @@ public class FeedActivity extends AppCompatActivity
 
         dbDownloader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
         {
-            //Onloaded function for POSTS specifically
             @Override
             public void onLoaded(QuerySnapshot documentSnapshots)
             {
@@ -68,26 +67,13 @@ public class FeedActivity extends AppCompatActivity
             }
 
             @Override
-            public void onLoadedComments(QuerySnapshot documentSnapshots)
+            public void onFailure()
             {
-                for (QueryDocumentSnapshot doc : documentSnapshots)
-                {
-                    textView.append(doc.get("text").toString() + " ");
-                    //Log.d("MAP", map.get("text").toString());
-                }
 
-            }
-
-            @Override
-            public void onFailure(String error)
-            {
-                Log.d("onLoadedListener error", error);
             }
         });
 
         dbDownloader.loadCollection("posts");
-        dbDownloader.loadComments("<postID>");
-
     }
 
     private void showPost(Post post)
