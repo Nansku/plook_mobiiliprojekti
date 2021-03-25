@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-public class DatabaseDownloader
+public class DatabaseReader
 {
     private FirebaseFirestore db;
     private CollectionReference collRef;
     private OnLoadedListener listener;
 
-    public DatabaseDownloader()
+    public DatabaseReader()
     {
         db = FirebaseFirestore.getInstance();
     }
@@ -38,11 +38,9 @@ public class DatabaseDownloader
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
                 if (task.isSuccessful())
-                {
                     listener.onLoaded(task.getResult());
-                }
                 else
-                    listener.onFailure();
+                    listener.onFailure(task.getException().toString());
             }
         });
     }
@@ -58,11 +56,9 @@ public class DatabaseDownloader
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
                 if (task.isSuccessful())
-                {
                     listener.onLoaded(task.getResult());
-                }
                 else
-                    listener.onFailure();
+                    listener.onFailure(task.getException().toString());
             }
         });
     }
@@ -77,11 +73,28 @@ public class DatabaseDownloader
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
                     {
                         if (task.isSuccessful())
-                        {
                             listener.onLoaded(task.getResult());
-                        }
                         else
-                            listener.onFailure();
+                            listener.onFailure(task.getException().toString());
+                    }
+                });
+    }
+
+    public void loadComments(String postId)
+    {
+        db.collection("comment_sections")
+                .document(postId)
+                .collection("comments")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        if (task.isSuccessful())
+                            listener.onLoadedComments(task.getResult());
+                        else
+                            listener.onFailure(task.getException().toString());
                     }
                 });
     }
@@ -89,7 +102,8 @@ public class DatabaseDownloader
     public interface OnLoadedListener
     {
         void onLoaded(QuerySnapshot documentSnapshots);
-        void onFailure();
+        void onLoadedComments(QuerySnapshot documentSnapshots);
+        void onFailure(String error);
     }
 
     public void setOnLoadedListener(OnLoadedListener eventListener)
