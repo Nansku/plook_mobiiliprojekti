@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
- xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,21 +15,25 @@
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="300dp"
             android:src="@drawable/ic_launcher_background"
             android:scaleType="centerCrop"
         />
 
         <TextView
+            android:id="@+id/post_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HELLO WORLD"
+            android:text="Hello World"
             android:textColor="@color/white"
             android:textStyle="bold"
+            android:textSize="18sp"
             android:padding="10dp"
+            android:background="@drawable/gradient_feed_post"
         />
 
         <TextView
+            android:id="@+id/post_description"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_below="@+id/image"

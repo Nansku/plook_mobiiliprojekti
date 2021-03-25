@@ -38,10 +38,19 @@ dependencies {
     //Google dependencies (add more if needed.. for example firebase storage...)
     implementation 'com.google.firebase:firebase-analytics'
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
+
     implementation 'com.google.firebase:firebase-storage:19.2.1'
+
+    implementation 'com.google.firebase:firebase-auth:6.4.0'
+    implementation 'com.google.firebase:firebase-firestore:21.4.3'
+ 
+    implementation 'com.firebaseui:firebase-ui-storage:6.4.0'
+
     //
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
 }
