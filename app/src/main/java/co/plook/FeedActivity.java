@@ -3,6 +3,7 @@ package co.plook;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,15 +20,14 @@ import java.util.ArrayList;
 
 public class FeedActivity extends AppCompatActivity
 {
-    private ViewGroup content;
-
-    private DatabaseReader dbDownloader;
+    private DatabaseDownloader dbDownloader;
 
     private ArrayList<Post> allPosts;
 
     private TextView textView;
 
     private Context context;
+    private ViewGroup content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -115,8 +115,18 @@ public class FeedActivity extends AppCompatActivity
                 int i = content.indexOfChild(v);
 
                 Toast.makeText(context, allPosts.get(i).getPostID(), Toast.LENGTH_SHORT).show();
+                openPostActivity(allPosts.get(i).getPostID());
             }
         });
+    }
+
+    private void openPostActivity(String postID)
+    {
+        Intent intent = new Intent(this, PostActivity.class);
+
+        intent.putExtra("post_id", postID);
+
+        startActivity(intent);
     }
 
     private void removePosts()

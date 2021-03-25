@@ -40,7 +40,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
     implementation 'com.google.firebase:firebase-auth:20.0.3'
     implementation 'com.google.firebase:firebase-firestore:22.1.1'
-    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-storage:19.2.1'
     implementation 'com.firebaseui:firebase-ui-storage:6.4.0'
     //
 
