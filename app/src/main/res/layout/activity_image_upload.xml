@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:layout_marginBottom="31dp"
         android:contentDescription="TODO"
-        app:layout_constraintBottom_toTopOf="@+id/button3"
+        app:layout_constraintBottom_toTopOf="@+id/cropImage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,11 +23,11 @@
 
     //jostain syystä ei toimi ilman buttonin läsnäoloa :DD
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/cropImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="123dp"
-        android:text="Button"
+        android:text="Crop Image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
