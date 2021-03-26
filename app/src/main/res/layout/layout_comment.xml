@@ -3,8 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="2dp"
-    android:background="@color/lighter_forest">
+    android:layout_marginBottom="2dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="30dp"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/comment_username"
@@ -12,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:text="Username"
+        android:textColor="@color/forest"
     />
 
     <TextView
@@ -21,12 +24,7 @@
         android:layout_below="@id/comment_username"
         android:layout_marginHorizontal="40dp"
         android:text="Text..."
-    />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@id/comment_text"
+        android:textColor="@color/forest"
     />
 
 </RelativeLayout>

@@ -83,8 +83,13 @@ public class DatabaseWriter
         return true;
     }
 
-    public boolean addComment()
+    public boolean addComment(String userID, String text, String postID)
     {
+        Map<String, Object> comment = new HashMap<>();
+        comment.put("userID", userID);
+        comment.put("text", text);
+
+        addToSubcollection("comment_section", postID, "comments", comment);
 
         return true;
     }
@@ -105,6 +110,31 @@ public class DatabaseWriter
     {
         // Add a new document with a generated ID
         db.collection(collectionPath)
+                .add(document)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>()
+                {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference)
+                    {
+                        System.out.println("DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        System.out.println("Error adding document" + e.getMessage());
+                    }
+                });
+    }
+
+    private void addToSubcollection(String collectionPath, String documentID, String subcollectionPath, Map document)
+    {
+        // Add a new document with a generated ID
+        db.collection(collectionPath)
+                .document(documentID)
+                .collection(subcollectionPath)
                 .add(document)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>()
                 {

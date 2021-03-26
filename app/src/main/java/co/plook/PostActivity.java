@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,17 +13,18 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.List;
 
 public class PostActivity extends AppCompatActivity
 {
-    private DatabaseReader dbDownloader;
+    private DatabaseReader dbReader;
+    private DatabaseWriter dbWriter;
 
     private Context context;
     private ViewGroup content;
     private ImageView imageView;
 
-    private String postID;
+    private Post post;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,15 +34,17 @@ public class PostActivity extends AppCompatActivity
 
         context = getApplicationContext();
 
-        dbDownloader = new DatabaseReader();
+        dbReader = new DatabaseReader();
 
         content = findViewById(R.id.post_content);
         imageView = findViewById(R.id.image);
 
-        Bundle extras = getIntent().getExtras();
-        postID = extras.getString("post_id");
+        post = new Post();
 
-        dbDownloader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
+        Bundle extras = getIntent().getExtras();
+        post.setPostID(extras.getString("post_id"));
+
+        dbReader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
         {
             @Override
             public void onLoaded(CollectionType type, QuerySnapshot documentSnapshots)
@@ -66,21 +68,35 @@ public class PostActivity extends AppCompatActivity
         });
 
         // Passing the enum so later (in onLoaded) we can process the received data further.
-        dbDownloader.findById(CollectionType.post,"posts", postID);
-        dbDownloader.findSubcollection(CollectionType.comment_section,"comment_sections", "<postID>", "comments");
+        dbReader.findById(CollectionType.post,"posts", post.getPostID());
+        dbReader.findSubcollection(CollectionType.comment_section,"comment_sections", "<postID>", "comments");
     }
 
     private void showPost(QuerySnapshot documentSnapshots)
     {
         for (QueryDocumentSnapshot document : documentSnapshots)
         {
+            post.setPostID(document.getId());
+            post.setCaption(document.getString("caption"));
+            post.setDescription(document.getString("description"));
+            post.setImageUrl(document.getString("url"));
+
             TextView textView_caption = findViewById(R.id.post_caption);
-            textView_caption.setText(document.get("caption").toString());
-
             TextView textView_description = findViewById(R.id.post_description);
-            textView_description.setText(document.get("description").toString());
+            TextView textView_tags = findViewById(R.id.post_tags);
 
-            Glide.with(context).load(document.get("url").toString()).into(imageView);
+            List<String> group = (List<String>) document.get("tags");
+            String tags = "tags:\n";
+            for (String str : group)
+            {
+                tags += "{ " + str + " } ";
+            }
+
+            textView_caption.setText(post.getCaption());
+            textView_description.setText(post.getDescription());
+            textView_tags.setText(tags);
+
+            Glide.with(context).load(post.getImageUrl()).into(imageView);
         }
     }
 
@@ -88,16 +104,19 @@ public class PostActivity extends AppCompatActivity
     {
         for (QueryDocumentSnapshot document : documentSnapshots)
         {
-            System.out.println("TASSA " + document.toString());
-
             View child = getLayoutInflater().inflate(R.layout.layout_comment, content, false);
             content.addView(child);
 
             TextView textView_username = child.findViewById(R.id.comment_username);
             TextView textView_commentText = child.findViewById(R.id.comment_text);
 
-            textView_username.setText(document.get("userID").toString());
-            textView_commentText.setText(document.get("text").toString());
+            textView_username.setText(document.getString("userID"));
+            textView_commentText.setText(document.getString("text"));
         }
+    }
+
+    public void addComment(View v)
+    {
+        dbWriter.addComment("Username", "Lorem ipsum", post.getPostID());
     }
 }

@@ -79,8 +79,6 @@ public class DatabaseReader
                     listener.onFailure();
             }
         });
-
-
     }
 
     public interface OnLoadedListener
