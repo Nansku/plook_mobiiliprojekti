@@ -121,17 +121,17 @@ public class FeedActivity extends AppCompatActivity
 
     public void button1(View v)
     {
-        dbDownloader.loadCollection("posts");
+        dbDownloader.loadCollection(CollectionType.post, "posts");
     }
 
     public void button2(View v)
     {
         String[] list = {"red", "blue"};
-        dbDownloader.loadCollection("posts", "tags", list);
+        dbDownloader.loadCollection(CollectionType.post, "posts", "tags", list);
     }
 
     public void button3(View v)
     {
-        dbDownloader.loadCollection("posts", "tags", "outdoors");
+        dbDownloader.loadCollection(CollectionType.post, "posts", "tags", "outdoors");
     }
 }

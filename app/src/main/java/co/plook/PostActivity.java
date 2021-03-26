@@ -67,7 +67,7 @@ public class PostActivity extends AppCompatActivity
 
         // Passing the enum so later (in onLoaded) we can process the received data further.
         dbDownloader.findById(CollectionType.post,"posts", postID);
-        dbDownloader.findById(CollectionType.comment_section,"comment_sections", postID);
+        dbDownloader.findSubcollection(CollectionType.comment_section,"comment_sections", "<postID>", "comments");
     }
 
     private void showPost(QuerySnapshot documentSnapshots)
@@ -86,20 +86,18 @@ public class PostActivity extends AppCompatActivity
 
     private void showComments(QuerySnapshot documentSnapshots)
     {
-        System.out.println(documentSnapshots);
-
-        return;
-
         for (QueryDocumentSnapshot document : documentSnapshots)
         {
+            System.out.println("TASSA " + document.toString());
+
             View child = getLayoutInflater().inflate(R.layout.layout_comment, content, false);
             content.addView(child);
 
             TextView textView_username = child.findViewById(R.id.comment_username);
             TextView textView_commentText = child.findViewById(R.id.comment_text);
 
-            textView_username.setText(document.get("caption").toString());
-            textView_commentText.setText(document.get("description").toString());
+            textView_username.setText(document.get("userID").toString());
+            textView_commentText.setText(document.get("text").toString());
         }
     }
 }

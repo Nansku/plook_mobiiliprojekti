@@ -48,10 +48,18 @@ public class DatabaseReader
         queryData(type, q);
     }
 
-    public void findById(CollectionType type, String collectionPath, String id)
+    public void findById(CollectionType type, String collectionPath, String documentId)
     {
         CollectionReference collRef = db.collection(collectionPath);
-        Query q = collRef.whereEqualTo("__name__", id);
+        Query q = collRef.whereEqualTo("__name__", documentId);
+
+        queryData(type, q);
+    }
+
+    public void findSubcollection(CollectionType type, String collectionPath, String documentId, String subcollectionPath)
+    {
+        CollectionReference collRef = db.collection(collectionPath).document(documentId).collection(subcollectionPath);
+        Query q = collRef;
 
         queryData(type, q);
     }
@@ -71,6 +79,8 @@ public class DatabaseReader
                     listener.onFailure();
             }
         });
+
+
     }
 
     public interface OnLoadedListener
