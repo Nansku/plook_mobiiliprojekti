@@ -24,8 +24,6 @@ public class FeedActivity extends AppCompatActivity
 
     private ArrayList<Post> allPosts;
 
-    private TextView textView;
-
     private Context context;
     private ViewGroup content;
 
@@ -37,8 +35,6 @@ public class FeedActivity extends AppCompatActivity
 
         context = getApplicationContext();
 
-        textView = findViewById(R.id.textView);
-
         dbDownloader = new DatabaseReader();
 
         content = findViewById(R.id.feed_content);
@@ -48,7 +44,7 @@ public class FeedActivity extends AppCompatActivity
         dbDownloader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
         {
             @Override
-            public void onLoaded(QuerySnapshot documentSnapshots)
+            public void onLoaded(CollectionType type, QuerySnapshot documentSnapshots)
             {
                 removePosts();
 
@@ -73,7 +69,7 @@ public class FeedActivity extends AppCompatActivity
             }
         });
 
-        dbDownloader.loadCollection("posts");
+        dbDownloader.loadCollection(CollectionType.post, "posts");
     }
 
     private void showPost(Post post)

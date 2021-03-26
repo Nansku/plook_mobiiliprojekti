@@ -10,6 +10,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 public class DatabaseReader
 {
@@ -23,39 +24,39 @@ public class DatabaseReader
 
     //WIP logic that determines what the type of queried field is
 
-    public void loadCollection(String collectionPath, String field, String[] query)
+    public void loadCollection(CollectionType type, String collectionPath, String field, String[] query)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereArrayContainsAny(field, Arrays.asList(query));
 
-        queryData(q);
+        queryData(type, q);
     }
 
-    public void loadCollection(String collectionPath, String field, String query)
+    public void loadCollection(CollectionType type, String collectionPath, String field, String query)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereArrayContains(field, query);
 
-        queryData(q);
+        queryData(type, q);
     }
 
-    public void loadCollection(String collectionPath)
+    public void loadCollection(CollectionType type, String collectionPath)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef;
 
-        queryData(q);
+        queryData(type, q);
     }
 
-    public void findById(String collectionPath, String id)
+    public void findById(CollectionType type, String collectionPath, String id)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereEqualTo("__name__", id);
 
-        queryData(q);
+        queryData(type, q);
     }
 
-    private void queryData(Query q)
+    private void queryData(CollectionType type, Query q)
     {
         q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
@@ -64,7 +65,7 @@ public class DatabaseReader
             {
                 if (task.isSuccessful())
                 {
-                    listener.onLoaded(task.getResult());
+                    listener.onLoaded(type, task.getResult());
                 }
                 else
                     listener.onFailure();
@@ -74,7 +75,7 @@ public class DatabaseReader
 
     public interface OnLoadedListener
     {
-        void onLoaded(QuerySnapshot documentSnapshots);
+        void onLoaded(CollectionType type, QuerySnapshot documentSnapshots);
         void onFailure();
     }
 
@@ -82,6 +83,13 @@ public class DatabaseReader
     {
         listener = eventListener;
     }
+}
 
-
+enum CollectionType
+{
+    comment_section,
+    post,
+    tag,
+    user,
+    vote
 }
