@@ -10,12 +10,22 @@
 
     <TextView
         android:id="@+id/comment_username"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:text="Username"
         android:textColor="@color/forest"
     />
+
+    <TextView
+        android:id="@+id/comment_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginHorizontal="50dp"
+        android:text="Timestamp"
+        android:textColor="@color/forest"
+        />
 
     <TextView
         android:id="@+id/comment_text"
