@@ -12,15 +12,22 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 public class ImageEditActivity extends AppCompatActivity {
     public static Uri resultUri;
+    public Uri imageUri;
+    private ImageView profilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_edit);
+        setContentView(R.layout.activity_image_upload);
+        profilePic = findViewById(R.id.profilePic);
+        //Intent intent = getIntent();
 
-        Intent intent = getIntent();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null && bundle.containsKey("imageUri")) {
+            imageUri = Uri.parse(bundle.getString("imageUri"));
+        }
 
-        CropImage.activity(ImageUploadActivity.imageUri)
+        CropImage.activity(imageUri)
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .setAspectRatio(3, 4)
                 .start(this);
@@ -33,9 +40,16 @@ public class ImageEditActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
 
             if (resultCode == RESULT_OK) {
-                resultUri = result.getUri();
+                imageUri = result.getUri();
+                profilePic.setImageURI(imageUri);
+                /*Intent intent = new Intent(ImageEditActivity.this, ImageUploadActivity.class) ;
+                intent.putExtra("resultUri", resultUri);
+                startActivity(intent) ;*/
 
-                ImageView profilePic = (ImageView) findViewById(R.id.profilePic);
+               /*Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setClass(ImageEditActivity.this,  ImageUploadActivity.class);
+                intent.putExtra("resultUri", resultUri.toString());
+                startActivity(intent);*/
 
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {

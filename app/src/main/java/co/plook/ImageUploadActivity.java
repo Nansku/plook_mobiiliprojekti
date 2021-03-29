@@ -27,11 +27,12 @@ import java.util.UUID;
 
 import static android.view.View.*;
 
+
 public class ImageUploadActivity extends AppCompatActivity
 {
     Button button;
     private ImageView profilePic;
-    public static Uri imageUri;
+    public Uri imageUri;
     public static Uri resultUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
@@ -79,21 +80,20 @@ public class ImageUploadActivity extends AppCompatActivity
         if(requestCode==1 && resultCode==RESULT_OK && data!= null && data.getData()!= null){
             imageUri = data.getData();
 
-            /*Intent intent = new Intent(getApplicationContext(), ImageEditActivity.class) ;
+            /*Intent intent = new Intent(ImageUploadActivity.this, ImageEditActivity.class);
             intent.putExtra("imageUri", imageUri);
-            startActivity(intent);/
-            *
-             */
+            startActivity(intent);*/
 
-            /*Intent intent2 = getIntent();
-            Uri resultUri = intent2.getData();
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setClass(ImageUploadActivity.this,  ImageEditActivity.class);
+            intent.putExtra("imageUri", imageUri.toString());
+            startActivity(intent);
 
-            profilePic.setImageURI(resultUri);*/
+            /*Bundle bundle = getIntent().getExtras();
+            if (bundle != null && bundle.containsKey("resultUri")) {
+                resultUri = Uri.parse(bundle.getString("resultUri"));
+            }*/
 
-            CropImage.activity(ImageUploadActivity.imageUri)
-                    .setGuidelines(CropImageView.Guidelines.ON)
-                    .setAspectRatio(3, 4)
-                    .start(this);
 
             uploadPicture();
         }
@@ -104,7 +104,7 @@ public class ImageUploadActivity extends AppCompatActivity
         final String randomKey = UUID.randomUUID().toString();
         StorageReference riversRef = storageReference.child("images/"+ randomKey);
 
-        riversRef.putFile(resultUri)
+        riversRef.putFile(imageUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -126,12 +126,5 @@ public class ImageUploadActivity extends AppCompatActivity
                     }
                 });
     }
-
-
-
-
-
-
-
 
     }
