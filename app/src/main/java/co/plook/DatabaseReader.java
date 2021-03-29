@@ -1,21 +1,31 @@
 package co.plook;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class DatabaseReader
 {
     private FirebaseFirestore db;
     private OnLoadedListener listener;
+
+    private String userID;
 
     public DatabaseReader()
     {
@@ -23,6 +33,7 @@ public class DatabaseReader
     }
 
     //WIP logic that determines what the type of queried field is
+
 
     public void loadCollection(CollectionType type, String collectionPath, String field, String[] query)
     {
@@ -59,14 +70,14 @@ public class DatabaseReader
     public void findSubcollection(CollectionType type, String collectionPath, String documentId, String subcollectionPath)
     {
         CollectionReference collRef = db.collection(collectionPath).document(documentId).collection(subcollectionPath);
-        Query q = collRef;
+        Query q = collRef.orderBy("time", Query.Direction.ASCENDING);
 
         queryData(type, q);
     }
 
     private void queryData(CollectionType type, Query q)
     {
-        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        Task t1 = q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
@@ -91,6 +102,72 @@ public class DatabaseReader
     {
         listener = eventListener;
     }
+
+
+    //1. request: find the post object AND comment section using postID
+    //2. request: get every commentators display name for UI using userIDs
+    public Task loadComments(String postID)
+    {
+        Task getPostTask = db.collection("posts").document(postID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+
+            }
+        });
+
+        Task getCommentsTask = db.collection("comment_sections").document("<postID>").collection("comments").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+
+            }
+        });
+
+        Task parallelTask = Tasks.whenAllSuccess(getPostTask, getCommentsTask).addOnSuccessListener(new OnSuccessListener<List<Object>>()
+        {
+            @Override
+            public void onSuccess(List<Object> objects)
+            {
+                loadCommentators(objects);
+            }
+        });
+        return parallelTask;
+    }
+
+    //search for all commentator userIDs, put them in a list and make .lenght amount of pipelined firestorage requests
+    private void loadCommentators(List<Object> objects)
+    {
+        System.out.println(objects);
+    }
+
+
+    public class TaskRunner implements Runnable
+    {
+        Task[] tasks;
+
+        private TaskRunner(Task[] t)
+        {
+            tasks = t;
+        }
+
+
+        @Override
+        public void run()
+        {
+            Task combinedTask = Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>() {
+                @Override
+                public void onSuccess(List<Object> objects)
+                {
+                    Log.d("Debuggaus", objects.toString());
+                }
+            });
+        }
+    }
+
+
 }
 
 enum CollectionType

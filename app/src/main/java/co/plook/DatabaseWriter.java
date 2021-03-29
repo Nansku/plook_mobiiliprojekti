@@ -3,11 +3,11 @@ package co.plook;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,15 +83,18 @@ public class DatabaseWriter
         return true;
     }
 
-    public boolean addComment(String userID, String text, String postID)
+    public Comment addComment(String userID, String text, String postID)
     {
         Map<String, Object> comment = new HashMap<>();
+        Timestamp timeNow = Timestamp.now();
+
         comment.put("userID", userID);
         comment.put("text", text);
+        comment.put("time", timeNow);
 
-        addToSubcollection("comment_section", postID, "comments", comment);
+        addToSubcollection("comment_sections", postID, "comments", comment);
 
-        return true;
+        return new Comment(userID, text, "repliedTo ph", timeNow);
     }
 
     public boolean addVote(boolean upOrDown)
