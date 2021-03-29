@@ -10,9 +10,10 @@ import android.widget.ImageView;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import static android.app.PendingIntent.getActivity;
+
 public class ImageEditActivity extends AppCompatActivity {
-    public static Uri resultUri;
-    public Uri imageUri;
+    public static Uri imageUri;
     private ImageView profilePic;
 
     @Override
@@ -42,13 +43,10 @@ public class ImageEditActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 imageUri = result.getUri();
                 profilePic.setImageURI(imageUri);
-                /*Intent intent = new Intent(ImageEditActivity.this, ImageUploadActivity.class) ;
-                intent.putExtra("resultUri", resultUri);
-                startActivity(intent) ;*/
 
-               /*Intent intent = new Intent(Intent.ACTION_VIEW);
+                /*Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setClass(ImageEditActivity.this,  ImageUploadActivity.class);
-                intent.putExtra("resultUri", resultUri.toString());
+                intent.putExtra("imageUri", imageUri.toString());
                 startActivity(intent);*/
 
 

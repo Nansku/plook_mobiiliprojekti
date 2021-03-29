@@ -30,10 +30,8 @@ import static android.view.View.*;
 
 public class ImageUploadActivity extends AppCompatActivity
 {
-    Button button;
     private ImageView profilePic;
-    public Uri imageUri;
-    public static Uri resultUri;
+    public static Uri imageUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
 
@@ -44,28 +42,20 @@ public class ImageUploadActivity extends AppCompatActivity
         setContentView(R.layout.activity_image_upload);
         profilePic = findViewById(R.id.profilePic);
 
+        Button chooseButton = (Button)findViewById(R.id.choosePic);
+
+
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
-        profilePic.setOnClickListener(new OnClickListener() {
+        chooseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 choosePicture();
+                chooseButton.setVisibility(INVISIBLE);
             }
         });
-
-        /*Button button = (Button)findViewById(R.id.cropImage);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), ImageEditActivity.class) ;
-                intent.putExtra("imageUri", imageUri);
-                startActivity(intent);
-
-        });}*/
     }
-
 
     private void choosePicture() {
         Intent intent = new Intent();
@@ -85,26 +75,35 @@ public class ImageUploadActivity extends AppCompatActivity
             startActivity(intent);*/
 
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setClass(ImageUploadActivity.this,  ImageEditActivity.class);
+            intent.setClass(ImageUploadActivity.this, ImageEditActivity.class);
             intent.putExtra("imageUri", imageUri.toString());
             startActivity(intent);
 
             /*Bundle bundle = getIntent().getExtras();
-            if (bundle != null && bundle.containsKey("resultUri")) {
-                resultUri = Uri.parse(bundle.getString("resultUri"));
+            if (bundle != null && bundle.containsKey("imageUri")) {
+                imageUri = Uri.parse(bundle.getString("resultUri"));
             }*/
-
-
-            uploadPicture();
         }
+
+        /*Button uploadButton = (Button)findViewById(R.id.upload);
+
+        uploadButton.setVisibility(View.VISIBLE);
+
+        uploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadPicture();
+            }
+        });
+*/      uploadPicture(imageUri);
     }
 
-    private void uploadPicture() {
+    private void uploadPicture(Uri uri) {
 
         final String randomKey = UUID.randomUUID().toString();
         StorageReference riversRef = storageReference.child("images/"+ randomKey);
 
-        riversRef.putFile(imageUri)
+        riversRef.putFile(uri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
