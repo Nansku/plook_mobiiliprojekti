@@ -1,6 +1,5 @@
 package co.plook;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,15 +9,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.w3c.dom.Document;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
+
 
 public class DatabaseReader
 {
@@ -95,6 +98,7 @@ public class DatabaseReader
     public interface OnLoadedListener
     {
         void onLoaded(CollectionType type, QuerySnapshot documentSnapshots);
+        void onLoadedCommentators(Map<String, String> names);
         void onFailure();
     }
 
@@ -117,7 +121,7 @@ public class DatabaseReader
             }
         });
 
-        Task getCommentsTask = db.collection("comment_sections").document("<postID>").collection("comments").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        Task getCommentsTask = db.collection("comment_sections").document(postID).collection("comments").orderBy("time", Query.Direction.ASCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
@@ -131,17 +135,63 @@ public class DatabaseReader
             @Override
             public void onSuccess(List<Object> objects)
             {
+                //listener.onLoaded(CollectionType.comment_section, objects);
                 loadCommentators(objects);
             }
         });
         return parallelTask;
     }
 
-    //search for all commentator userIDs, put them in a list and make .lenght amount of pipelined firestorage requests
+    //search for all commentator userIDs, put them in a list and make .length amount of pipelined firestorage requests
     private void loadCommentators(List<Object> objects)
     {
-        System.out.println(objects);
+        QuerySnapshot querySnapshot = (QuerySnapshot) objects.get(1);
+        //Log.d("OBJECTS", );
+        List<DocumentSnapshot> snapshots = querySnapshot.getDocuments();
+        ArrayList<String> userIDs = new ArrayList<>();
+
+        //loop through userIDs and get a list of unique names
+        for (DocumentSnapshot snapshot : snapshots)
+        {
+            String userID = snapshot.get("userID").toString();
+            if (!userIDs.contains(userID))
+                userIDs.add(userID);
+        }
+
+        Task[] tasks = new Task[userIDs.size()];
+
+        for (int i = 0; i < userIDs.size(); i++)
+        {
+            Task userNameTask = db.collection("users").document(userIDs.get(i)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+            {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task)
+                {
+
+                }
+            });
+            tasks[i] = userNameTask;
+        }
+
+        Task parallelTask = Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
+        {
+            @Override
+            public void onSuccess(List<Object> objects)
+            {
+                List<DocumentSnapshot> userDocs = (List<DocumentSnapshot>)(List<?>) objects;
+                Map<String, String> usernamePairs = new HashMap<>();
+                for (int i = 0; i < userDocs.size(); i++)
+                {
+                    usernamePairs.put(userIDs.get(i), userDocs.get(i).get("name").toString());
+                }
+
+                listener.onLoadedCommentators(usernamePairs);
+            }
+        });
     }
+
+
+
 
 
     public class TaskRunner implements Runnable

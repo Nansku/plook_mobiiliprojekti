@@ -15,6 +15,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class FeedActivity extends AppCompatActivity
 {
@@ -58,6 +59,12 @@ public class FeedActivity extends AppCompatActivity
                     allPosts.add(post);
                     showPost(post);
                 }
+            }
+
+            @Override
+            public void onLoadedCommentators(Map<String, String> names)
+            {
+
             }
 
             @Override

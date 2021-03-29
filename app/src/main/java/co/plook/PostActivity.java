@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,9 +16,9 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PostActivity extends AppCompatActivity
 {
@@ -29,6 +30,7 @@ public class PostActivity extends AppCompatActivity
     //database stuff
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
+    private QuerySnapshot comments;
 
     //objects
     private Post post;
@@ -63,12 +65,18 @@ public class PostActivity extends AppCompatActivity
                 {
                     case post:
                         showPost(documentSnapshots);
-                        System.out.println("TÄMÄ" + documentSnapshots.toString());
                         break;
                     case comment_section:
-                        addComments(documentSnapshots);
+                        //addComments(documentSnapshots);
+                        comments = documentSnapshots;
                         break;
                 }
+            }
+
+            @Override
+            public void onLoadedCommentators(Map<String, String> names)
+            {
+                addComments(names);
             }
 
             @Override
@@ -78,17 +86,20 @@ public class PostActivity extends AppCompatActivity
             }
         });
 
-        /*dbReader.loadComments("<postID>").addOnSuccessListener(new OnSuccessListener() {
+        dbReader.loadComments(post.getPostID()).addOnSuccessListener(new OnSuccessListener() {
             @Override
-            public void onSuccess(Object o) {
+            public void onSuccess(Object o)
+            {
+                ArrayList<Object> list = (ArrayList) o;
+                comments = (QuerySnapshot) list.get(1);
 
             }
-        });*/
+        });
 
 
         // Passing the enum so later (in onLoaded) we can process the received data further.
         dbReader.findById(CollectionType.post,"posts", post.getPostID());
-        dbReader.findSubcollection(CollectionType.comment_section,"comment_sections", post.getPostID(), "comments");
+        //dbReader.findSubcollection(CollectionType.comment_section,"comment_sections", post.getPostID(), "comments");
     }
 
     private void showPost(QuerySnapshot documentSnapshots)
@@ -119,12 +130,13 @@ public class PostActivity extends AppCompatActivity
         }
     }
 
-    private void addComments(QuerySnapshot documentSnapshots)
+    private void addComments(Map<String, String> names)
     {
         allComments = new ArrayList<>();
-        for (QueryDocumentSnapshot document : documentSnapshots)
+        for (QueryDocumentSnapshot document : comments)
         {
-            Comment comment = new Comment(document.getString("userID"), document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
+            String displayName = names.get(document.get("userID").toString());
+            Comment comment = new Comment(displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
             allComments.add(comment);
         }
         showComments(allComments);
