@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 
 public class FeedActivity extends AppCompatActivity
 {
-    private DatabaseDownloader dbDownloader;
+    private DatabaseReader dbReader;
 
     private ArrayList<Post> allPosts;
 
@@ -34,24 +33,27 @@ public class FeedActivity extends AppCompatActivity
 
         context = getApplicationContext();
 
-        dbDownloader = new DatabaseDownloader();
+        dbReader = new DatabaseReader();
 
         content = findViewById(R.id.feed_content);
         allPosts = new ArrayList<>();
 
-        dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
+
+        dbReader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
         {
             @Override
-            public void onLoaded(QuerySnapshot documentSnapshots)
+            public void onLoaded(CollectionType type, QuerySnapshot documentSnapshots)
             {
+                removePosts();
+
                 for (QueryDocumentSnapshot document : documentSnapshots)
                 {
                     Post post = new Post();
 
                     post.setPostID(document.getId());
-                    post.setCaption(document.get("caption").toString());
-                    post.setDescription(document.get("description").toString());
-                    post.setImageUrl(document.get("url").toString());
+                    post.setCaption(document.getString("caption"));
+                    post.setDescription(document.getString("description"));
+                    post.setImageUrl(document.getString("url"));
 
                     allPosts.add(post);
                     showPost(post);
@@ -65,7 +67,7 @@ public class FeedActivity extends AppCompatActivity
             }
         });
 
-        dbDownloader.loadCollection("posts");
+        dbReader.loadCollection(CollectionType.post, "posts");
     }
 
     private void showPost(Post post)
@@ -94,7 +96,6 @@ public class FeedActivity extends AppCompatActivity
             {
                 int i = content.indexOfChild(v);
 
-                Toast.makeText(context, allPosts.get(i).getPostID(), Toast.LENGTH_SHORT).show();
                 openPostActivity(allPosts.get(i).getPostID());
             }
         });
@@ -117,20 +118,17 @@ public class FeedActivity extends AppCompatActivity
 
     public void button1(View v)
     {
-        removePosts();
-        dbDownloader.loadCollection("posts");
+        dbReader.loadCollection(CollectionType.post, "posts");
     }
 
     public void button2(View v)
     {
-        removePosts();
         String[] list = {"red", "blue"};
-        dbDownloader.loadCollection("posts", "tags", list);
+        dbReader.loadCollection(CollectionType.post, "posts", "tags", list);
     }
 
     public void button3(View v)
     {
-        removePosts();
-        dbDownloader.loadCollection("posts", "tags", "outdoors");
+        dbReader.loadCollection(CollectionType.post, "posts", "tags", "outdoors");
     }
 }
