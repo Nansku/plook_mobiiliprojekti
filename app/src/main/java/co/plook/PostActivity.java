@@ -63,6 +63,7 @@ public class PostActivity extends AppCompatActivity
                 {
                     case post:
                         showPost(documentSnapshots);
+                        System.out.println("TÄMÄ" + documentSnapshots.toString());
                         break;
                     case comment_section:
                         addComments(documentSnapshots);
@@ -77,12 +78,12 @@ public class PostActivity extends AppCompatActivity
             }
         });
 
-        dbReader.loadComments("<postID>").addOnSuccessListener(new OnSuccessListener() {
+        /*dbReader.loadComments("<postID>").addOnSuccessListener(new OnSuccessListener() {
             @Override
             public void onSuccess(Object o) {
 
             }
-        });
+        });*/
 
 
         // Passing the enum so later (in onLoaded) we can process the received data further.
@@ -132,7 +133,7 @@ public class PostActivity extends AppCompatActivity
     private void showComments(List<Comment> comments)
     {
         //clear viewGroup before showing comments
-        content.removeAllViews();
+        //content.removeAllViews();
         for (Comment comment : comments)
         {
             //create a view for comment
@@ -142,9 +143,11 @@ public class PostActivity extends AppCompatActivity
             //ADD TEXTVIEWS FOR REPLIEDTOID AND TIMESTAMP
             TextView textView_username = child.findViewById(R.id.comment_username);
             TextView textView_commentText = child.findViewById(R.id.comment_text);
+            TextView textView_timestamp = child.findViewById(R.id.comment_timestamp);
             //set texts
             textView_username.setText(comment.getUserID());
-            textView_commentText.setText(comment.getText() + "  time: " + comment.getTimeDifference());
+            textView_commentText.setText(comment.getText());
+            textView_timestamp.setText(comment.getTimeDifference());
         }
     }
 

@@ -68,6 +68,12 @@ public class DatabaseWriter
         addToCollection("users", user);
     }
 
+    //make a user class
+    /*public void modifyUser(User user)
+    {
+
+    }*/
+
     public boolean addPost(String userID, String caption, String description, String[] tags) //WIP image??
     {
         //First upload the picture to storage and return the imageurl
