@@ -58,6 +58,7 @@
             android:layout_height="100dp"
             android:text="BIO"
             android:background="@drawable/bio"
+            android:textAlignment="center"
             />
 
         <RelativeLayout
