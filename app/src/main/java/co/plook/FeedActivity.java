@@ -130,20 +130,6 @@ public class FeedActivity extends AppCompatActivity
         setListener(child);
     }
 
-    private void setListener(View v)
-    {
-        v.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                int i = content.indexOfChild(v);
-
-                openPostActivity(allPosts.get(i).getPostID());
-            }
-        });
-    }
-
     private Task requestNicknames(QuerySnapshot querySnapshot)
     {
         List<DocumentSnapshot> docSnapshots = querySnapshot.getDocuments();
@@ -180,6 +166,20 @@ public class FeedActivity extends AppCompatActivity
             }
         });
         return parallelTask;
+    }
+
+    private void setListener(View v)
+    {
+        v.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                int i = content.indexOfChild(v);
+
+                openPostActivity(allPosts.get(i).getPostID());
+            }
+        });
     }
 
     private void openPostActivity(String postID)
