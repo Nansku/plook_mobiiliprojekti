@@ -67,29 +67,31 @@ public class ImageUploadActivity extends AppCompatActivity
     }
 
     private void uploadPicture() {
-
-
         final String randomKey = UUID.randomUUID().toString();
         StorageReference riversRef = storageReference.child("images/"+ randomKey);
 
         riversRef.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
+                {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                    {
                         Snackbar.make(findViewById(android.R.id.content), "Kuva ladattu", Snackbar.LENGTH_LONG).show();
-
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
+                .addOnFailureListener(new OnFailureListener()
+                {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-
+                    public void onFailure(@NonNull Exception e)
+                    {
                         Toast.makeText(getApplicationContext(), "Lataus epäonnistui", Toast.LENGTH_LONG).show();
                     }
                 })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>()
+                {
                     @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot)
+                    {
 
                     }
                 });

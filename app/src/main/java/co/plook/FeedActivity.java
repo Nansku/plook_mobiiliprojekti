@@ -1,5 +1,6 @@
 package co.plook;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -11,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -26,6 +29,8 @@ public class FeedActivity extends AppCompatActivity
     private Context context;
     private ViewGroup content;
 
+    private boolean isNotReady = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -40,41 +45,42 @@ public class FeedActivity extends AppCompatActivity
         allPosts = new ArrayList<>();
 
 
-        dbReader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
-        {
-            @Override
-            public void onLoaded(CollectionType type, QuerySnapshot documentSnapshots)
+        Task postTask = dbReader.findDocuments("posts", "tags", "red").addOnCompleteListener(task -> {
+            QuerySnapshot snapshot = (QuerySnapshot) task.getResult();
+            for (QueryDocumentSnapshot document : snapshot)
             {
-                removePosts();
+                Post post = new Post();
 
-                for (QueryDocumentSnapshot document : documentSnapshots)
-                {
-                    Post post = new Post();
+                post.setPostID(document.getId());
+                post.setCaption(document.getString("caption"));
+                post.setDescription(document.getString("description"));
+                post.setImageUrl(document.getString("url"));
 
-                    post.setPostID(document.getId());
-                    post.setCaption(document.getString("caption"));
-                    post.setDescription(document.getString("description"));
-                    post.setImageUrl(document.getString("url"));
+                allPosts.add(post);
+                showPost(post);
 
-                    allPosts.add(post);
-                    showPost(post);
-                }
-            }
-
-            @Override
-            public void onLoadedCommentators(Map<String, String> names)
-            {
-
-            }
-
-            @Override
-            public void onFailure()
-            {
-
+                isNotReady = false;
             }
         });
 
-        dbReader.loadCollection(CollectionType.post, "posts");
+        //this should wait for postTask
+        Task displayNameTask = dbReader.findDocumentByID("posts", "tags");
+
+        /*synchronized (displayNameTask)
+        {
+            if (isNotReady)
+            {
+                try
+                {
+                    displayNameTask.wait();
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println(e.getMessage());
+                }
+            }
+            System.out.println("ON VALMIS");
+        }*/
     }
 
     private void showPost(Post post)
@@ -125,17 +131,17 @@ public class FeedActivity extends AppCompatActivity
 
     public void button1(View v)
     {
-        dbReader.loadCollection(CollectionType.post, "posts");
+        dbReader.findDocuments("posts", "tags", "blue");
     }
 
     public void button2(View v)
     {
         String[] list = {"red", "blue"};
-        dbReader.loadCollection(CollectionType.post, "posts", "tags", list);
+        dbReader.findDocuments("posts", "tags", list);
     }
 
     public void button3(View v)
     {
-        dbReader.loadCollection(CollectionType.post, "posts", "tags", "outdoors");
+        dbReader.findDocuments("posts", "tags", "outdoors");
     }
 }

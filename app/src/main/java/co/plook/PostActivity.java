@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -56,49 +55,8 @@ public class PostActivity extends AppCompatActivity
         Bundle extras = getIntent().getExtras();
         post.setPostID(extras.getString("post_id"));
 
-        dbReader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
-        {
-            @Override
-            public void onLoaded(CollectionType type, QuerySnapshot documentSnapshots)
-            {
-                switch (type)
-                {
-                    case post:
-                        showPost(documentSnapshots);
-                        break;
-                    case comment_section:
-                        //addComments(documentSnapshots);
-                        comments = documentSnapshots;
-                        break;
-                }
-            }
-
-            @Override
-            public void onLoadedCommentators(Map<String, String> names)
-            {
-                addComments(names);
-            }
-
-            @Override
-            public void onFailure()
-            {
-
-            }
-        });
-
-        dbReader.loadComments(post.getPostID()).addOnSuccessListener(new OnSuccessListener() {
-            @Override
-            public void onSuccess(Object o)
-            {
-                ArrayList<Object> list = (ArrayList) o;
-                comments = (QuerySnapshot) list.get(1);
-
-            }
-        });
-
-
         // Passing the enum so later (in onLoaded) we can process the received data further.
-        dbReader.findById(CollectionType.post,"posts", post.getPostID());
+        dbReader.findDocumentByID("posts", post.getPostID());
         //dbReader.findSubcollection(CollectionType.comment_section,"comment_sections", post.getPostID(), "comments");
     }
 
