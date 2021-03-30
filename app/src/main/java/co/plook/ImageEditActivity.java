@@ -1,4 +1,4 @@
-package co.plook;
+/*package co.plook;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -44,17 +44,18 @@ public class ImageEditActivity extends AppCompatActivity {
                 imageUri = result.getUri();
                 profilePic.setImageURI(imageUri);
 
-                /*Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setClass(ImageEditActivity.this,  ImageUploadActivity.class);
-                intent.putExtra("imageUri", imageUri.toString());
-                startActivity(intent);*/
+
 
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
 
             }
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setClass(ImageEditActivity.this,  CroppedImageUpload.class);
+            intent.putExtra("imageUri", imageUri.toString());
+            startActivity(intent);
         }
 
     }
-}
+}*/
