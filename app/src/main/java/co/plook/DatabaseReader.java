@@ -1,7 +1,5 @@
 package co.plook;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -13,8 +11,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +31,7 @@ public class DatabaseReader {
     //WIP logic that determines what the type of queried field is
 
     //find documents in collectionPath that have one of 'criteria' lists strings
-    public Task findDocuments(String collectionPath, String field, String[] criteria)
+    public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String[] criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereArrayContainsAny(field, Arrays.asList(criteria));
@@ -44,7 +40,7 @@ public class DatabaseReader {
     }
 
     //find documents in collectionPath that have the string criteria in specified field
-    public Task findDocuments(String collectionPath, String field, String criteria)
+    public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereArrayContains(field, criteria);
@@ -53,7 +49,7 @@ public class DatabaseReader {
     }
 
     //
-    public Task findDocumentByID(String collectionPath, String documentId)
+    public Task<QuerySnapshot> findDocumentByID(String collectionPath, String documentId)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereEqualTo("__name__", documentId);
@@ -62,7 +58,7 @@ public class DatabaseReader {
     }
 
     //find subcollections! currently the only subcollection exists in comment_sections
-    public Task findSubcollection(String collectionPath, String documentId, String subcollectionPath)
+    public Task<QuerySnapshot> findSubcollection(String collectionPath, String documentId, String subcollectionPath)
     {
         CollectionReference collRef = db.collection(collectionPath).document(documentId).collection(subcollectionPath);
         Query q = collRef.orderBy("time", Query.Direction.ASCENDING);
