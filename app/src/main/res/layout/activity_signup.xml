@@ -45,6 +45,7 @@
     <EditText
         android:id="@+id/editText3"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="208dp"
         android:ems="10"
         android:hint="Password"
