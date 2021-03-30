@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -25,6 +27,9 @@ public class FeedActivity extends AppCompatActivity
 
     private Context context;
     private ViewGroup content;
+    private ViewGroup contentRight;
+
+    int lane = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,9 +41,14 @@ public class FeedActivity extends AppCompatActivity
 
         dbReader = new DatabaseReader();
 
-        content = findViewById(R.id.feed_content);
-        allPosts = new ArrayList<>();
+        Spinner spinner = (Spinner) findViewById(R.id.feed_filter);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.feed_filters, R.layout.support_simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
+        content = findViewById(R.id.feed_content);
+        contentRight = findViewById(R.id.feed_content_right);
+        allPosts = new ArrayList<>();
 
         dbReader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
         {
@@ -80,7 +90,15 @@ public class FeedActivity extends AppCompatActivity
     private void showPost(Post post)
     {
         View child = getLayoutInflater().inflate(R.layout.layout_feed_post, content, false);
+
         content.addView(child);
+
+        /*
+        if(lane % 2 == 0)
+            content.addView(child);
+        else
+            contentRight.addView(child);
+         */
 
         TextView textView_caption = child.findViewById(R.id.post_caption);
         TextView textView_description = child.findViewById(R.id.post_description);
@@ -92,6 +110,8 @@ public class FeedActivity extends AppCompatActivity
         Glide.with(context).load(post.getImageUrl()).into(imageView_image);
 
         setListener(child);
+
+        lane++;
     }
 
     private void setListener(View v)
@@ -120,7 +140,10 @@ public class FeedActivity extends AppCompatActivity
     private void removePosts()
     {
         content.removeAllViews();
+        contentRight.removeAllViews();
         allPosts.clear();
+
+        lane = 0;
     }
 
     public void button1(View v)

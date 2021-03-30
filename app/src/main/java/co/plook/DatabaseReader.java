@@ -115,19 +115,13 @@ public class DatabaseReader
         Task getPostTask = db.collection("posts").document(postID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
         {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task)
-            {
-
-            }
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {}
         });
 
         Task getCommentsTask = db.collection("comment_sections").document(postID).collection("comments").orderBy("time", Query.Direction.ASCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
-            {
-
-            }
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {}
         });
 
         Task parallelTask = Tasks.whenAllSuccess(getPostTask, getCommentsTask).addOnSuccessListener(new OnSuccessListener<List<Object>>()

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -86,14 +87,10 @@ public class PostActivity extends AppCompatActivity
             }
         });
 
-        dbReader.loadComments(post.getPostID()).addOnSuccessListener(new OnSuccessListener() {
-            @Override
-            public void onSuccess(Object o)
-            {
-                ArrayList<Object> list = (ArrayList) o;
-                comments = (QuerySnapshot) list.get(1);
-
-            }
+        dbReader.loadComments(post.getPostID()).addOnSuccessListener(o ->
+        {
+            ArrayList<Object> list = (ArrayList) o;
+            comments = (QuerySnapshot) list.get(1);
         });
 
 

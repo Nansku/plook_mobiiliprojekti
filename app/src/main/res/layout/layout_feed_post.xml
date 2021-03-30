@@ -4,8 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginVertical="5dp"
-    android:layout_marginHorizontal="10dp"
     app:cardCornerRadius="10dp"
     android:clickable="true"
     android:foreground="@drawable/card_ripple">
@@ -20,13 +18,14 @@
             android:layout_height="300dp"
             android:src="@drawable/ic_launcher_background"
             android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
         />
 
         <TextView
             android:id="@+id/post_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hello World"
+            android:text="CAPTION"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:textSize="18sp"
@@ -37,13 +36,15 @@
         <TextView
             android:id="@+id/post_description"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/image"
             android:background="@color/lighter_forest"
-            android:text="HELLO WORLD"
+            android:text="DESCRIPTION"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:padding="10dp"
+            android:paddingTop="10dp"
+            android:paddingHorizontal="10dp"
+            android:paddingBottom="30dp"
         />
 
     </RelativeLayout>
