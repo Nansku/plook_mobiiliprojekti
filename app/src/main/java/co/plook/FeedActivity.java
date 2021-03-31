@@ -98,6 +98,8 @@ public class FeedActivity extends AppCompatActivity
     private void loadPosts()
     {
         loading = true;
+        allPosts.add(null);
+        feedContentAdapter.notifyItemInserted(allPosts.size() - 1);
 
         // Posts are loaded from the "posts" collection. Wow.
         Query q = dbReader.db.collection("posts");
@@ -131,6 +133,9 @@ public class FeedActivity extends AppCompatActivity
                     usernamePairs.put(userIDs.get(i), docs.get(0).get("name").toString());
                 }
 
+                allPosts.remove(allPosts.size() - 1);
+                feedContentAdapter.notifyItemRemoved(allPosts.size());
+
                 createPosts(usernamePairs, snapshot);
 
                 loading = false;
@@ -151,8 +156,9 @@ public class FeedActivity extends AppCompatActivity
             post.setName(usernamePairs.get(document.get("userID")));
 
             allPosts.add(post);
-            feedContentAdapter.notifyItemInserted(allPosts.size() - 1);
         }
+
+        feedContentAdapter.notifyDataSetChanged();
 
         if(snapshot.size() > 0)
             lastVisible = snapshot.getDocuments().get(snapshot.size() - 1);
