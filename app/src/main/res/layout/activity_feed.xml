@@ -43,10 +43,22 @@
         android:scrollbars="none">
 
         <LinearLayout
+            android:id="@+id/feed_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-        />
+            android:padding="5dp"
+            android:divider="@drawable/divider_feed_content"
+            android:showDividers="middle">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="LOAD MORE"
+                android:onClick="loadMore"
+            />
+
+        </LinearLayout>
 
     </ScrollView>
 
