@@ -22,7 +22,7 @@ import java.util.Map;
 public class DatabaseReader {
     private FirebaseFirestore db;
 
-    private String userID;
+    //private String userID;
 
     public DatabaseReader() {
         db = FirebaseFirestore.getInstance();
@@ -92,49 +92,6 @@ public class DatabaseReader {
             public void onSuccess(List<Object> objects)
             {
 
-            }
-        });
-    }
-
-    //search for all commentator userIDs, put them in a list and make .length amount of pipelined firestorage requests
-    private void loadCommentators(List<Object> objects)
-    {
-        QuerySnapshot querySnapshot = (QuerySnapshot) objects.get(1);
-        //Log.d("OBJECTS", );
-        List<DocumentSnapshot> snapshots = querySnapshot.getDocuments();
-        ArrayList<String> userIDs = new ArrayList<>();
-
-        //loop through userIDs and get a list of unique names
-        for (DocumentSnapshot snapshot : snapshots)
-        {
-            String userID = snapshot.get("userID").toString();
-            if (!userIDs.contains(userID))
-                userIDs.add(userID);
-        }
-
-        Task[] tasks = new Task[userIDs.size()];
-
-        for (int i = 0; i < userIDs.size(); i++) {
-            Task userNameTask = db.collection("users").document(userIDs.get(i)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task)
-                {
-
-                }
-            });
-            tasks[i] = userNameTask;
-        }
-
-        Task parallelTask = Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
-        {
-            @Override
-            public void onSuccess(List<Object> objects)
-            {
-                List<DocumentSnapshot> userDocs = (List<DocumentSnapshot>) (List<?>) objects;
-                Map<String, String> usernamePairs = new HashMap<>();
-                for (int i = 0; i < userDocs.size(); i++) {
-                    usernamePairs.put(userIDs.get(i), userDocs.get(i).get("name").toString());
-                }
             }
         });
     }
