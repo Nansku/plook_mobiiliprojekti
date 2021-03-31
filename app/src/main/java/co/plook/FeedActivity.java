@@ -68,8 +68,7 @@ public class FeedActivity extends AppCompatActivity
         feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
 
         recyclerView.setAdapter(feedContentAdapter);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
@@ -82,12 +81,11 @@ public class FeedActivity extends AppCompatActivity
                 {
                     int visibleItemCount = layoutManager.getChildCount();
                     int totalItemCount = layoutManager.getItemCount();
-                    int pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+                    int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
                     if (!loading)
                     {
-                        System.out.println("SCOLLING");
-                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - 2)
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2)
                             loadPosts();
                     }
                 }

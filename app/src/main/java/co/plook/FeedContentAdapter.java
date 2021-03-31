@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,8 +18,8 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final int VIEW_TYPE_POST = 0;
     private final int VIEW_TYPE_LOADING = 1;
 
-    private ArrayList<Post> localDataSet;
-    private Context context;
+    private final ArrayList<Post> localDataSet;
+    private final Context context;
 
     private static ClickListener clickListener;
 
