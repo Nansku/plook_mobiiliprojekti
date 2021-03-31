@@ -47,6 +47,19 @@
             android:paddingBottom="30dp"
         />
 
+        <TextView
+            android:id="@+id/post_username"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_below="@+id/post_description"
+            android:background="@color/lighter_forest"
+            android:text="HELLO WORLD"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:padding="10dp"
+            />
+
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

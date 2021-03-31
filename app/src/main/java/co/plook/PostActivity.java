@@ -1,19 +1,20 @@
 package co.plook;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -36,7 +37,6 @@ public class PostActivity extends AppCompatActivity
     //objects
     private Post post;
     private ArrayList<Comment> allComments;
-    //the PostActivity should probably know the userID too???
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,80 +54,54 @@ public class PostActivity extends AppCompatActivity
 
         post = new Post();
 
+        //postID from feed
         Bundle extras = getIntent().getExtras();
-        post.setPostID(extras.getString("post_id"));
+        String postID = extras.getString("post_id");
+        post.setPostID(postID);
 
-        dbReader.setOnLoadedListener(new DatabaseReader.OnLoadedListener()
+
+
+        dbReader.findDocumentByID("posts", postID)
+                .addOnCompleteListener(task -> showPost((QuerySnapshot) task.getResult()));
+
+        dbReader.findSubcollection("comment_sections", postID, "comments")
+        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
-            public void onLoaded(CollectionType type, QuerySnapshot documentSnapshots)
-            {
-                switch (type)
-                {
-                    case post:
-                        showPost(documentSnapshots);
-                        break;
-                    case comment_section:
-                        //addComments(documentSnapshots);
-                        comments = documentSnapshots;
-                        break;
-                }
-            }
-
-            @Override
-            public void onLoadedCommentators(Map<String, String> names)
-            {
-                addComments(names);
-            }
-
-            @Override
-            public void onFailure()
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
 
             }
         });
-
-        dbReader.loadComments(post.getPostID()).addOnSuccessListener(o ->
-        {
-            ArrayList<Object> list = (ArrayList) o;
-            comments = (QuerySnapshot) list.get(1);
-        });
-
-
-        // Passing the enum so later (in onLoaded) we can process the received data further.
-        dbReader.findById(CollectionType.post,"posts", post.getPostID());
-        //dbReader.findSubcollection(CollectionType.comment_section,"comment_sections", post.getPostID(), "comments");
     }
 
     private void showPost(QuerySnapshot documentSnapshots)
     {
-        for (QueryDocumentSnapshot document : documentSnapshots)
+        DocumentSnapshot document = documentSnapshots.getDocuments().get(0);
+        post.setPostID(document.getId());
+        post.setCaption(document.getString("caption"));
+        post.setDescription(document.getString("description"));
+        post.setImageUrl(document.getString("url"));
+
+        TextView textView_caption = findViewById(R.id.post_caption);
+        TextView textView_description = findViewById(R.id.post_description);
+        TextView textView_tags = findViewById(R.id.post_tags);
+
+        List<String> group = (List<String>) document.get("tags");
+        String tags = "tags:\n";
+        for (String str : group)
         {
-            post.setPostID(document.getId());
-            post.setCaption(document.getString("caption"));
-            post.setDescription(document.getString("description"));
-            post.setImageUrl(document.getString("url"));
-
-            TextView textView_caption = findViewById(R.id.post_caption);
-            TextView textView_description = findViewById(R.id.post_description);
-            TextView textView_tags = findViewById(R.id.post_tags);
-
-            List<String> group = (List<String>) document.get("tags");
-            String tags = "tags:\n";
-            for (String str : group)
-            {
-                tags += "{ " + str + " } ";
-            }
-
-            textView_caption.setText(post.getCaption());
-            textView_description.setText(post.getDescription());
-            textView_tags.setText(tags);
-
-            Glide.with(context).load(post.getImageUrl()).into(imageView);
+            tags += "{ " + str + " } ";
         }
+
+        textView_caption.setText(post.getCaption());
+        textView_description.setText(post.getDescription());
+        textView_tags.setText(tags);
+
+        Glide.with(context).load(post.getImageUrl()).into(imageView);
     }
 
-    private void addComments(Map<String, String> names)
+    /*private void addComments(Map<String, String> names)
     {
         allComments = new ArrayList<>();
         for (QueryDocumentSnapshot document : comments)
@@ -137,7 +111,7 @@ public class PostActivity extends AppCompatActivity
             allComments.add(comment);
         }
         showComments(allComments);
-    }
+    }*/
 
     private void showComments(List<Comment> comments)
     {
@@ -165,9 +139,9 @@ public class PostActivity extends AppCompatActivity
         //get text and userID(s) from the view and pass them into a Comment object
         //for now lets use a ph (placeholder) comment
         Timestamp timeNow = Timestamp.now();
-        String commentText = "kommentti ajalla: " + timeNow.toDate().toString();
+        String commentText = "Kello on: " + timeNow.toDate().toString();
 
-        Comment commentToAdd = dbWriter.addComment("Username", commentText, post.getPostID());
+        Comment commentToAdd = dbWriter.addComment("HkiNfJx7Vaaok6L9wo6x34D3Ol03", commentText, post.getPostID());
 
         //hmm does 'allComments' have to be global or do we remove the parameter from 'showComment'??
         allComments.add(commentToAdd);
