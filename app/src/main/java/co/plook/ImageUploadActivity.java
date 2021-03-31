@@ -15,13 +15,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -92,9 +97,7 @@ public class ImageUploadActivity extends AppCompatActivity
 
                 }
         }
-
-
-
+        
             /*Intent intent = new Intent(ImageUploadActivity.this, ImageEditActivity.class);
             intent.putExtra("imageUri", imageUri);
             startActivity(intent);
@@ -125,29 +128,66 @@ public class ImageUploadActivity extends AppCompatActivity
     private void uploadPicture(Uri uri) {
 
         final String randomKey = UUID.randomUUID().toString();
-        StorageReference riversRef = storageReference.child("images/"+ randomKey);
+        StorageReference riversRef = storageReference.child("images/testi.jpg");
 
-        riversRef.putFile(uri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        Task<Uri> urlTask = riversRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>()
+        {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception
+            {
+                if (!task.isSuccessful()){
+                    throw task.getException();
+                }
+
+                return riversRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task)
+            {
+                if (task.isSuccessful())
+                {
+                    //TÄÄLLÄ on download token joka menee database kirjoittajaan jotenkin näin
+                    //dbWriter.addPost("Caption", "Description", downloadUri.toString());
+                    Uri downloadUri = task.getResult();
+                }
+            }
+        })
+
+                ;
+                /*.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                    {
                         Snackbar.make(findViewById(android.R.id.content), "Kuva ladattu", Snackbar.LENGTH_LONG).show();
-
+                        //System.out.println("UPLOAD SESSION URI: " + taskSnapshot.getUploadSessionUri());
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
+                .addOnFailureListener(new OnFailureListener()
+                {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-
+                    public void onFailure(@NonNull Exception e)
+                    {
                         Toast.makeText(getApplicationContext(), "Lataus epäonnistui", Toast.LENGTH_LONG).show();
                     }
                 })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>()
+                {
                     @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot)
+                    {
 
                     }
-                });
+                });*/
+        riversRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
+            @Override
+            public void onSuccess(Uri uri)
+            {
+                System.out.println("GET DOWNLOAD URI STRING: " + uri.toString());
+            }
+        });
     }
 }
 
