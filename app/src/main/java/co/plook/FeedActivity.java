@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -34,10 +35,6 @@ public class FeedActivity extends AppCompatActivity
     private Context context;
     private ViewGroup content;
 
-    private ArrayList<String> userIDs;
-
-    private boolean isNotReady = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -52,10 +49,41 @@ public class FeedActivity extends AppCompatActivity
         allPosts = new ArrayList<>();
 
 
+        dbReader.findDocuments("posts", "tags", "flower").continueWithTask(new Continuation<QuerySnapshot, Task<QuerySnapshot>>()
+        {
+            @Override
+            public Task<QuerySnapshot> then(@NonNull Task<QuerySnapshot> task) throws Exception
+            {
+                return task;
+            }
+        }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+
+            }
+        });
+
+
+
         Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "tags", "flower").addOnCompleteListener(task -> {
 
-            QuerySnapshot snapshot = task.getResult();
-            requestNicknames(snapshot).addOnCompleteListener(new OnCompleteListener() {
+            QuerySnapshot querySnapshot = task.getResult();
+            List<DocumentSnapshot> docSnapshots = querySnapshot.getDocuments();
+            ArrayList<String> userIDs = new ArrayList<>();
+
+            //loop through userIDs and get a list of unique names
+            for (DocumentSnapshot snapshot : docSnapshots)
+            {
+                String userID = snapshot.get("userID").toString();
+                if (!userIDs.contains(userID))
+                    userIDs.add(userID);
+            }
+
+            //request nicknames with a list of unique names and onComplete parse it to usernamePairs
+            dbReader.requestNicknames(userIDs).addOnCompleteListener(new OnCompleteListener()
+            {
                 @Override
                 public void onComplete(@NonNull Task task)
                 {
@@ -67,29 +95,10 @@ public class FeedActivity extends AppCompatActivity
                         usernamePairs.put(userIDs.get(i), docs.get(0).get("name").toString());
                     }
                     System.out.println("PARIT: " + usernamePairs);
-                    createPosts(usernamePairs, snapshot);
+                    createPosts(usernamePairs, querySnapshot);
                 }
             });
         });
-
-        //this should wait for postTask
-        //Task displayNameTask = dbReader.findDocumentByID("posts", "tags");
-
-        /*synchronized (displayNameTask)
-        {
-            if (isNotReady)
-            {
-                try
-                {
-                    displayNameTask.wait();
-                }
-                catch (InterruptedException e)
-                {
-                    System.out.println(e.getMessage());
-                }
-            }
-            System.out.println("ON VALMIS");
-        }*/
     }
 
     private void createPosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
@@ -106,8 +115,6 @@ public class FeedActivity extends AppCompatActivity
 
             allPosts.add(post);
             showPost(post);
-
-            isNotReady = false;
         }
     }
 
@@ -130,43 +137,6 @@ public class FeedActivity extends AppCompatActivity
         setListener(child);
     }
 
-    private Task requestNicknames(QuerySnapshot querySnapshot)
-    {
-        List<DocumentSnapshot> docSnapshots = querySnapshot.getDocuments();
-        userIDs = new ArrayList<>();
-
-        //loop through userIDs and get a list of unique names
-        for (DocumentSnapshot snapshot : docSnapshots)
-        {
-            String userID = snapshot.get("userID").toString();
-            if (!userIDs.contains(userID))
-                userIDs.add(userID);
-        }
-
-        Task[] tasks = new Task[userIDs.size()];
-
-        for (int i = 0; i < userIDs.size(); i++) {
-            Task<QuerySnapshot> userNameTask = dbReader.findDocumentByID("users", userIDs.get(i))
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task)
-                        {
-
-                        }
-                    });
-            tasks[i] = userNameTask;
-        }
-
-        Task<List<Object>> parallelTask = Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
-        {
-            @Override
-            public void onSuccess(List<Object> objects)
-            {
-
-            }
-        });
-        return parallelTask;
-    }
 
     private void setListener(View v)
     {

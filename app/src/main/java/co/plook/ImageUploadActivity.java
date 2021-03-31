@@ -128,7 +128,7 @@ public class ImageUploadActivity extends AppCompatActivity
     private void uploadPicture(Uri uri) {
 
         final String randomKey = UUID.randomUUID().toString();
-        StorageReference riversRef = storageReference.child("images/testi.jpg");
+        StorageReference riversRef = storageReference.child("images/" + randomKey);
 
         Task<Uri> urlTask = riversRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>()
         {
