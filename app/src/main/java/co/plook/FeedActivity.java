@@ -58,15 +58,26 @@ public class FeedActivity extends AppCompatActivity
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        content = findViewById(R.id.feed_content);
-        contentRight = findViewById(R.id.feed_content_right);
         allPosts = new ArrayList<>();
 
 
         Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "tags", "flower").addOnCompleteListener(task -> {
 
-            QuerySnapshot snapshot = task.getResult();
-            requestNicknames(snapshot).addOnCompleteListener(new OnCompleteListener() {
+            QuerySnapshot querySnapshot = task.getResult();
+            List<DocumentSnapshot> docSnapshots = querySnapshot.getDocuments();
+            ArrayList<String> userIDs = new ArrayList<>();
+
+            //loop through userIDs and get a list of unique names
+            for (DocumentSnapshot snapshot : docSnapshots)
+            {
+                String userID = snapshot.get("userID").toString();
+                if (!userIDs.contains(userID))
+                    userIDs.add(userID);
+            }
+
+            //request nicknames with a list of unique names and onComplete parse it to usernamePairs
+            dbReader.requestNicknames(userIDs).addOnCompleteListener(new OnCompleteListener()
+            {
                 @Override
                 public void onComplete(@NonNull Task task)
                 {
@@ -78,29 +89,10 @@ public class FeedActivity extends AppCompatActivity
                         usernamePairs.put(userIDs.get(i), docs.get(0).get("name").toString());
                     }
                     System.out.println("PARIT: " + usernamePairs);
-                    createPosts(usernamePairs, snapshot);
+                    createPosts(usernamePairs, querySnapshot);
                 }
             });
         });
-
-        //this should wait for postTask
-        //Task displayNameTask = dbReader.findDocumentByID("posts", "tags");
-
-        /*synchronized (displayNameTask)
-        {
-            if (isNotReady)
-            {
-                try
-                {
-                    displayNameTask.wait();
-                }
-                catch (InterruptedException e)
-                {
-                    System.out.println(e.getMessage());
-                }
-            }
-            System.out.println("ON VALMIS");
-        }*/
     }
 
     private void createPosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
@@ -117,8 +109,6 @@ public class FeedActivity extends AppCompatActivity
 
             allPosts.add(post);
             showPost(post);
-
-            isNotReady = false;
         }
     }
 
@@ -127,13 +117,6 @@ public class FeedActivity extends AppCompatActivity
         View child = getLayoutInflater().inflate(R.layout.layout_feed_post, content, false);
 
         content.addView(child);
-
-        /*
-        if(lane % 2 == 0)
-            content.addView(child);
-        else
-            contentRight.addView(child);
-         */
 
         TextView textView_caption = child.findViewById(R.id.post_caption);
         TextView textView_description = child.findViewById(R.id.post_description);
@@ -149,44 +132,6 @@ public class FeedActivity extends AppCompatActivity
         setListener(child);
 
         lane++;
-    }
-
-    private Task requestNicknames(QuerySnapshot querySnapshot)
-    {
-        List<DocumentSnapshot> docSnapshots = querySnapshot.getDocuments();
-        userIDs = new ArrayList<>();
-
-        //loop through userIDs and get a list of unique names
-        for (DocumentSnapshot snapshot : docSnapshots)
-        {
-            String userID = snapshot.get("userID").toString();
-            if (!userIDs.contains(userID))
-                userIDs.add(userID);
-        }
-
-        Task[] tasks = new Task[userIDs.size()];
-
-        for (int i = 0; i < userIDs.size(); i++) {
-            Task<QuerySnapshot> userNameTask = dbReader.findDocumentByID("users", userIDs.get(i))
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task)
-                        {
-
-                        }
-                    });
-            tasks[i] = userNameTask;
-        }
-
-        Task<List<Object>> parallelTask = Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
-        {
-            @Override
-            public void onSuccess(List<Object> objects)
-            {
-
-            }
-        });
-        return parallelTask;
     }
 
     private void setListener(View v)
