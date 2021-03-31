@@ -1,19 +1,16 @@
 package co.plook;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -34,9 +31,12 @@ public class FeedActivity extends AppCompatActivity
     private DocumentSnapshot lastVisible;
 
     private Context context;
-    private ViewGroup content;
+    private RecyclerView recyclerView;
 
     private ArrayList<String> userIDs;
+    private FeedContentAdapter feedContentAdapter;
+
+    private boolean loading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,19 +53,67 @@ public class FeedActivity extends AppCompatActivity
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        content = findViewById(R.id.feed_content);
         allPosts = new ArrayList<>();
+
+        initializeRecyclerView();
 
         loadPosts();
     }
 
+    private void initializeRecyclerView()
+    {
+        recyclerView = findViewById(R.id.feed_recycle);
+
+        feedContentAdapter = new FeedContentAdapter(allPosts, context);
+        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
+
+        recyclerView.setAdapter(feedContentAdapter);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if(dy > 0)
+                {
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if (!loading)
+                    {
+                        System.out.println("SCOLLING");
+                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - 2)
+                            loadPosts();
+                    }
+                }
+            }
+        });
+    }
+
     private void loadPosts()
     {
-        Query q = dbReader.db.collection("posts").whereEqualTo("channel", "qgFpTggcuMNLzOMbIbyD").orderBy("time", Query.Direction.DESCENDING);
+        loading = true;
 
+        // Posts are loaded from the "posts" collection. Wow.
+        Query q = dbReader.db.collection("posts");
+
+        // Make a query for posts in a specific channel.
+        q.whereEqualTo("channel", "qgFpTggcuMNLzOMbIbyD");
+
+        // Posts are ordered by "new" by default.
+        q.orderBy("time", Query.Direction.DESCENDING);
+
+        // Ignore posts before (and including) the last one. This way no duplicates should appear.
+        // If this is the first time loading the activity, or if the user somehow refreshes, then start from the first post.
         if(lastVisible != null)
             q = q.startAfter(lastVisible);
 
+        // Get only the first few posts.
         q = q.limit(2);
 
         dbReader.findDocuments(q).addOnCompleteListener(task ->
@@ -84,6 +132,8 @@ public class FeedActivity extends AppCompatActivity
                 }
 
                 createPosts(usernamePairs, snapshot);
+
+                loading = false;
             });
         });
     }
@@ -101,40 +151,19 @@ public class FeedActivity extends AppCompatActivity
             post.setName(usernamePairs.get(document.get("userID")));
 
             allPosts.add(post);
-            showPost(post);
+            feedContentAdapter.notifyItemInserted(allPosts.size() - 1);
         }
 
         if(snapshot.size() > 0)
             lastVisible = snapshot.getDocuments().get(snapshot.size() - 1);
     }
 
-    private void showPost(Post post)
-    {
-        View child = getLayoutInflater().inflate(R.layout.layout_feed_post, content, false);
-
-        content.addView(child, content.getChildCount() - 1);
-
-        TextView textView_caption = child.findViewById(R.id.post_caption);
-        //TextView textView_description = child.findViewById(R.id.post_description);
-        TextView textView_username = child.findViewById(R.id.post_username);
-        ImageView imageView_image = child.findViewById(R.id.image);
-
-        textView_caption.setText(post.getCaption());
-        //textView_description.setText(post.getDescription());
-        textView_username.setText(post.getName());
-
-        Glide.with(context).load(post.getImageUrl()).into(imageView_image);
-
-        setListener(child);
-    }
-
     private void removePosts()
     {
-        for(int i = content.getChildCount() - 2; i >= 0; i--)
-            content.removeViewAt(i);
-
+        recyclerView.removeAllViews();
         allPosts.clear();
 
+        feedContentAdapter.notifyDataSetChanged();
         lastVisible = null;
     }
 
@@ -165,20 +194,6 @@ public class FeedActivity extends AppCompatActivity
         return parallelTask;
     }
 
-    private void setListener(View v)
-    {
-        v.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                int i = content.indexOfChild(v);
-
-                openPostActivity(allPosts.get(i).getPostID());
-            }
-        });
-    }
-
     private void openPostActivity(String postID)
     {
         Intent intent = new Intent(this, PostActivity.class);
@@ -191,11 +206,6 @@ public class FeedActivity extends AppCompatActivity
     public void button1(View v)
     {
         removePosts();
-        loadPosts();
-    }
-
-    public void loadMore(View v)
-    {
         loadPosts();
     }
 }
