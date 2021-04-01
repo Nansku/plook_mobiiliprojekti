@@ -32,11 +32,13 @@
                 android:id="@+id/post_caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="DESCRIPTION"
+                android:paddingBottom="10dp"
+                android:text=""
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:textSize="18sp"
-                android:paddingBottom="20dp"
+                android:textSize="20sp"
+                android:ellipsize="end"
+                android:maxLines="1"
             />
 
             <TextView
@@ -44,11 +46,54 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/post_caption"
-                android:text="HELLO WORLD"
+                android:text=""
                 android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:textSize="16sp"
             />
+
+            <LinearLayout
+                android:id="@+id/post_votes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/post_username"
+                android:layout_alignParentEnd="true"
+                android:divider="@drawable/divider_feed_content"
+                android:showDividers="middle"
+                android:dividerPadding="50dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@color/teal_700"
+                />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:gravity="bottom"
+                />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@color/teal_700"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:gravity="bottom"
+                />
+
+            </LinearLayout>
 
         </RelativeLayout>
 

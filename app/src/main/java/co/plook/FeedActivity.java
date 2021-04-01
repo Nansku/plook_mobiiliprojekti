@@ -36,7 +36,9 @@ public class FeedActivity extends AppCompatActivity
     private ArrayList<String> userIDs;
     private FeedContentAdapter feedContentAdapter;
 
+    private int postLoadAmount = 3;
     private boolean loading = false;
+    private boolean loadedAll = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -83,7 +85,7 @@ public class FeedActivity extends AppCompatActivity
                     int totalItemCount = layoutManager.getItemCount();
                     int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
-                    if (!loading)
+                    if (!loading && !loadedAll)
                     {
                         if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2)
                             loadPosts();
@@ -113,8 +115,8 @@ public class FeedActivity extends AppCompatActivity
         if(lastVisible != null)
             q = q.startAfter(lastVisible);
 
-        // Get only the first few posts.
-        q = q.limit(2);
+        // Get only a set amount of posts at once.
+        q = q.limit(postLoadAmount);
 
         dbReader.findDocuments(q).addOnCompleteListener(task ->
         {
@@ -137,6 +139,9 @@ public class FeedActivity extends AppCompatActivity
                 createPosts(usernamePairs, snapshot);
 
                 loading = false;
+
+                if(snapshot.isEmpty() || snapshot.size() < 2)
+                    loadedAll = true;
             });
         });
     }
@@ -169,6 +174,8 @@ public class FeedActivity extends AppCompatActivity
 
         feedContentAdapter.notifyDataSetChanged();
         lastVisible = null;
+
+        loadedAll = false;
     }
 
     private Task requestNicknames(QuerySnapshot querySnapshot)
