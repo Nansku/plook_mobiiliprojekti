@@ -36,7 +36,6 @@ import java.util.UUID;
 import static android.view.View.*;
 import static java.security.AccessController.*;
 
-
 public class ImageUploadActivity extends AppCompatActivity
 {
     private ImageView profilePic;

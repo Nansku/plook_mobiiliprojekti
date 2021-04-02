@@ -91,9 +91,8 @@
                 android:text="edit profile"
                  />
         </RelativeLayout>
-
-
     </RelativeLayout>
+
     <GridView
         android:id="@+id/postGrid"
         android:layout_width="match_parent"
@@ -106,7 +105,6 @@
         android:layout_marginStart="10dp"
         android:background="@drawable/bio"
         android:numColumns="3">
-
     </GridView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
