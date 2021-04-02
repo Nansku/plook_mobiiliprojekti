@@ -58,9 +58,9 @@ public class FeedActivity extends AppCompatActivity
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        content = findViewById(R.id.feed_content);
+        /*content = findViewById(R.id.feed_content);
         contentRight = findViewById(R.id.feed_content_right);
-        allPosts = new ArrayList<>();
+        allPosts = new ArrayList<>();*/
 
         Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "tags", "flower").addOnCompleteListener(task ->
         {

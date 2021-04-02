@@ -3,8 +3,11 @@ package co.plook;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.google.android.gms.tasks.Task;
@@ -21,7 +24,7 @@ public class ProfileActivity extends AppCompatActivity
     private Context context;
     private ViewGroup content;
     private ViewGroup contentRight;
-
+    GridAdapter gridAdapter;
     GridView gridView;
 
     @Override
@@ -33,13 +36,15 @@ public class ProfileActivity extends AppCompatActivity
         setContentView(R.layout.activity_profile);
         gridView = findViewById(R.id.postGrid);
 
+
+
         Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
+
+            assert snapshot != null;
             System.out.println(snapshot.getDocuments().toString());
             for (QueryDocumentSnapshot document : snapshot)
-            {
-                Post post = new Post();
-
+            {   Post post = new Post();
                 post.setPostID(document.getId());
                 post.setCaption(document.getString("caption"));
                 post.setDescription(document.getString("description"));
@@ -47,24 +52,32 @@ public class ProfileActivity extends AppCompatActivity
 
                 userPosts.add(post);
             }
+
             System.out.println(userPosts.size());
-            GridAdapter gridAdapter = new GridAdapter(this, R.layout.activity_profile_post, userPosts);
+
+            gridAdapter = new GridAdapter(this, R.layout.activity_profile_post, userPosts);
+
             gridView.setAdapter(gridAdapter);
+
             gridAdapter.notifyDataSetChanged();
         });
 
-
-
-
-
-        /*gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(ProfileActivity.this, Post.class);
-                intent.putExtra("image", images[position]);
-                startActivity(intent);
+                String postID = userPosts.get(position).getPostID();
+                openPostActivity(postID);
             }
-        });*/
+
+        });
     }
+    
+    private void openPostActivity(String postID) {
+
+        Intent intent = new Intent(ProfileActivity.this, PostActivity.class);
+        intent.putExtra("post_id", postID);
+        startActivity(intent);
+    }
+
 }
 
