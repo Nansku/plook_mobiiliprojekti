@@ -18,7 +18,7 @@ import com.google.firebase.auth.AuthResult;
 
 
 
-public class SignupActivity extends AppCompatActivity {
+public class SignupActivity extends ParentActivity {
 
     private EditText textPersonName;
     private EditText textEmailAddress;

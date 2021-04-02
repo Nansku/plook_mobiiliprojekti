@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FeedActivity extends AppCompatActivity
+public class FeedActivity extends ParentActivity
 {
     private DatabaseReader dbReader;
 
