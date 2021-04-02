@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -25,18 +23,20 @@ import java.util.Map;
 
 public class FeedActivity extends AppCompatActivity
 {
-    private DatabaseReader dbReader;
-
-    private ArrayList<Post> allPosts;
-    private DocumentSnapshot lastVisible;
-
+    // Views & UI
     private Context context;
     private RecyclerView recyclerView;
-
     private ArrayList<String> userIDs;
     private FeedContentAdapter feedContentAdapter;
 
-    private int postLoadAmount = 3;
+    // Database stuff
+    private DatabaseReader dbReader;
+    private Query query;
+    private DocumentSnapshot lastVisible;
+
+    // Posts & loading
+    private ArrayList<Post> allPosts;
+    private final int postLoadAmount = 2;
     private boolean loading = false;
     private boolean loadedAll = false;
 
@@ -50,14 +50,17 @@ public class FeedActivity extends AppCompatActivity
 
         dbReader = new DatabaseReader();
 
-        Spinner spinner = findViewById(R.id.feed_filter);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.feed_filters, R.layout.support_simple_spinner_dropdown_item);
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
         allPosts = new ArrayList<>();
 
         initializeRecyclerView();
+
+        // Make a query based on the sent string (if one was sent, otherwise default to empty).
+        Bundle extras = getIntent().getExtras();
+        String queryString = "";
+        if(extras != null)
+            queryString = extras.getString("query", "");
+
+        makeQuery(queryString);
 
         loadPosts();
     }
@@ -72,6 +75,11 @@ public class FeedActivity extends AppCompatActivity
         recyclerView.setAdapter(feedContentAdapter);
         recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
 
+        recyclerScrollListener();
+    }
+
+    private void recyclerScrollListener()
+    {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
@@ -79,8 +87,9 @@ public class FeedActivity extends AppCompatActivity
             {
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-                if(dy > 0)
+                if (dy > 0)
                 {
+                    assert layoutManager != null;
                     int visibleItemCount = layoutManager.getChildCount();
                     int totalItemCount = layoutManager.getItemCount();
                     int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
@@ -95,30 +104,39 @@ public class FeedActivity extends AppCompatActivity
         });
     }
 
+    private void makeQuery(String queryString)
+    {
+        if(queryString.equals(""))
+            queryString = "all//time";
+
+        String[] queryParts = queryString.split("/");
+
+        query = dbReader.db.collection("posts");
+
+        if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
+            query = query.whereEqualTo(queryParts[0], queryParts[1]);
+        else if (queryParts[0].equals("tags"))
+            query = query.whereArrayContains(queryParts[0], queryParts[1]);
+
+        query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
+
+        // Get only a set amount of posts at once.
+        query = query.limit(postLoadAmount);
+    }
+
     private void loadPosts()
     {
         loading = true;
+
         allPosts.add(null);
         feedContentAdapter.notifyItemInserted(allPosts.size() - 1);
 
-        // Posts are loaded from the "posts" collection. Wow.
-        Query q = dbReader.db.collection("posts");
-
-        // Make a query for posts in a specific channel.
-        q.whereEqualTo("channel", "qgFpTggcuMNLzOMbIbyD");
-
-        // Posts are ordered by "new" by default.
-        q.orderBy("time", Query.Direction.DESCENDING);
-
         // Ignore posts before (and including) the last one. This way no duplicates should appear.
         // If this is the first time loading the activity, or if the user somehow refreshes, then start from the first post.
-        if(lastVisible != null)
-            q = q.startAfter(lastVisible);
+        if (lastVisible != null)
+            query = query.startAfter(lastVisible);
 
-        // Get only a set amount of posts at once.
-        q = q.limit(postLoadAmount);
-
-        dbReader.findDocuments(q).addOnCompleteListener(task ->
+        dbReader.findDocuments(query).addOnCompleteListener(task ->
         {
             QuerySnapshot snapshot = task.getResult();
             requestNicknames(snapshot).addOnCompleteListener(task1 ->
@@ -140,7 +158,7 @@ public class FeedActivity extends AppCompatActivity
 
                 loading = false;
 
-                if(snapshot.isEmpty() || snapshot.size() < 2)
+                if(snapshot.isEmpty() || snapshot.size() < postLoadAmount)
                     loadedAll = true;
             });
         });
@@ -216,6 +234,8 @@ public class FeedActivity extends AppCompatActivity
 
     public void button1(View v)
     {
+        makeQuery("");
+
         removePosts();
         loadPosts();
     }
