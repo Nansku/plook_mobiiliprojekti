@@ -44,7 +44,6 @@ public class ImageUploadActivity extends AppCompatActivity
     private FirebaseStorage storage;
     private StorageReference storageReference;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -97,20 +96,6 @@ public class ImageUploadActivity extends AppCompatActivity
 
                 }
         }
-        
-            /*Intent intent = new Intent(ImageUploadActivity.this, ImageEditActivity.class);
-            intent.putExtra("imageUri", imageUri);
-            startActivity(intent);
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setClass(ImageUploadActivity.this, ImageEditActivity.class);
-                intent.putExtra("imageUri", imageUri.toString());
-                startActivity(intent);
-
-            Bundle bundle = getIntent().getExtras();
-            if (bundle != null && bundle.containsKey("imageUri")) {
-                imageUri = Uri.parse(bundle.getString("resultUri"));*/
-
 
         Button uploadButton = (Button)findViewById(R.id.upload);
 
@@ -128,7 +113,7 @@ public class ImageUploadActivity extends AppCompatActivity
     private void uploadPicture(Uri uri) {
 
         final String randomKey = UUID.randomUUID().toString();
-        StorageReference riversRef = storageReference.child("images/testi.jpg");
+        StorageReference riversRef = storageReference.child("images/" + randomKey);
 
         Task<Uri> urlTask = riversRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>()
         {

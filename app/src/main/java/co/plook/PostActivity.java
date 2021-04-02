@@ -60,7 +60,6 @@ public class PostActivity extends AppCompatActivity
         post.setPostID(postID);
 
 
-
         dbReader.findDocumentByID("posts", postID)
                 .addOnCompleteListener(task -> showPost((QuerySnapshot) task.getResult()));
 

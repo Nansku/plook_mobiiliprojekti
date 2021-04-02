@@ -43,7 +43,7 @@ public class DatabaseReader {
     public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
-        Query q = collRef.whereArrayContains(field, criteria);
+        Query q = collRef.whereEqualTo(field, criteria);
 
         return q.get().addOnCompleteListener(task -> { });
     }
