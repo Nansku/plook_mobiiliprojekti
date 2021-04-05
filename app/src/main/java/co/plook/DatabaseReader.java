@@ -1,26 +1,16 @@
 package co.plook;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-
-public class DatabaseReader {
-    private FirebaseFirestore db;
+public class DatabaseReader
+{
+    public FirebaseFirestore db;
 
     //private String userID;
 
@@ -29,6 +19,11 @@ public class DatabaseReader {
     }
 
     //WIP logic that determines what the type of queried field is
+
+    public Task<QuerySnapshot> findDocuments(Query q)
+    {
+        return q.get().addOnCompleteListener(task -> { });
+    }
 
     //find documents in collectionPath that have one of 'criteria' lists strings
     public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String[] criteria)
