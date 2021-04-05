@@ -22,7 +22,7 @@ public class ParentActivity extends AppCompatActivity
         }
     }
 
-    private void startSplashScreenActivity()
+    protected void startSplashScreenActivity()
     {
         //Open Splash screen and login activity
     }
