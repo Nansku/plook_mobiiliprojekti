@@ -4,45 +4,98 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginVertical="5dp"
-    android:layout_marginHorizontal="10dp"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="10dp"
+    android:clickable="true"
+    android:foreground="@drawable/card_ripple">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/post_image"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:src="@drawable/ic_launcher_background"
             android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
         />
 
-        <TextView
-            android:id="@+id/post_caption"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hello World"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:padding="10dp"
-            android:background="@drawable/gradient_feed_post"
-        />
+            android:layout_below="@+id/post_image"
+            android:background="@color/lighter_forest"
+            android:padding="10dp">
 
-        <TextView
-            android:id="@+id/post_description"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_below="@+id/image"
-            android:background="@color/teal_700"
-            android:text="HELLO WORLD"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:padding="10dp"
-        />
+            <TextView
+                android:id="@+id/post_caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:text=""
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+            />
+
+            <TextView
+                android:id="@+id/post_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/post_caption"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="16sp"
+            />
+
+            <LinearLayout
+                android:id="@+id/post_votes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/post_username"
+                android:layout_alignParentEnd="true"
+                android:divider="@drawable/divider_feed_content"
+                android:showDividers="middle"
+                android:dividerPadding="50dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@color/teal_700"
+                />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:gravity="bottom"
+                />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@color/teal_700"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:gravity="bottom"
+                />
+
+            </LinearLayout>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
