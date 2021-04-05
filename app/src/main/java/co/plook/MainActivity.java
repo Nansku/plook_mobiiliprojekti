@@ -4,10 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends ParentActivity
 {
 
-    DatabaseWriter uploader;
+    DatabaseWriter dbWriter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         //Postin luonti tietokantaan
-        /*uploader = new DatabaseUploader();
-        uploader.addPost("Iikka", "Mun kasvi :3", "Tässä tää nyt on");*/
+        /*dbWriter = new DatabaseUploader();
+        dbWriter.addPost("Iikka", "Mun kasvi :3", "Tässä tää nyt on");*/
 
     }
 }

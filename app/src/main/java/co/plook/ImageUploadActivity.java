@@ -37,7 +37,7 @@ import static android.view.View.*;
 import static java.security.AccessController.*;
 
 
-public class ImageUploadActivity extends AppCompatActivity
+public class ImageUploadActivity extends ParentActivity
 {
     private ImageView profilePic;
     public static Uri imageUri;

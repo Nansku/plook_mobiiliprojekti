@@ -3,7 +3,7 @@ package co.plook;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class ProfileActivity extends AppCompatActivity
+public class ProfileActivity extends ParentActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)
