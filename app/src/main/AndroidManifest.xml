@@ -24,7 +24,11 @@
       
         <activity android:name=".ImageEditActivity" />
       
-        <activity android:name=".SignupActivity" />
+        <activity android:name=".LoginActivity" android:exported="true"></activity>
+        
+        <activity android:name=".SignupActivity" android:exported="true" />
+  
+        <activity android:name=".ConfirmationActivity" android:exported="true"/>
 
         <activity android:name=".FeedActivity" android:exported="true" />
       
