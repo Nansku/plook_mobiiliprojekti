@@ -51,6 +51,7 @@ public class FeedActivity extends ParentActivity
         dbReader = new DatabaseReader();
 
         allPosts = new ArrayList<>();
+        userIDs = new ArrayList<>();
 
         initializeRecyclerView();
 
@@ -114,9 +115,13 @@ public class FeedActivity extends ParentActivity
         query = dbReader.db.collection("posts");
 
         if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
+        {
             query = query.whereEqualTo(queryParts[0], queryParts[1]);
+        }
         else if (queryParts[0].equals("tags"))
+        {
             query = query.whereArrayContains(queryParts[0], queryParts[1]);
+        }
 
         query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
 
@@ -138,27 +143,35 @@ public class FeedActivity extends ParentActivity
 
         dbReader.findDocuments(query).addOnCompleteListener(task ->
         {
-            QuerySnapshot snapshot = task.getResult();
-            requestNicknames(snapshot).addOnCompleteListener(task1 ->
+            QuerySnapshot postSnapshot = task.getResult();
+
+            //loop through userIDs and get a list of unique names
+            for (DocumentSnapshot snapshot : postSnapshot.getDocuments())
             {
-                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) task1.getResult();
+                String userID = snapshot.getString("userID");
+                if (!userIDs.contains(userID))
+                    userIDs.add(userID);
+            }
+
+            dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
+            {
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); //  @Iikka what even is this??
                 Map<String, String> usernamePairs = new HashMap<>();
 
                 for (int i = 0; i < querySnapshots.size(); i++)
                 {
                     List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
-
-                    usernamePairs.put(userIDs.get(i), docs.get(0).get("name").toString());
+                    usernamePairs.put(userIDs.get(i), docs.get(0).getString("name"));
                 }
 
                 allPosts.remove(allPosts.size() - 1);
                 feedContentAdapter.notifyItemRemoved(allPosts.size());
 
-                createPosts(usernamePairs, snapshot);
+                createPosts(usernamePairs, postSnapshot);
 
                 loading = false;
 
-                if(snapshot.isEmpty() || snapshot.size() < postLoadAmount)
+                if(postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
                     loadedAll = true;
             });
         });

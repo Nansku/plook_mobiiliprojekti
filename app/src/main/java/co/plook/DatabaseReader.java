@@ -1,12 +1,19 @@
 package co.plook;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DatabaseReader
 {
@@ -64,7 +71,6 @@ public class DatabaseReader
     //siirrä database luokkaan ja muuta parametriksi ArrayList<String>
     public Task<List<Object>> requestNicknames(ArrayList<String> userIDs)
     {
-
         Task[] tasks = new Task[userIDs.size()];
 
         for (int i = 0; i < userIDs.size(); i++)
