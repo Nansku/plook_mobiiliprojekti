@@ -65,6 +65,7 @@ public class ImageUploadActivity extends AppCompatActivity
     }
 
     private void choosePicture() {
+        //aukasee gallerian
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -76,7 +77,7 @@ public class ImageUploadActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         Log.d("APP_DEBUG", String.valueOf(requestCode));
-
+            //tarkistaa onko kuvaa valittu ja jos on niin ottaa
             if(requestCode==1 && resultCode==RESULT_OK && data!= null && data.getData()!= null){
                 imageUri = data.getData();
 
@@ -180,14 +181,7 @@ public class ImageUploadActivity extends AppCompatActivity
 
                     }
                 });*/
-        riversRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
-        {
-            @Override
-            public void onSuccess(Uri uri)
-            {
-                System.out.println("GET DOWNLOAD URI STRING: " + uri.toString());
-            }
-        });
+
     }
 }
 
