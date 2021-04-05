@@ -1,30 +1,44 @@
 package co.plook;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FeedActivity extends AppCompatActivity
 {
-    private DatabaseDownloader dbDownloader;
-
-    private ArrayList<Post> allPosts;
-
+    // Views & UI
     private Context context;
-    private ViewGroup content;
+    private RecyclerView recyclerView;
+    private ArrayList<String> userIDs;
+    private FeedContentAdapter feedContentAdapter;
+
+    // Database stuff
+    private DatabaseReader dbReader;
+    private Query query;
+    private DocumentSnapshot lastVisible;
+
+    // Posts & loading
+    private ArrayList<Post> allPosts;
+    private final int postLoadAmount = 2;
+    private boolean loading = false;
+    private boolean loadedAll = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,70 +48,165 @@ public class FeedActivity extends AppCompatActivity
 
         context = getApplicationContext();
 
-        dbDownloader = new DatabaseDownloader();
+        dbReader = new DatabaseReader();
 
-        content = findViewById(R.id.feed_content);
         allPosts = new ArrayList<>();
+        userIDs = new ArrayList<>();
 
-        dbDownloader.setOnLoadedListener(new DatabaseDownloader.OnLoadedListener()
+        initializeRecyclerView();
+
+        // Make a query based on the sent string (if one was sent, otherwise default to empty).
+        Bundle extras = getIntent().getExtras();
+        String queryString = "";
+        if(extras != null)
+            queryString = extras.getString("query", "");
+
+        makeQuery(queryString);
+
+        loadPosts();
+    }
+
+    private void initializeRecyclerView()
+    {
+        recyclerView = findViewById(R.id.feed_recycle);
+
+        feedContentAdapter = new FeedContentAdapter(allPosts, context);
+        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
+
+        recyclerView.setAdapter(feedContentAdapter);
+        recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
+
+        recyclerScrollListener();
+    }
+
+    private void recyclerScrollListener()
+    {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
-            public void onLoaded(QuerySnapshot documentSnapshots)
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
-                for (QueryDocumentSnapshot document : documentSnapshots)
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (dy > 0)
                 {
-                    Post post = new Post();
+                    assert layoutManager != null;
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
-                    post.setPostID(document.getId());
-                    post.setCaption(document.get("caption").toString());
-                    post.setDescription(document.get("description").toString());
-                    post.setImageUrl(document.get("url").toString());
-
-                    allPosts.add(post);
-                    showPost(post);
+                    if (!loading && !loadedAll)
+                    {
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2)
+                            loadPosts();
+                    }
                 }
             }
-
-            @Override
-            public void onFailure()
-            {
-
-            }
         });
-
-        dbDownloader.loadCollection("posts");
     }
 
-    private void showPost(Post post)
+    private void makeQuery(String queryString)
     {
-        View child = getLayoutInflater().inflate(R.layout.layout_feed_post, content, false);
-        content.addView(child);
+        if(queryString.equals(""))
+            queryString = "all//time";
 
-        TextView textView_caption = child.findViewById(R.id.post_caption);
-        TextView textView_description = child.findViewById(R.id.post_description);
-        ImageView imageView_image = child.findViewById(R.id.image);
+        String[] queryParts = queryString.split("/");
 
-        textView_caption.setText(post.getCaption());
-        textView_description.setText(post.getDescription());
+        query = dbReader.db.collection("posts");
 
-        Glide.with(context).load(post.getImageUrl()).into(imageView_image);
-
-        setListener(child);
-    }
-
-    private void setListener(View v)
-    {
-        v.setOnClickListener(new View.OnClickListener()
+        if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
         {
-            @Override
-            public void onClick(View v)
-            {
-                int i = content.indexOfChild(v);
+            query = query.whereEqualTo(queryParts[0], queryParts[1]);
+        }
+        else if (queryParts[0].equals("tags"))
+        {
+            query = query.whereArrayContains(queryParts[0], queryParts[1]);
+        }
 
-                Toast.makeText(context, allPosts.get(i).getPostID(), Toast.LENGTH_SHORT).show();
-                openPostActivity(allPosts.get(i).getPostID());
+        query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
+
+        // Get only a set amount of posts at once.
+        query = query.limit(postLoadAmount);
+    }
+
+    private void loadPosts()
+    {
+        loading = true;
+
+        allPosts.add(null);
+        feedContentAdapter.notifyItemInserted(allPosts.size() - 1);
+
+        // Ignore posts before (and including) the last one. This way no duplicates should appear.
+        // If this is the first time loading the activity, or if the user somehow refreshes, then start from the first post.
+        if (lastVisible != null)
+            query = query.startAfter(lastVisible);
+
+        dbReader.findDocuments(query).addOnCompleteListener(task ->
+        {
+            QuerySnapshot postSnapshot = task.getResult();
+
+            //loop through userIDs and get a list of unique names
+            for (DocumentSnapshot snapshot : postSnapshot.getDocuments())
+            {
+                String userID = snapshot.getString("userID");
+                if (!userIDs.contains(userID))
+                    userIDs.add(userID);
             }
+
+            dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
+            {
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); //  @Iikka what even is this??
+                Map<String, String> usernamePairs = new HashMap<>();
+
+                for (int i = 0; i < querySnapshots.size(); i++)
+                {
+                    List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
+                    usernamePairs.put(userIDs.get(i), docs.get(0).getString("name"));
+                }
+
+                allPosts.remove(allPosts.size() - 1);
+                feedContentAdapter.notifyItemRemoved(allPosts.size());
+
+                createPosts(usernamePairs, postSnapshot);
+
+                loading = false;
+
+                if(postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
+                    loadedAll = true;
+            });
         });
+    }
+
+    private void createPosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
+    {
+        for (QueryDocumentSnapshot document : snapshot)
+        {
+            Post post = new Post();
+
+            post.setPostID(document.getId());
+            post.setCaption(document.getString("caption"));
+            post.setDescription(document.getString("description"));
+            post.setImageUrl(document.getString("url"));
+            post.setName(usernamePairs.get(document.get("userID")));
+
+            allPosts.add(post);
+        }
+
+        feedContentAdapter.notifyDataSetChanged();
+
+        if(snapshot.size() > 0)
+            lastVisible = snapshot.getDocuments().get(snapshot.size() - 1);
+    }
+
+    private void removePosts()
+    {
+        recyclerView.removeAllViews();
+        allPosts.clear();
+
+        feedContentAdapter.notifyDataSetChanged();
+        lastVisible = null;
+
+        loadedAll = false;
     }
 
     private void openPostActivity(String postID)
@@ -109,28 +218,11 @@ public class FeedActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    private void removePosts()
-    {
-        content.removeAllViews();
-        allPosts.clear();
-    }
-
     public void button1(View v)
     {
-        removePosts();
-        dbDownloader.loadCollection("posts");
-    }
+        makeQuery("");
 
-    public void button2(View v)
-    {
         removePosts();
-        String[] list = {"red", "blue"};
-        dbDownloader.loadCollection("posts", "tags", list);
-    }
-
-    public void button3(View v)
-    {
-        removePosts();
-        dbDownloader.loadCollection("posts", "tags", "outdoors");
+        loadPosts();
     }
 }
