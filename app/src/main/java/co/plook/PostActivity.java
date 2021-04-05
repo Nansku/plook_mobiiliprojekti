@@ -1,6 +1,5 @@
 package co.plook;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -11,14 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,10 +30,10 @@ public class PostActivity extends AppCompatActivity
     //database stuff
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
-    private QuerySnapshot comments;
 
     //objects
     private Post post;
+    private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
 
     @Override
@@ -53,26 +51,60 @@ public class PostActivity extends AppCompatActivity
         imageView = findViewById(R.id.image);
 
         post = new Post();
+        userIDs = new ArrayList<>();
+        allComments = new ArrayList<>();
 
         //postID from feed
         Bundle extras = getIntent().getExtras();
         String postID = extras.getString("post_id");
         post.setPostID(postID);
 
-
-
         dbReader.findDocumentByID("posts", postID)
-                .addOnCompleteListener(task -> showPost((QuerySnapshot) task.getResult()));
+                .addOnCompleteListener(task -> showPost(task.getResult()));
 
-        dbReader.findSubcollection("comment_sections", postID, "comments")
-        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        loadComments();
+    }
+
+    private void loadComments()
+    {
+        dbReader.findSubcollection("comment_sections", post.getPostID(), "comments").addOnCompleteListener(task ->
         {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
-            {
+            QuerySnapshot commentSnapshots = task.getResult();
 
+            //loop through userIDs and get a list of unique names
+            for (DocumentSnapshot snapshot : commentSnapshots.getDocuments())
+            {
+                String userID = snapshot.getString("userID");
+                if (!userIDs.contains(userID))
+                    userIDs.add(userID);
             }
+
+            dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
+            {
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); //  @Iikka what even is this??
+                Map<String, String> usernamePairs = new HashMap<>();
+
+                for (int i = 0; i < querySnapshots.size(); i++)
+                {
+                    List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
+                    usernamePairs.put(userIDs.get(i), docs.get(0).getString("name"));
+                }
+
+                addComments(usernamePairs, commentSnapshots);
+            });
         });
+    }
+
+    private void addComments(Map<String, String> names, QuerySnapshot snapshot)
+    {
+        for (QueryDocumentSnapshot document : snapshot)
+        {
+            String displayName = names.get(document.getString("userID"));
+            Comment comment = new Comment(displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
+            allComments.add(comment);
+        }
+
+        showComments(allComments);
     }
 
     private void showPost(QuerySnapshot documentSnapshots)
@@ -100,18 +132,6 @@ public class PostActivity extends AppCompatActivity
 
         Glide.with(context).load(post.getImageUrl()).into(imageView);
     }
-
-    /*private void addComments(Map<String, String> names)
-    {
-        allComments = new ArrayList<>();
-        for (QueryDocumentSnapshot document : comments)
-        {
-            String displayName = names.get(document.get("userID").toString());
-            Comment comment = new Comment(displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
-            allComments.add(comment);
-        }
-        showComments(allComments);
-    }*/
 
     private void showComments(List<Comment> comments)
     {
