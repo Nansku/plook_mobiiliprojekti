@@ -12,7 +12,7 @@ public class DatabaseReader
 {
     public FirebaseFirestore db;
 
-    private String userID;
+    //private String userID;
 
     public DatabaseReader() {
         db = FirebaseFirestore.getInstance();
@@ -59,5 +59,35 @@ public class DatabaseReader
         Query q = collRef.orderBy("time", Query.Direction.ASCENDING);
 
         return q.get().addOnCompleteListener(task -> { });
+    }
+
+    //siirrä database luokkaan ja muuta parametriksi ArrayList<String>
+    public Task<List<Object>> requestNicknames(ArrayList<String> userIDs)
+    {
+
+        Task[] tasks = new Task[userIDs.size()];
+
+        for (int i = 0; i < userIDs.size(); i++)
+        {
+            Task<QuerySnapshot> userNameTask = findDocumentByID("users", userIDs.get(i))
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                    {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task)
+                        {
+
+                        }
+                    });
+            tasks[i] = userNameTask;
+        }
+
+        return Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
+        {
+            @Override
+            public void onSuccess(List<Object> objects)
+            {
+
+            }
+        });
     }
 }

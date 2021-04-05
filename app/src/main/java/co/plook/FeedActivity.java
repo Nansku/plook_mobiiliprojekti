@@ -196,33 +196,6 @@ public class FeedActivity extends AppCompatActivity
         loadedAll = false;
     }
 
-    private Task requestNicknames(QuerySnapshot querySnapshot)
-    {
-        List<DocumentSnapshot> docSnapshots = querySnapshot.getDocuments();
-        userIDs = new ArrayList<>();
-
-        //loop through userIDs and get a list of unique names
-        for (DocumentSnapshot snapshot : docSnapshots)
-        {
-            String userID = snapshot.get("userID").toString();
-            if (!userIDs.contains(userID))
-                userIDs.add(userID);
-        }
-
-        Task[] tasks = new Task[userIDs.size()];
-
-        for (int i = 0; i < userIDs.size(); i++)
-        {
-            Task<QuerySnapshot> userNameTask = dbReader.findDocumentByID("users", userIDs.get(i))
-                    .addOnCompleteListener(task -> { });
-            tasks[i] = userNameTask;
-        }
-
-        Task<List<Object>> parallelTask = Tasks.whenAllSuccess(tasks).addOnSuccessListener(objects -> { });
-
-        return parallelTask;
-    }
-
     private void openPostActivity(String postID)
     {
         Intent intent = new Intent(this, PostActivity.class);
