@@ -105,6 +105,8 @@ public class FeedActivity extends AppCompatActivity
         });
     }
 
+    // Syntax: "field/criteria/sorting"
+    // Example: "tags/red/time" "userID/insert userID here/time"
     private void makeQuery(String queryString)
     {
         if(queryString.equals(""))
@@ -114,15 +116,15 @@ public class FeedActivity extends AppCompatActivity
 
         query = dbReader.db.collection("posts");
 
+        // Field is a single item.
         if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
-        {
             query = query.whereEqualTo(queryParts[0], queryParts[1]);
-        }
-        else if (queryParts[0].equals("tags"))
-        {
-            query = query.whereArrayContains(queryParts[0], queryParts[1]);
-        }
 
+        // Field is an array of items.
+        else if (queryParts[0].equals("tags"))
+            query = query.whereArrayContains(queryParts[0], queryParts[1]);
+
+        // Sort by
         query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
 
         // Get only a set amount of posts at once.
@@ -155,7 +157,7 @@ public class FeedActivity extends AppCompatActivity
 
             dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
             {
-                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); //  @Iikka what even is this??
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what even is this??
                 Map<String, String> usernamePairs = new HashMap<>();
 
                 for (int i = 0; i < querySnapshots.size(); i++)
@@ -204,15 +206,14 @@ public class FeedActivity extends AppCompatActivity
         allPosts.clear();
 
         feedContentAdapter.notifyDataSetChanged();
-        lastVisible = null;
 
+        lastVisible = null;
         loadedAll = false;
     }
 
     private void openPostActivity(String postID)
     {
         Intent intent = new Intent(this, PostActivity.class);
-
         intent.putExtra("post_id", postID);
 
         startActivity(intent);
