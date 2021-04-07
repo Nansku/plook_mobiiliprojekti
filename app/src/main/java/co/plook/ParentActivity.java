@@ -1,5 +1,6 @@
 package co.plook;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -18,12 +19,12 @@ public class ParentActivity extends AppCompatActivity
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null)
         {
-            startSplashScreenActivity();
-        }
-    }
+            //send user to login page if not logged in
+            //startSplashScreenActivity();
+            Intent intent = new Intent(this, LoginActivity.class);
 
-    protected void startSplashScreenActivity()
-    {
-        //Open Splash screen and login activity
+            //comment out this line if you want to ignore login check
+            startActivity(intent);
+        }
     }
 }
