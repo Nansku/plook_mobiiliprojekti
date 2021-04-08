@@ -59,14 +59,14 @@
 
         <Button
             android:id="@+id/log_in"
-            android:text="@string/log_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
+            android:background="@drawable/button"
             android:color="#3A654B"
-            />
+            android:onClick="login"
+            android:text="@string/log_in" />
 
         <TextView
             android:layout_width="wrap_content"
