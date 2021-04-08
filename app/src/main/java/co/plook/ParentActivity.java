@@ -12,16 +12,18 @@ import com.google.firebase.auth.FirebaseUser;
 //Parent class for all of the other activities to check if user is logged in on every onCreate()
 public class ParentActivity extends AppCompatActivity
 {
+    protected FirebaseAuth auth;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null)
+        auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null)
         {
             //send user to login page if not logged in
             //startSplashScreenActivity();
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
 
             //comment out this line if you want to ignore login check
             startActivity(intent);
