@@ -155,12 +155,15 @@ public class ImageUploadActivity extends AppCompatActivity
             else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 Log.d("APP_DEBUG",result.toString());
+
                 if (resultCode == RESULT_OK) {
                     imageUri = result.getUri();
                     Log.d("APP_DEBUG",imageUri.toString());
                     profilePic.setImageURI(imageUri);
 
-                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                }
+
+                else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                     Exception error = result.getError();
 
                 }
