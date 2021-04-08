@@ -101,7 +101,8 @@ public class PostActivity extends AppCompatActivity
             TextView textView = child.findViewById(R.id.tag_text);
             textView.setText(str);
 
-            child.setOnClickListener(new View.OnClickListener() {
+            child.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
                 public void onClick(View v) {
                     openFeedActivity("tags/" + str + "/time");

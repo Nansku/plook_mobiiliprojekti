@@ -38,7 +38,7 @@ public class FeedActivity extends AppCompatActivity
 
     // Posts & loading
     private ArrayList<Post> allPosts;
-    private final int postLoadAmount = 2;
+    private final int postLoadAmount = 10;
     private boolean loading = false;
     private boolean loadedAll = false;
 
@@ -160,7 +160,7 @@ public class FeedActivity extends AppCompatActivity
 
             dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
             {
-                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what even is this??
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
                 Map<String, String> usernamePairs = new HashMap<>();
 
                 for (int i = 0; i < querySnapshots.size(); i++)
