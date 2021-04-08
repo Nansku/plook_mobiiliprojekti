@@ -44,7 +44,6 @@ public class ImageUploadActivity extends ParentActivity
     private FirebaseStorage storage;
     private StorageReference storageReference;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -97,20 +96,6 @@ public class ImageUploadActivity extends ParentActivity
 
                 }
         }
-        
-            /*Intent intent = new Intent(ImageUploadActivity.this, ImageEditActivity.class);
-            intent.putExtra("imageUri", imageUri);
-            startActivity(intent);
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setClass(ImageUploadActivity.this, ImageEditActivity.class);
-                intent.putExtra("imageUri", imageUri.toString());
-                startActivity(intent);
-
-            Bundle bundle = getIntent().getExtras();
-            if (bundle != null && bundle.containsKey("imageUri")) {
-                imageUri = Uri.parse(bundle.getString("resultUri"));*/
-
 
         Button uploadButton = (Button)findViewById(R.id.upload);
 

@@ -15,13 +15,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class DatabaseReader
 {
     public FirebaseFirestore db;
 
     //private String userID;
 
-    public DatabaseReader() {
+
+    public DatabaseReader() 
+    {
         db = FirebaseFirestore.getInstance();
     }
 
@@ -45,7 +48,7 @@ public class DatabaseReader
     public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
-        Query q = collRef.whereArrayContains(field, criteria);
+        Query q = collRef.whereEqualTo(field, criteria);
 
         return q.get().addOnCompleteListener(task -> { });
     }
