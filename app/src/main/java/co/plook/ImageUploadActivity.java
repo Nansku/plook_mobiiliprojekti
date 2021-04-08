@@ -119,6 +119,26 @@ public class ImageUploadActivity extends AppCompatActivity
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //tätä kutsutaan kun käyttäjä painaa allowia tai deny nappulaa pop upista
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch(requestCode){
+            case PERMISSION_CODE:{
+                if (grantResults.length > 0 && grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED){
+                    //lupa pop upista annettiin
+                    openCamera();
+                }
+                else {
+                    //lupaa ei annettu
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
