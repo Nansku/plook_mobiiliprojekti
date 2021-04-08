@@ -8,7 +8,11 @@
     android:fitsSystemWindows="true">
 
     <!-- Layout to contain contents of main body of screen (drawer will slide over this) -->
-    <include layout="@layout/activity_feed"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/frameLayout"
+    />
 
     <!-- Container for contents of drawer - use NavigationView to make configuration easier -->
     <com.google.android.material.navigation.NavigationView
@@ -16,6 +20,52 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true" />
+        android:fitsSystemWindows="true"
+        android:paddingTop="90dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="openFeed"
+                android:text="Feed"
+                android:foreground="?attr/selectableItemBackground"
+                android:background="@color/white"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:padding="10dp"
+            />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="openProfile"
+                android:text="Profile"
+                android:foreground="?attr/selectableItemBackground"
+                android:background="@color/white"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:padding="10dp"
+            />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:onClick="logout"
+                android:paddingTop="200dp"
+                android:text="Logout"
+                android:textSize="24sp" />
+
+
+        </LinearLayout>
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
