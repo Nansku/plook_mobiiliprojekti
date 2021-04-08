@@ -29,11 +29,12 @@ public class ProfileActivity extends ParentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
-    {   userPosts = new ArrayList<Post>();
+    {
+        userPosts = new ArrayList<Post>();
 
         dbReader = new DatabaseReader();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
         gridView = findViewById(R.id.postGrid);
 
 
