@@ -17,7 +17,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 
-public class ProfileActivity extends AppCompatActivity
+public class ProfileActivity extends ParentActivity
 {
     private DatabaseReader dbReader;
     private ArrayList<Post> userPosts;
