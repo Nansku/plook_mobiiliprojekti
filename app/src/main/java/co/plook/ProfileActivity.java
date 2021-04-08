@@ -8,7 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.navigation.Navigation;
+
 
 
 import android.content.Context;
@@ -54,7 +54,7 @@ public class ProfileActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
+        //getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
         userPosts = new ArrayList<Post>();
 
         dbReader = new DatabaseReader();
@@ -110,7 +110,16 @@ public class ProfileActivity extends AppCompatActivity
 
         });
     }
-    
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void openPostActivity(String postID) {
 
         Intent intent = new Intent(ProfileActivity.this, PostActivity.class);

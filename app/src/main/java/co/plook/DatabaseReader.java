@@ -7,23 +7,24 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class DatabaseReader {
-    private FirebaseFirestore db;
 
-    private String userID;
+public class DatabaseReader
+{
+    public FirebaseFirestore db;
 
-    public DatabaseReader() {
+    //private String userID;
+
+
+    public DatabaseReader()
+    {
         db = FirebaseFirestore.getInstance();
     }
 
@@ -73,19 +74,6 @@ public class DatabaseReader {
     //siirrä database luokkaan ja muuta parametriksi ArrayList<String>
     public Task<List<Object>> requestNicknames(ArrayList<String> userIDs)
     {
-        QuerySnapshot querySnapshot = (QuerySnapshot) objects.get(1);
-        //Log.d("OBJECTS", );
-        List<DocumentSnapshot> snapshots = querySnapshot.getDocuments();
-        ArrayList<String> userIDs = new ArrayList<>();
-
-        //loop through userIDs and get a list of unique names
-        for (DocumentSnapshot snapshot : snapshots)
-        {
-            String userID = snapshot.get("userID").toString();
-            if (!userIDs.contains(userID))
-                userIDs.add(userID);
-        }
-
         Task[] tasks = new Task[userIDs.size()];
 
         for (int i = 0; i < userIDs.size(); i++)
@@ -97,21 +85,17 @@ public class DatabaseReader {
                         public void onComplete(@NonNull Task<QuerySnapshot> task)
                         {
 
-                }
-            });
+                        }
+                    });
             tasks[i] = userNameTask;
         }
 
-        Task parallelTask = Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
+        return Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
         {
             @Override
             public void onSuccess(List<Object> objects)
             {
-                List<DocumentSnapshot> userDocs = (List<DocumentSnapshot>) (List<?>) objects;
-                Map<String, String> usernamePairs = new HashMap<>();
-                for (int i = 0; i < userDocs.size(); i++) {
-                    usernamePairs.put(userIDs.get(i), userDocs.get(i).get("name").toString());
-                }
+
             }
         });
     }
