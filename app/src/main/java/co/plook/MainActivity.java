@@ -1,13 +1,14 @@
 package co.plook;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity
-{
+import com.google.firebase.auth.FirebaseAuth;
 
-    DatabaseWriter uploader;
+public class MainActivity extends ParentActivity
+{
+    FirebaseAuth auth;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -15,9 +16,18 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Postin luonti tietokantaan
-        /*uploader = new DatabaseUploader();
-        uploader.addPost("Iikka", "Mun kasvi :3", "Tässä tää nyt on");*/
+        auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null)
+        {
+            //user is signed in
+            intent = new Intent(this, FeedActivity.class);
+        }
+        else
+        {
+            //if user is NOT signed in
+            intent = new Intent(this, WelcomeActivity.class);
+        }
 
+        startActivity(intent);
     }
 }

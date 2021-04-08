@@ -110,16 +110,7 @@ public class ProfileActivity extends AppCompatActivity
 
         });
     }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
+    
     private void openPostActivity(String postID) {
 
         Intent intent = new Intent(ProfileActivity.this, PostActivity.class);

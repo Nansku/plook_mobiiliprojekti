@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class DatabaseReader {
     private FirebaseFirestore db;
 
@@ -29,6 +28,11 @@ public class DatabaseReader {
     }
 
     //WIP logic that determines what the type of queried field is
+
+    public Task<QuerySnapshot> findDocuments(Query q)
+    {
+        return q.get().addOnCompleteListener(task -> { });
+    }
 
     //find documents in collectionPath that have one of 'criteria' lists strings
     public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String[] criteria)
@@ -66,8 +70,8 @@ public class DatabaseReader {
         return q.get().addOnCompleteListener(task -> { });
     }
 
-    //search for all commentator userIDs, put them in a list and make .length amount of pipelined firestorage requests
-    private void loadCommentators(List<Object> objects)
+    //siirrä database luokkaan ja muuta parametriksi ArrayList<String>
+    public Task<List<Object>> requestNicknames(ArrayList<String> userIDs)
     {
         QuerySnapshot querySnapshot = (QuerySnapshot) objects.get(1);
         //Log.d("OBJECTS", );
@@ -84,11 +88,14 @@ public class DatabaseReader {
 
         Task[] tasks = new Task[userIDs.size()];
 
-        for (int i = 0; i < userIDs.size(); i++) {
-            Task userNameTask = db.collection("users").document(userIDs.get(i)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task)
-                {
+        for (int i = 0; i < userIDs.size(); i++)
+        {
+            Task<QuerySnapshot> userNameTask = findDocumentByID("users", userIDs.get(i))
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                    {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task)
+                        {
 
                 }
             });

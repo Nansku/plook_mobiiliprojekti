@@ -1,47 +1,47 @@
 package co.plook;
 
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FeedActivity extends AppCompatActivity
+public class FeedActivity extends ParentActivity
 {
-    private DatabaseReader dbReader;
-
-    private ArrayList<Post> allPosts;
-
+    // Views & UI
     private Context context;
-    private ViewGroup content;
-    private ViewGroup contentRight;
-
-    int lane = 0;
-
+    private RecyclerView recyclerView;
     private ArrayList<String> userIDs;
+    private FeedContentAdapter feedContentAdapter;
 
-    private boolean isNotReady = true;
+    // Database stuff
+    private DatabaseReader dbReader;
+    private Query query;
+    private DocumentSnapshot lastVisible;
+
+    // Posts & loading
+    private ArrayList<Post> allPosts;
+    private final int postLoadAmount = 10;
+    private boolean loading = false;
+    private boolean loadedAll = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,54 +53,134 @@ public class FeedActivity extends AppCompatActivity
 
         dbReader = new DatabaseReader();
 
-        Spinner spinner = (Spinner) findViewById(R.id.feed_filter);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.feed_filters, R.layout.support_simple_spinner_dropdown_item);
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        allPosts = new ArrayList<>();
+        userIDs = new ArrayList<>();
 
-        /*content = findViewById(R.id.feed_content);
-        contentRight = findViewById(R.id.feed_content_right);
-        allPosts = new ArrayList<>();*/
+        initializeRecyclerView();
 
-        Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "tags", "flower").addOnCompleteListener(task ->
+        // Make a query based on the sent string (if one was sent, otherwise default to empty).
+        Bundle extras = getIntent().getExtras();
+        String queryString = "";
+        if(extras != null)
+            queryString = extras.getString("query", "");
+
+        makeQuery(queryString);
+
+        loadPosts();
+    }
+
+    private void initializeRecyclerView()
+    {
+        recyclerView = findViewById(R.id.feed_recycle);
+
+        feedContentAdapter = new FeedContentAdapter(allPosts, context);
+        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
+
+        recyclerView.setAdapter(feedContentAdapter);
+        recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
+
+        recyclerScrollListener();
+    }
+
+    private void recyclerScrollListener()
+    {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
-
-            QuerySnapshot snapshot = task.getResult();
-            requestNicknames(snapshot).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task)
-                {
-                    List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task.getResult();
-                    Map<String, String> usernamePairs = new HashMap<>();
-                    for (int i = 0; i < querySnapshots.size(); i++)
-                    {
-                        List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
-                        usernamePairs.put(userIDs.get(i), docs.get(0).get("name").toString());
-                    }
-                    System.out.println("PARIT: " + usernamePairs);
-                    createPosts(usernamePairs, snapshot);
-                }
-            });
-        });
-
-        //this should wait for postTask
-        //Task displayNameTask = dbReader.findDocumentByID("posts", "tags");
-
-        /*synchronized (displayNameTask)
-        {
-            if (isNotReady)
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
-                try
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (dy > 0)
                 {
-                    displayNameTask.wait();
-                }
-                catch (InterruptedException e)
-                {
-                    System.out.println(e.getMessage());
+                    assert layoutManager != null;
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if (!loading && !loadedAll)
+                    {
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2)
+                            loadPosts();
+                    }
                 }
             }
-            System.out.println("ON VALMIS");
-        }*/
+        });
+    }
+
+    // Syntax: "field/criteria/sorting"
+    // Example: "tags/red/time" "userID/insert userID here/time"
+    private void makeQuery(String queryString)
+    {
+        if(queryString.equals(""))
+            queryString = "all//time";
+
+        String[] queryParts = queryString.split("/");
+        String[] criteria = queryParts[1].split(",");
+
+        query = dbReader.db.collection("posts");
+
+        // Field is a single item.
+        if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
+            query = query.whereIn(queryParts[0], Arrays.asList(criteria));
+
+        // Field is an array of items.
+        else if (queryParts[0].equals("tags"))
+            query = query.whereArrayContains(queryParts[0], queryParts[1]);
+
+        // Sort by
+        query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
+
+        // Get only a set amount of posts at once.
+        query = query.limit(postLoadAmount);
+    }
+
+    private void loadPosts()
+    {
+        loading = true;
+
+        allPosts.add(null);
+        feedContentAdapter.notifyItemInserted(allPosts.size() - 1);
+
+        // Ignore posts before (and including) the last one. This way no duplicates should appear.
+        // If this is the first time loading the activity, or if the user somehow refreshes, then start from the first post.
+        if (lastVisible != null)
+            query = query.startAfter(lastVisible);
+
+        dbReader.findDocuments(query).addOnCompleteListener(task ->
+        {
+            QuerySnapshot postSnapshot = task.getResult();
+
+            //loop through userIDs and get a list of unique names
+            for (DocumentSnapshot snapshot : postSnapshot.getDocuments())
+            {
+                String userID = snapshot.getString("userID");
+                if (!userIDs.contains(userID))
+                    userIDs.add(userID);
+            }
+
+            dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
+            {
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
+                Map<String, String> usernamePairs = new HashMap<>();
+
+                for (int i = 0; i < querySnapshots.size(); i++)
+                {
+                    List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
+                    usernamePairs.put(userIDs.get(i), docs.get(0).getString("name"));
+                }
+
+                allPosts.remove(allPosts.size() - 1);
+                feedContentAdapter.notifyItemRemoved(allPosts.size());
+
+                createPosts(usernamePairs, postSnapshot);
+
+                loading = false;
+
+                if(postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
+                    loadedAll = true;
+            });
+        });
     }
 
     private void createPosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
@@ -116,124 +196,66 @@ public class FeedActivity extends AppCompatActivity
             post.setName(usernamePairs.get(document.get("userID")));
 
             allPosts.add(post);
-            showPost(post);
-
-            isNotReady = false;
-        }
-    }
-
-    private void showPost(Post post)
-    {
-        View child = getLayoutInflater().inflate(R.layout.layout_feed_post, content, false);
-
-        content.addView(child);
-
-        /*
-        if(lane % 2 == 0)
-            content.addView(child);
-        else
-            contentRight.addView(child);
-         */
-
-        TextView textView_caption = child.findViewById(R.id.post_caption);
-        TextView textView_description = child.findViewById(R.id.post_description);
-        TextView textView_username = child.findViewById(R.id.post_username);
-        ImageView imageView_image = child.findViewById(R.id.image);
-
-        textView_caption.setText(post.getCaption());
-        textView_description.setText(post.getDescription());
-        textView_username.setText(post.getName());
-
-        Glide.with(context).load(post.getImageUrl()).into(imageView_image);
-
-        setListener(child);
-
-        lane++;
-    }
-
-    private Task requestNicknames(QuerySnapshot querySnapshot)
-    {
-        List<DocumentSnapshot> docSnapshots = querySnapshot.getDocuments();
-        userIDs = new ArrayList<>();
-
-        //loop through userIDs and get a list of unique names
-        for (DocumentSnapshot snapshot : docSnapshots)
-        {
-            String userID = snapshot.get("userID").toString();
-            if (!userIDs.contains(userID))
-                userIDs.add(userID);
         }
 
-        Task[] tasks = new Task[userIDs.size()];
+        feedContentAdapter.notifyDataSetChanged();
 
-        for (int i = 0; i < userIDs.size(); i++) {
-            Task<QuerySnapshot> userNameTask = dbReader.findDocumentByID("users", userIDs.get(i))
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task)
-                        {
-
-                        }
-                    });
-            tasks[i] = userNameTask;
-        }
-
-        Task<List<Object>> parallelTask = Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
-        {
-            @Override
-            public void onSuccess(List<Object> objects)
-            {
-
-            }
-        });
-        return parallelTask;
+        if(snapshot.size() > 0)
+            lastVisible = snapshot.getDocuments().get(snapshot.size() - 1);
     }
 
-    private void setListener(View v)
+    private void removePosts()
     {
-        v.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                int i = content.indexOfChild(v);
+        recyclerView.removeAllViews();
+        allPosts.clear();
 
-                openPostActivity(allPosts.get(i).getPostID());
-            }
-        });
+        feedContentAdapter.notifyDataSetChanged();
+
+        lastVisible = null;
+        loadedAll = false;
     }
 
     private void openPostActivity(String postID)
     {
         Intent intent = new Intent(this, PostActivity.class);
-
         intent.putExtra("post_id", postID);
 
         startActivity(intent);
     }
 
-    private void removePosts()
+    public void getAllPosts(View v)
     {
-        content.removeAllViews();
-        contentRight.removeAllViews();
-        allPosts.clear();
+        makeQuery("");
 
-        lane = 0;
+        removePosts();
+        loadPosts();
     }
 
-    public void button1(View v)
+    public void getFollowedPosts(View v)
     {
-        dbReader.findDocuments("posts", "tags", "blue");
-    }
+        removePosts();
 
-    public void button2(View v)
-    {
-        String[] list = {"red", "blue"};
-        dbReader.findDocuments("posts", "tags", list);
-    }
+        dbReader.findDocumentByID("user_contacts", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
-    public void button3(View v)
-    {
-        dbReader.findDocuments("posts", "tags", "outdoors");
+                String queryString = "channel/";
+
+                List<String> group = (List<String>) document.get("followed_channels");
+                for (String str : group)
+                {
+                    queryString += str + ",";
+                }
+
+                queryString += "/time";
+
+                makeQuery(queryString);
+
+                loadPosts();
+            }
+        });
     }
 }
