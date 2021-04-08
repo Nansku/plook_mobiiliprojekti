@@ -41,7 +41,7 @@ public class FeedActivity extends ParentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
+        setContentView(R.layout.drawer);
 
         context = getApplicationContext();
 
