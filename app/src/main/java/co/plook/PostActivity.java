@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PostActivity extends AppCompatActivity
+public class PostActivity extends ParentActivity
 {
     //views
     private Context context;
