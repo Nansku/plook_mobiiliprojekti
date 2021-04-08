@@ -21,16 +21,26 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_margin="2dp"
-            android:onClick="button1"
+            android:onClick="getAllPosts"
             android:text="ALL"
-            />
+        />
 
-        <Spinner
-            android:id="@+id/feed_filter"
+        <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_margin="2dp"
+            android:onClick="getFollowedPosts"
+            android:text="Followed"
+        />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="2dp"
+            android:onClick="toggleSearchView"
+            android:text="Search"
         />
 
     </LinearLayout>

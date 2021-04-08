@@ -91,6 +91,7 @@ public class PostActivity extends AppCompatActivity
         textView_caption.setText(post.getCaption());
         textView_description.setText(post.getDescription());
 
+        // Add tag buttons.
         List<String> group = (List<String>) document.get("tags");
         for (String str : group)
         {
