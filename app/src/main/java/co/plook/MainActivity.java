@@ -3,9 +3,11 @@ package co.plook;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MainActivity extends ParentActivity
+public class MainActivity extends AppCompatActivity
 {
     FirebaseAuth auth;
     Intent intent;
@@ -27,7 +29,6 @@ public class MainActivity extends ParentActivity
             //if user is NOT signed in
             intent = new Intent(this, WelcomeActivity.class);
         }
-
         startActivity(intent);
     }
 }
