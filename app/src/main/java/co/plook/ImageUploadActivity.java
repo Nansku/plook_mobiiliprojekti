@@ -151,7 +151,8 @@ public class ImageUploadActivity extends AppCompatActivity
                 activity.setGuidelines(CropImageView.Guidelines.ON);
                 activity.setAspectRatio(3, 4);
                 activity.start(this);
-            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            }
+            else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 Log.d("APP_DEBUG",result.toString());
                 if (resultCode == RESULT_OK) {
