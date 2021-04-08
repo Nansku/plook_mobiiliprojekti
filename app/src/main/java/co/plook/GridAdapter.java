@@ -44,68 +44,9 @@ public class GridAdapter extends ArrayAdapter<Post> {
         ImageView imageView = view.findViewById(R.id.image);
         Glide.with(context).load(post.getImageUrl()).into(imageView);
 
-        //imageView.setImageResource(Integer.parseInt(post.getImageUrl()));
         return view;
     }
 
-    /*public GridAdapter(@NonNull Context context, ArrayList<Post> postArrayList) {
-        super(context, 0, postArrayList);
-    }
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull  ViewGroup parent) {
-        View listItemView = convertView;
-        if (listItemView == null) {
-            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.activity_profile_post, parent, false) ;
-        }
-
-        Post post = getItem(position);
-
-        ImageView imageView = listItemView.findViewById(R.id.image);
-
-        Picasso.get().load(Post.getImageUrl()).into(imageView);
-
-        listItemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getContext(), "Item clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
-        return listItemView;
-    }*/
-    /*Context context;
-    private final int[] images ;
-    LayoutInflater inflater ;
-
-    public GridAdapter(Context context, int[] images) {
-        this.context = context;
-        this.images = images;
-        inflater = (LayoutInflater.from(context));
-    }
-
-    @Override
-    public int getCount() {
-        return images.length;
-    }
-
-    @Override
-    public Object getItem(int i) {
-        return null ;
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        view = inflater.inflate(R.layout.activity_profile_post, null);
-        ImageView image = (ImageView) view.findViewById(R.id.image);
-        image.setImageResource(images[i]);
-        return view;
-
-    }*/
 
 }

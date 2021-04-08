@@ -21,9 +21,7 @@
         <activity android:name=".PostActivity" />
       
         <activity android:name=".ProfileActivity" android:exported="true" />
-      
-        <activity android:name=".ImageEditActivity" />
-      
+
         <activity android:name=".SignupActivity" />
 
         <activity android:name=".FeedActivity" android:exported="true" />
@@ -38,5 +36,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
