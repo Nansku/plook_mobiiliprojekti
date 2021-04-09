@@ -23,7 +23,7 @@ public class DatabaseReader
     //private String userID;
 
 
-    public DatabaseReader() 
+    public DatabaseReader()
     {
         db = FirebaseFirestore.getInstance();
     }

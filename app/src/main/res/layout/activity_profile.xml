@@ -5,26 +5,25 @@
     android:layout_height="match_parent"
     android:theme="@style/CustomTheme">
 
-    <LinearLayout
-        android:id="@id/linear"
+    <include layout="@layout/appbar"
+        android:id="@+id/bar"/>
+    <!--<LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:id="@+id/bar"
+        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-
-        <include layout="@layout/appbar"/>
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"/>-->
 
     <FrameLayout android:id="@+id/frame"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linear"
         app:layout_constraintBottom_toTopOf="@id/bio">
-
 
         <ImageView android:id="@+id/profilePic"
             android:layout_width="100dp"
@@ -107,4 +106,5 @@
         android:numColumns="3">
     </GridView>
 
+    <include layout="@layout/navigation_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
