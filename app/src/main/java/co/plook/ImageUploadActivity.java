@@ -168,6 +168,10 @@ public class ImageUploadActivity extends AppCompatActivity
 
                 }
         }
+            else if (resultCode == RESULT_OK) {
+                //jos ok niin laita image viewiin
+                profilePic.setImageURI(imageUri);
+            }
         
             /*Intent intent = new Intent(ImageUploadActivity.this, ImageEditActivity.class);
             intent.putExtra("imageUri", imageUri);
