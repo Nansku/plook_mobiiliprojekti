@@ -101,4 +101,6 @@
     </GridView>
 
     <!--<include layout="@layout/navigation_layout" />-->
+
 </RelativeLayout>
+
