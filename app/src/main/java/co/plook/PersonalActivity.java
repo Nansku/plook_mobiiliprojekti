@@ -18,11 +18,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
-public class PersonalActivity extends AppCompatActivity
+public class PersonalActivity extends ParentActivity
 {
-    // Views & UI
-    private Context context;
-
     // Database stuff
     private DatabaseReader dbReader;
 
@@ -32,8 +29,6 @@ public class PersonalActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
 
-        context = getApplicationContext();
-
         dbReader = new DatabaseReader();
 
         loadChannels();
@@ -41,7 +36,8 @@ public class PersonalActivity extends AppCompatActivity
 
     private void loadChannels()
     {
-        dbReader.findDocumentByID("user_contacts", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        // Followed channels
+        dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
@@ -52,11 +48,12 @@ public class PersonalActivity extends AppCompatActivity
                 List<String> group = (List<String>) document.get("followed_channels");
                 for (String str : group)
                 {
-                    populateChannelList(str, content);
+                    populateChannelsList(str, content);
                 }
             }
         });
 
+        // All channels
         Query query = dbReader.db.collection("channels");
         dbReader.findDocuments(query).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
@@ -67,15 +64,14 @@ public class PersonalActivity extends AppCompatActivity
 
                 for (DocumentSnapshot document : task.getResult())
                 {
-                    populateChannelList(document.getId(), content);
+                    populateChannelsList(document.getId(), content);
                 }
             }
         });
     }
 
-    private void populateChannelList(String channelID, ViewGroup content)
+    private void populateChannelsList(String channelID, ViewGroup content)
     {
-        //create a view for the channel
         View child = getLayoutInflater().inflate(R.layout.layout_personal_button, content, false);
         content.addView(child);
 
