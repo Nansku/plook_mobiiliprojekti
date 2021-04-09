@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="@color/forest"
-    android:id="@+id/toolbar"
+    android:id="@+id/toolbar_appbar"
     android:theme="@style/CustomTheme"
     android:fitsSystemWindows="true">
 

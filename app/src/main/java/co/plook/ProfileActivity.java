@@ -37,7 +37,7 @@ import co.plook.fragments.ProfileFragment;
 import co.plook.fragments.SettingsFragment;
 
 
-public class ProfileActivity extends AppCompatActivity
+public class ProfileActivity extends ParentActivity
 {   private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
@@ -51,10 +51,11 @@ public class ProfileActivity extends AppCompatActivity
     GridAdapter gridAdapter;
     GridView gridView;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
 
         userPosts = new ArrayList<Post>();
 
@@ -63,8 +64,9 @@ public class ProfileActivity extends AppCompatActivity
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
         gridView = findViewById(R.id.postGrid);
 
+
         // DRAWER MENU
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        /*toolbar = (Toolbar)findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
@@ -73,7 +75,8 @@ public class ProfileActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close) ;
         drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        toggle.syncState();*/
+
 
 
         // FIND PHOTOS FROM FIREBASE
@@ -112,14 +115,14 @@ public class ProfileActivity extends AppCompatActivity
         });
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
-    }
+    }*/
 
     private void openPostActivity(String postID) {
 
