@@ -68,7 +68,7 @@ public class DatabaseWriter
 
         addToSubcollection("comment_sections", postID, "comments", comment);
 
-        return new Comment(userID, text, "vastattu tälle", timeNow);
+        return new Comment(userID, "", text, "vastattu tälle", timeNow);
     }
 
     public boolean addVote(String userID, String postID, boolean upOrDown)
