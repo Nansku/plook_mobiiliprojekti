@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".FeedActivity">
 
-    <include layout="@layout/appbar"/>
+    <!-- toolbar tulee ParentActivityn kautta -->
+    <!--<include layout="@layout/appbar"/>-->
 
     <Button
         android:layout_width="wrap_content"
