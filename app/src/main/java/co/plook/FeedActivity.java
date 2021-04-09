@@ -48,7 +48,7 @@ public class FeedActivity extends ParentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
+        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
 
         context = getApplicationContext();
 
@@ -230,6 +230,14 @@ public class FeedActivity extends ParentActivity
 
         removePosts();
         loadPosts();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        //block the user from going back to blank
+        //maybe add a feed refresh function here?
+        //super.onBackPressed();
     }
 
     public void getFollowedPosts(View v)
