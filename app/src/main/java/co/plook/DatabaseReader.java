@@ -44,6 +44,15 @@ public class DatabaseReader
         return q.get().addOnCompleteListener(task -> { });
     }
 
+    //find documents in collectionPath that have one of 'criteria' lists strings
+    public Task<QuerySnapshot> findDocumentsWhereIn(String collectionPath, String field, String[] criteria)
+    {
+        CollectionReference collRef = db.collection(collectionPath);
+        Query q = collRef.whereIn(field, Arrays.asList(criteria));
+
+        return q.get().addOnCompleteListener(task -> { });
+    }
+
     //find documents in collectionPath that have the string criteria in specified field
     public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String criteria)
     {

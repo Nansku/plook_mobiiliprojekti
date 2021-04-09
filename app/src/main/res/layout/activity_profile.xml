@@ -106,5 +106,5 @@
         android:numColumns="3">
     </GridView>
 
-    <include layout="@layout/navigation_layout" />
+    <!--<include layout="@layout/navigation_layout" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
