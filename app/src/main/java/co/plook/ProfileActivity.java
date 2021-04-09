@@ -1,15 +1,84 @@
 package co.plook;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 
-public class ProfileActivity extends AppCompatActivity
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
+
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+
+
+public class ProfileActivity extends ParentActivity
 {
+    private DatabaseReader dbReader;
+    private ArrayList<Post> userPosts;
+    private Context context;
+    private ViewGroup content;
+    private ViewGroup contentRight;
+    GridAdapter gridAdapter;
+    GridView gridView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
+        userPosts = new ArrayList<Post>();
 
-        setContentView(R.layout.activity_profile);
+        dbReader = new DatabaseReader();
+        super.onCreate(savedInstanceState);
+        getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
+        gridView = findViewById(R.id.postGrid);
+
+
+
+        Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(task ->
+        {   QuerySnapshot snapshot = task.getResult();
+
+            assert snapshot != null;
+            System.out.println(snapshot.getDocuments().toString());
+            for (QueryDocumentSnapshot document : snapshot)
+            {   Post post = new Post();
+                post.setPostID(document.getId());
+                post.setCaption(document.getString("caption"));
+                post.setDescription(document.getString("description"));
+                post.setImageUrl(document.getString("url"));
+
+                userPosts.add(post);
+            }
+
+            System.out.println(userPosts.size());
+
+            gridAdapter = new GridAdapter(this, R.layout.activity_profile_post, userPosts);
+
+            gridView.setAdapter(gridAdapter);
+
+            gridAdapter.notifyDataSetChanged();
+        });
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String postID = userPosts.get(position).getPostID();
+                openPostActivity(postID);
+            }
+
+        });
     }
+    
+    private void openPostActivity(String postID) {
+
+        Intent intent = new Intent(ProfileActivity.this, PostActivity.class);
+        intent.putExtra("post_id", postID);
+        startActivity(intent);
+    }
+
 }
+

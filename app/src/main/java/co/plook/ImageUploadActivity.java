@@ -42,7 +42,7 @@ import static android.view.View.*;
 import static java.security.AccessController.*;
 
 
-public class ImageUploadActivity extends AppCompatActivity
+public class ImageUploadActivity extends ParentActivity
 {
     private ImageView profilePic;
     public static Uri imageUri;
@@ -51,7 +51,6 @@ public class ImageUploadActivity extends AppCompatActivity
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Button mCaptureBtn;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -168,6 +167,7 @@ public class ImageUploadActivity extends AppCompatActivity
 
                 }
         }
+
             else if (resultCode == RESULT_OK) {
                 //jos ok niin laita image viewiin
                 profilePic.setImageURI(imageUri);
@@ -185,6 +185,7 @@ public class ImageUploadActivity extends AppCompatActivity
             Bundle bundle = getIntent().getExtras();
             if (bundle != null && bundle.containsKey("imageUri")) {
                 imageUri = Uri.parse(bundle.getString("resultUri"));*/
+
 
 
         Button uploadButton = (Button)findViewById(R.id.upload);

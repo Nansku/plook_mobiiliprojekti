@@ -2,8 +2,10 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +21,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PostActivity extends AppCompatActivity
+public class PostActivity extends ParentActivity
 {
     //views
     private Context context;
@@ -32,10 +35,10 @@ public class PostActivity extends AppCompatActivity
     //database stuff
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
-    private QuerySnapshot comments;
 
     //objects
     private Post post;
+    private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
 
     @Override
@@ -53,26 +56,24 @@ public class PostActivity extends AppCompatActivity
         imageView = findViewById(R.id.image);
 
         post = new Post();
+        userIDs = new ArrayList<>();
+        allComments = new ArrayList<>();
 
         //postID from feed
         Bundle extras = getIntent().getExtras();
         String postID = extras.getString("post_id");
         post.setPostID(postID);
 
-
-
-        dbReader.findDocumentByID("posts", postID)
-                .addOnCompleteListener(task -> showPost((QuerySnapshot) task.getResult()));
-
-        dbReader.findSubcollection("comment_sections", postID, "comments")
-        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        dbReader.findDocumentByID("posts", postID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
-
+                showPost(task.getResult());
             }
         });
+
+        loadComments();
     }
 
     private void showPost(QuerySnapshot documentSnapshots)
@@ -85,33 +86,74 @@ public class PostActivity extends AppCompatActivity
 
         TextView textView_caption = findViewById(R.id.post_caption);
         TextView textView_description = findViewById(R.id.post_description);
-        TextView textView_tags = findViewById(R.id.post_tags);
-
-        List<String> group = (List<String>) document.get("tags");
-        String tags = "tags:\n";
-        for (String str : group)
-        {
-            tags += "{ " + str + " } ";
-        }
+        ViewGroup viewGroup_tags = findViewById(R.id.post_tags);
 
         textView_caption.setText(post.getCaption());
         textView_description.setText(post.getDescription());
-        textView_tags.setText(tags);
+
+        // Add tag buttons.
+        List<String> group = (List<String>) document.get("tags");
+        for (String str : group)
+        {
+            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, content, false);
+            viewGroup_tags.addView(child);
+
+            TextView textView = child.findViewById(R.id.tag_text);
+            textView.setText(str);
+
+            child.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v) {
+                    openFeedActivity("tags/" + str + "/time");
+                }
+            });
+        }
 
         Glide.with(context).load(post.getImageUrl()).into(imageView);
     }
 
-    /*private void addComments(Map<String, String> names)
+    private void loadComments()
     {
-        allComments = new ArrayList<>();
-        for (QueryDocumentSnapshot document : comments)
+        dbReader.findSubcollection("comment_sections", post.getPostID(), "comments").addOnCompleteListener(task ->
         {
-            String displayName = names.get(document.get("userID").toString());
-            Comment comment = new Comment(displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
+            QuerySnapshot commentSnapshots = task.getResult();
+
+            //loop through userIDs and get a list of unique names
+            for (DocumentSnapshot snapshot : commentSnapshots.getDocuments())
+            {
+                String userID = snapshot.getString("userID");
+                if (!userIDs.contains(userID))
+                    userIDs.add(userID);
+            }
+
+            dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
+            {
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); //  @Iikka what even is this??
+                Map<String, String> usernamePairs = new HashMap<>();
+
+                for (int i = 0; i < querySnapshots.size(); i++)
+                {
+                    List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
+                    usernamePairs.put(userIDs.get(i), docs.get(0).getString("name"));
+                }
+
+                addComments(usernamePairs, commentSnapshots);
+            });
+        });
+    }
+
+    private void addComments(Map<String, String> names, QuerySnapshot snapshot)
+    {
+        for (QueryDocumentSnapshot document : snapshot)
+        {
+            String displayName = names.get(document.getString("userID"));
+            Comment comment = new Comment(document.getString("userID"), displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
             allComments.add(comment);
         }
+
         showComments(allComments);
-    }*/
+    }
 
     private void showComments(List<Comment> comments)
     {
@@ -128,10 +170,15 @@ public class PostActivity extends AppCompatActivity
             TextView textView_commentText = child.findViewById(R.id.comment_text);
             TextView textView_timestamp = child.findViewById(R.id.comment_timestamp);
             //set texts
-            textView_username.setText(comment.getUserID());
+            textView_username.setText(comment.getUserName());
             textView_commentText.setText(comment.getText());
             textView_timestamp.setText(comment.getTimeDifference());
         }
+    }
+
+    private void removeComments()
+    {
+        content.removeAllViews();
     }
 
     public void writeComment(View v)
@@ -141,11 +188,21 @@ public class PostActivity extends AppCompatActivity
         Timestamp timeNow = Timestamp.now();
         String commentText = "Kello on: " + timeNow.toDate().toString();
 
-        Comment commentToAdd = dbWriter.addComment("HkiNfJx7Vaaok6L9wo6x34D3Ol03", commentText, post.getPostID());
+        Comment commentToAdd = dbWriter.addComment(auth.getUid(), commentText, post.getPostID());
+        commentToAdd.setUserName(auth.getCurrentUser().getDisplayName());
 
         //hmm does 'allComments' have to be global or do we remove the parameter from 'showComment'??
         allComments.add(commentToAdd);
+
+        removeComments();
         showComments(allComments);
     }
 
+    void openFeedActivity(String query)
+    {
+        Intent intent = new Intent(this, FeedActivity.class);
+        intent.putExtra("query", query);
+
+        startActivity(intent);
+    }
 }

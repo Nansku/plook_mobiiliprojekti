@@ -12,7 +12,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import static android.app.PendingIntent.getActivity;
 
-public class ImageEditActivity extends AppCompatActivity {
+public class ImageEditActivity extends ParentActivity {
     public static Uri imageUri;
     private ImageView profilePic;
 

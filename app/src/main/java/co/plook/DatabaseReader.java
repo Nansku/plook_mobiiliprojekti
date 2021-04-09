@@ -7,28 +7,33 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
-public class DatabaseReader {
-    private FirebaseFirestore db;
+public class DatabaseReader
+{
+    public FirebaseFirestore db;
 
     //private String userID;
 
-    public DatabaseReader() {
+
+    public DatabaseReader() 
+    {
         db = FirebaseFirestore.getInstance();
     }
 
     //WIP logic that determines what the type of queried field is
+
+    public Task<QuerySnapshot> findDocuments(Query q)
+    {
+        return q.get().addOnCompleteListener(task -> { });
+    }
 
     //find documents in collectionPath that have one of 'criteria' lists strings
     public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String[] criteria)
@@ -43,7 +48,7 @@ public class DatabaseReader {
     public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
-        Query q = collRef.whereArrayContains(field, criteria);
+        Query q = collRef.whereEqualTo(field, criteria);
 
         return q.get().addOnCompleteListener(task -> { });
     }
@@ -69,7 +74,6 @@ public class DatabaseReader {
     //siirrä database luokkaan ja muuta parametriksi ArrayList<String>
     public Task<List<Object>> requestNicknames(ArrayList<String> userIDs)
     {
-
         Task[] tasks = new Task[userIDs.size()];
 
         for (int i = 0; i < userIDs.size(); i++)
