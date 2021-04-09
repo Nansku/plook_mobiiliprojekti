@@ -22,12 +22,14 @@
             android:icon="@drawable/ic_settings"
             android:title="Settings"
             android:onClick="openSettings"/>
+        <item
+        android:id="@+id/log_out"
+            android:icon="@drawable/ic_logout"
+        android:title="Log out"
+        android:onClick="logOut"/>
     </group>
 
-    <group>
-        <item
-            android:id="@+id/log_out"
-            android:title="Log out"
-            android:onClick="logOut"/>
-    </group>
+
+
+
 </menu>

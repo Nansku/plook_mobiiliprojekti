@@ -36,6 +36,7 @@ public class ParentActivity extends AppCompatActivity
 
         contentGroup = findViewById(R.id.contentFrame);
 
+        // TOOLBAR & DRAWER
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -47,7 +48,7 @@ public class ParentActivity extends AppCompatActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-
+        // LOG IN AUTHORIZATION
         auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() == null)
         {
@@ -60,7 +61,7 @@ public class ParentActivity extends AppCompatActivity
         }
     }
 
-
+    // MENU OPEN & CLOSE
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -70,8 +71,7 @@ public class ParentActivity extends AppCompatActivity
         }
     }
 
-
-
+    // MENU ITEM ACTIVITIES
     public void logOut(MenuItem item)
     {
         auth.signOut();

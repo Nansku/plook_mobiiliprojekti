@@ -38,46 +38,25 @@ import co.plook.fragments.SettingsFragment;
 
 
 public class ProfileActivity extends ParentActivity
-{   private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
-    private Toolbar toolbar;
-    private NavigationView navigationView;
-
+{
     private DatabaseReader dbReader;
     private ArrayList<Post> userPosts;
-    private Context context;
-    private ViewGroup content;
-    private ViewGroup contentRight;
     GridAdapter gridAdapter;
     GridView gridView;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         userPosts = new ArrayList<Post>();
-
         dbReader = new DatabaseReader();
+
         super.onCreate(savedInstanceState);
+
+        // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
+
+        // GRIDVIEW
         gridView = findViewById(R.id.postGrid);
-
-
-        // DRAWER MENU
-        /*toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close) ;
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();*/
-
-
 
         // FIND PHOTOS FROM FIREBASE
         Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(task ->
@@ -115,21 +94,12 @@ public class ProfileActivity extends ParentActivity
         });
     }
 
-    /*@Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }*/
-
+    // OPEN SINGLE POST IN PostActivity
     private void openPostActivity(String postID) {
 
         Intent intent = new Intent(ProfileActivity.this, PostActivity.class);
         intent.putExtra("post_id", postID);
         startActivity(intent);
     }
-
 }
 

@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/CustomTheme">
 
-    <include layout="@layout/appbar"
-        android:id="@+id/bar"/>
-    <!--<LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:id="@+id/bar"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>-->
-
     <FrameLayout android:id="@+id/frame"
+        android:layout_marginHorizontal="50dp"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bio">
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true">
 
         <ImageView android:id="@+id/profilePic"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/user_icon"
-            android:contentDescription="profile picture" />
+            android:contentDescription="@string/profile_picture" />
 
         <ImageView android:id="@+id/circle_crop"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/circle"
-            android:contentDescription="circle crop" />
+            android:contentDescription="@string/circle_crop" />
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/frame"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Käyttäjänimi"
+            android:textAlignment="center"
+            android:textSize="@dimen/username"/>
+    </LinearLayout>
 
     <RelativeLayout
         android:orientation="vertical"
@@ -45,11 +45,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frame"
-        app:layout_constraintBottom_toTopOf="@id/postGrid"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/username"
         android:background="@drawable/bio">
 
         <TextView
@@ -58,8 +56,7 @@
             android:layout_height="100dp"
             android:text="BIO"
             android:background="@drawable/bio"
-            android:textAlignment="center"
-            />
+            android:textAlignment="center" />
 
         <RelativeLayout
             android:layout_width="fill_parent"
@@ -72,11 +69,10 @@
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/country"
                 android:layout_marginStart="5dp"
                 android:layout_marginBottom="5dp"
                 android:text="MAA"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:gravity="start" />
 
 
@@ -86,8 +82,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:layout_alignParentRight="true"
-                android:text="edit profile"
+                android:layout_alignParentEnd="true"
+                android:text="@string/edit_profile"
                  />
         </RelativeLayout>
     </RelativeLayout>
@@ -95,16 +91,14 @@
     <GridView
         android:id="@+id/postGrid"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bio"
+        android:layout_below="@+id/bio"
+        android:background="@drawable/bio"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
-        android:background="@drawable/bio"
         android:numColumns="3">
     </GridView>
 
-    <include layout="@layout/navigation_layout" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!--<include layout="@layout/navigation_layout" />-->
+</RelativeLayout>

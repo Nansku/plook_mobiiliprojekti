@@ -14,15 +14,18 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- TOOLBAR -->
         <include layout="@layout/appbar"
             android:id="@+id/toolbar"/>
 
+        <!-- CONTENT FRAME -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/contentFrame"/>
     </LinearLayout>
 
+    <!-- NAVIGATION ITSELF -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
