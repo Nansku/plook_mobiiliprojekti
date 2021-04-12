@@ -46,6 +46,10 @@ public class PersonalActivity extends ParentActivity
                 ViewGroup content = findViewById(R.id.personal_channels_followed);
 
                 List<String> group = (List<String>) document.get("followed_channels");
+
+                if(group == null)
+                    return;
+
                 String[] arrayOfIDs = group.toArray(new String[0]);
 
                 // Get channel names
