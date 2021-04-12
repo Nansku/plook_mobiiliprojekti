@@ -3,10 +3,15 @@ package co.plook;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -14,16 +19,18 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class DatabaseWriter
 {
 
     FirebaseFirestore db;
-
+    FirebaseAuth auth;
 
     public DatabaseWriter()
     {
         db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
     }
 
     //User gets an automatically generated userID.
@@ -61,17 +68,58 @@ public class DatabaseWriter
         return true;
     }
 
-    public void updateUser(String userID)
+    public void updateUser(String collectionPath, String userID,  HashMap<String, Object> updatedUserMap)
     {
-        ArrayList<String> followerIDs = new ArrayList<>();
-        followerIDs.add("TEST");
-        db.collection("user_contacts").document(userID).update("followers", followerIDs).addOnSuccessListener(new OnSuccessListener<Void>()
+        db.collection(collectionPath)
+                .document(userID)
+                .update(updatedUserMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>()
         {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d("LOG", "DocumentSnapshot successfully updated!");
+                Log.d("UpdateUserLog", userID + " successfully updated!");
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Log.d("UpdateUserLog", "ERROR: " + e.getMessage());
             }
         });
+    }
+
+    public void updateUserFollows(String userID, String field, String followID, boolean remove)
+    {
+        FieldValue fieldValue = remove ? FieldValue.arrayRemove(followID) : FieldValue.arrayUnion(followID);
+        db.collection("user_contacts")
+                .document(userID)
+                .update(field, fieldValue)
+                .addOnSuccessListener(new OnSuccessListener<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("UpdateUserLog", userID + " successfully updated!");
+                    }
+                });
+    }
+
+    public void removeFollower(String userID)
+    {
+        //Map<String, Object> updates = new HashMap<>();
+        //updates.put("followers", FieldValue.arrayRemove(auth.getUid()));
+        System.out.println("MINUN OMA UID: " + auth.getUid());
+        db.collection("user_contacts")
+                .document(userID)
+                .update("followers", FieldValue.arrayRemove(auth.getUid()))
+                .addOnCompleteListener(new OnCompleteListener<Void>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+
+                    }
+                });
     }
 
     public Comment addComment(String userID, String text, String postID)
