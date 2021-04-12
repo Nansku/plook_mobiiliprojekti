@@ -107,7 +107,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         Post post = localDataSet.get(position);
 
         viewHolder.getTextView_caption().setText(post.getCaption());
-        viewHolder.getTextView_username().setText(post.getName());
+        viewHolder.getTextView_username().setText(post.getUserID());
 
         Glide.with(context).load(post.getImageUrl()).into(viewHolder.getImageView_image());
     }

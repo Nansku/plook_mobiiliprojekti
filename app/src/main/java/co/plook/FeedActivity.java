@@ -1,6 +1,5 @@
 package co.plook;
 
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,18 +8,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +34,6 @@ public class FeedActivity extends ParentActivity
 
     // Database stuff
     private DatabaseReader dbReader;
-    private DatabaseWriter dbWriter;
     private Query query;
     private DocumentSnapshot lastVisible;
 
@@ -57,7 +52,6 @@ public class FeedActivity extends ParentActivity
         context = getApplicationContext();
 
         dbReader = new DatabaseReader();
-        dbWriter = new DatabaseWriter();
 
         allPosts = new ArrayList<>();
         userIDs = new ArrayList<>();
@@ -80,7 +74,7 @@ public class FeedActivity extends ParentActivity
         recyclerView = findViewById(R.id.feed_recycle);
 
         feedContentAdapter = new FeedContentAdapter(allPosts, context);
-        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
+        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID(), view.findViewById(R.id.post_image)));
 
         recyclerView.setAdapter(feedContentAdapter);
         recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
@@ -168,6 +162,10 @@ public class FeedActivity extends ParentActivity
             dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
             {
                 List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
+
+                if(querySnapshots == null || querySnapshots.size() <= 0)
+                    return;
+
                 Map<String, String> usernamePairs = new HashMap<>();
 
                 for (int i = 0; i < querySnapshots.size(); i++)
@@ -199,7 +197,7 @@ public class FeedActivity extends ParentActivity
             post.setCaption(document.getString("caption"));
             post.setDescription(document.getString("description"));
             post.setImageUrl(document.getString("url"));
-            post.setName(usernamePairs.get(document.get("userID")));
+            post.setUserID(usernamePairs.get(document.get("userID")));
 
             allPosts.add(post);
         }
@@ -221,10 +219,12 @@ public class FeedActivity extends ParentActivity
         loadedAll = false;
     }
 
-    private void openPostActivity(String postID)
+    private void openPostActivity(String postID, ImageView img)
     {
         Intent intent = new Intent(this, PostActivity.class);
         intent.putExtra("post_id", postID);
+
+        //ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, img, "postImage");
 
         startActivity(intent);
     }
@@ -235,8 +235,6 @@ public class FeedActivity extends ParentActivity
 
         removePosts();
         loadPosts();
-        //auth.signOut();
-        dbWriter.updateUser("qzTMn9YNS4NKYCPF97Ks7dVOjyX2");
     }
 
     @Override
@@ -256,21 +254,24 @@ public class FeedActivity extends ParentActivity
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
-                DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                QuerySnapshot snapshots = task.getResult();
+
+                DocumentSnapshot document = snapshots.getDocuments().get(0);
 
                 String queryString = "channel/";
 
                 List<String> group = (List<String>) document.get("followed_channels");
-                for (String str : group)
+                if (group != null)
                 {
-                    queryString += str + ",";
+                    for (String str : group)
+                        queryString += str + ",";
+
+                    queryString += "/time";
+
+                    makeQuery(queryString);
+
+                    loadPosts();
                 }
-
-                queryString += "/time";
-
-                makeQuery(queryString);
-
-                loadPosts();
             }
         });
     }
