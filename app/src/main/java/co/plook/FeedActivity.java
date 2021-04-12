@@ -1,5 +1,7 @@
 package co.plook;
 
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,6 +11,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -17,6 +22,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +43,7 @@ public class FeedActivity extends ParentActivity
 
     // Posts & loading
     private ArrayList<Post> allPosts;
-    private final int postLoadAmount = 2;
+    private final int postLoadAmount = 10;
     private boolean loading = false;
     private boolean loadedAll = false;
 
@@ -107,24 +113,27 @@ public class FeedActivity extends ParentActivity
         });
     }
 
+    // Syntax: "field/criteria/sorting"
+    // Example: "tags/red/time" "userID/insert userID here/time"
     private void makeQuery(String queryString)
     {
         if(queryString.equals(""))
             queryString = "all//time";
 
         String[] queryParts = queryString.split("/");
+        String[] criteria = queryParts[1].split(",");
 
         query = dbReader.db.collection("posts");
 
+        // Field is a single item.
         if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
-        {
-            query = query.whereEqualTo(queryParts[0], queryParts[1]);
-        }
-        else if (queryParts[0].equals("tags"))
-        {
-            query = query.whereArrayContains(queryParts[0], queryParts[1]);
-        }
+            query = query.whereIn(queryParts[0], Arrays.asList(criteria));
 
+        // Field is an array of items.
+        else if (queryParts[0].equals("tags"))
+            query = query.whereArrayContains(queryParts[0], queryParts[1]);
+
+        // Sort by
         query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
 
         // Get only a set amount of posts at once.
@@ -157,7 +166,7 @@ public class FeedActivity extends ParentActivity
 
             dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
             {
-                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); //  @Iikka what even is this??
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
                 Map<String, String> usernamePairs = new HashMap<>();
 
                 for (int i = 0; i < querySnapshots.size(); i++)
@@ -206,21 +215,20 @@ public class FeedActivity extends ParentActivity
         allPosts.clear();
 
         feedContentAdapter.notifyDataSetChanged();
-        lastVisible = null;
 
+        lastVisible = null;
         loadedAll = false;
     }
 
     private void openPostActivity(String postID)
     {
         Intent intent = new Intent(this, PostActivity.class);
-
         intent.putExtra("post_id", postID);
 
         startActivity(intent);
     }
 
-    public void button1(View v)
+    public void getAllPosts(View v)
     {
         makeQuery("");
 
@@ -236,5 +244,33 @@ public class FeedActivity extends ParentActivity
         //block the user from going back to blank
         //maybe add a feed refresh function here?
         //super.onBackPressed();
+    }
+
+    public void getFollowedPosts(View v)
+    {
+        removePosts();
+
+        dbReader.findDocumentByID("user_contacts", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                DocumentSnapshot document = task.getResult().getDocuments().get(0);
+
+                String queryString = "channel/";
+
+                List<String> group = (List<String>) document.get("followed_channels");
+                for (String str : group)
+                {
+                    queryString += str + ",";
+                }
+
+                queryString += "/time";
+
+                makeQuery(queryString);
+
+                loadPosts();
+            }
+        });
     }
 }

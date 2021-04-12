@@ -50,35 +50,43 @@
                 android:adjustViewBounds="true"
             />
 
-            <TextView
-                android:id="@+id/post_description"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/lighter_forest"
-                android:text="HELLO WORLD"
-                android:textColor="@color/white"
-                android:padding="10dp"
-            />
+                android:background="@color/lighter_forest">
 
-            <TextView
-                android:id="@+id/post_tags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/lighter_forest"
-                android:text=""
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:padding="10dp"
+                <TextView
+                    android:id="@+id/post_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:padding="10dp"
+                    android:layout_marginBottom="20dp"
                 />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/lighter_forest"
-                android:text="COMMENTS"
-                android:textColor="@color/white"
-                android:padding="10dp"
-            />
+                <LinearLayout
+                    android:id="@+id/post_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/post_description"
+                    android:orientation="horizontal"
+                    android:divider="@drawable/divider_feed_content"
+                    android:showDividers="middle"
+                    android:paddingHorizontal="10dp"
+                    android:layout_marginBottom="20dp"
+                />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/post_tags"
+                    android:text="COMMENTS"
+                    android:textColor="@color/white"
+                    android:padding="10dp"
+                />
+
+            </RelativeLayout>
 
         </LinearLayout>
 
