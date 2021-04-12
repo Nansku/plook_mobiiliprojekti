@@ -1,5 +1,7 @@
 package co.plook;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -9,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,12 +29,13 @@ public class DatabaseWriter
     //User gets an automatically generated userID.
     //Maybe the user is also asked for a nickname that is displayed on screen
     //and a 'real' name (firstname)
-    public void addUser(String userID, String nickname, String email)
+    public void addUser(String userID, String nickname, String email, String token)
     {
         Map<String, Object> user = new HashMap<>();
         user.put("id", userID);
         user.put("name", nickname);
         user.put("email", email);
+        user.put("token", token);
 
         addToCollectionWithName("users", user, userID);
     }
@@ -55,6 +59,19 @@ public class DatabaseWriter
         addToCollection("posts", post);
 
         return true;
+    }
+
+    public void updateUser(String userID)
+    {
+        ArrayList<String> followerIDs = new ArrayList<>();
+        followerIDs.add("TEST");
+        db.collection("user_contacts").document(userID).update("followers", followerIDs).addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("LOG", "DocumentSnapshot successfully updated!");
+            }
+        });
     }
 
     public Comment addComment(String userID, String text, String postID)
