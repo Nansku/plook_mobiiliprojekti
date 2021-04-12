@@ -28,7 +28,7 @@
                     android:id="@+id/post_caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Hello World"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="18sp"
@@ -40,11 +40,12 @@
                     android:id="@+id/post_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Username"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="14sp"
                     android:layout_marginHorizontal="40dp"
                     android:layout_marginBottom="10dp"
+                    android:onClick="openProfileActivity"
                 />
 
                 <ImageView
@@ -52,6 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
+                    android:transitionName="postImage"
                 />
 
                 <RelativeLayout
