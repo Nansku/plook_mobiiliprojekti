@@ -111,6 +111,7 @@ public class PostActivity extends ParentActivity
         textView_caption.setText(post.getCaption());
         textView_description.setText(post.getDescription());
 
+        // Add tag buttons.
         for (String tag : post.getTags())
         {
             View child = getLayoutInflater().inflate(R.layout.layout_post_tag, content, false);
@@ -128,6 +129,7 @@ public class PostActivity extends ParentActivity
             });
         }
 
+        // Add image.
         Glide.with(context).load(post.getImageUrl()).into(imageView);
     }
 
@@ -231,6 +233,7 @@ public class PostActivity extends ParentActivity
     public void openProfileActivity(View v)
     {
         Intent intent = new Intent(context, ProfileActivity.class);
+        intent.putExtra("user_id", post.getUserID());
 
         startActivity(intent);
     }
