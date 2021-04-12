@@ -5,37 +5,37 @@
     android:layout_height="match_parent"
     android:theme="@style/CustomTheme">
 
-    <LinearLayout
-        android:id="@id/linear"
+    <include layout="@layout/appbar"
+        android:id="@+id/bar"/>
+    <!--<LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:id="@+id/bar"
+        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-
-        <include layout="@layout/appbar"/>
-    </LinearLayout>
-
+        app:layout_constraintTop_toTopOf="parent"/>-->
 
     <FrameLayout android:id="@+id/frame"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linear"
         app:layout_constraintBottom_toTopOf="@id/bio">
-
 
         <ImageView android:id="@+id/profilePic"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/user_icon" />
+            android:src="@drawable/user_icon"
+            android:contentDescription="profile picture" />
 
         <ImageView android:id="@+id/circle_crop"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/circle" />
+            android:src="@drawable/circle"
+            android:contentDescription="circle crop" />
     </FrameLayout>
 
     <RelativeLayout
@@ -90,9 +90,8 @@
                 android:text="edit profile"
                  />
         </RelativeLayout>
-
-
     </RelativeLayout>
+
     <GridView
         android:id="@+id/postGrid"
         android:layout_width="match_parent"
@@ -103,7 +102,9 @@
         app:layout_constraintTop_toBottomOf="@id/bio"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
-        android:background="@drawable/bio">
-
+        android:background="@drawable/bio"
+        android:numColumns="3">
     </GridView>
+
+    <!--<include layout="@layout/navigation_layout" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

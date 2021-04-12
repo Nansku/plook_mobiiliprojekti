@@ -148,7 +148,7 @@ public class PostActivity extends ParentActivity
         for (QueryDocumentSnapshot document : snapshot)
         {
             String displayName = names.get(document.getString("userID"));
-            Comment comment = new Comment(displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
+            Comment comment = new Comment(document.getString("userID"), displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
             allComments.add(comment);
         }
 
@@ -170,10 +170,15 @@ public class PostActivity extends ParentActivity
             TextView textView_commentText = child.findViewById(R.id.comment_text);
             TextView textView_timestamp = child.findViewById(R.id.comment_timestamp);
             //set texts
-            textView_username.setText(comment.getUserID());
+            textView_username.setText(comment.getUserName());
             textView_commentText.setText(comment.getText());
             textView_timestamp.setText(comment.getTimeDifference());
         }
+    }
+
+    private void removeComments()
+    {
+        content.removeAllViews();
     }
 
     public void writeComment(View v)
@@ -183,10 +188,13 @@ public class PostActivity extends ParentActivity
         Timestamp timeNow = Timestamp.now();
         String commentText = "Kello on: " + timeNow.toDate().toString();
 
-        Comment commentToAdd = dbWriter.addComment("HkiNfJx7Vaaok6L9wo6x34D3Ol03", commentText, post.getPostID());
+        Comment commentToAdd = dbWriter.addComment(auth.getUid(), commentText, post.getPostID());
+        commentToAdd.setUserName(auth.getCurrentUser().getDisplayName());
 
         //hmm does 'allComments' have to be global or do we remove the parameter from 'showComment'??
         allComments.add(commentToAdd);
+
+        removeComments();
         showComments(allComments);
     }
 

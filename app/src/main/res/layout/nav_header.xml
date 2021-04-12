@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="176dp"
+    android:background="@color/lighter_forest"
+    android:gravity="bottom"
+    android:padding="20dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <FrameLayout android:id="@+id/frame"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@color/white">
+
+        <ImageView android:id="@+id/profilePic"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/user_icon"
+            android:contentDescription="profile picture" />
+
+        <ImageView android:id="@+id/circle_crop"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/circle_lighter_forest"
+            android:contentDescription="circle crop" />
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:id="@+id/username"
+        android:text="Käyttäjä"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+</LinearLayout>

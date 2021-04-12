@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -250,7 +251,7 @@ public class FeedActivity extends ParentActivity
     {
         removePosts();
 
-        dbReader.findDocumentByID("user_contacts", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
@@ -272,5 +273,12 @@ public class FeedActivity extends ParentActivity
                 loadPosts();
             }
         });
+    }
+
+    public void openPersonal(View v)
+    {
+        Intent intent = new Intent(this, PersonalActivity.class);
+
+        startActivity(intent);
     }
 }
