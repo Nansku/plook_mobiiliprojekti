@@ -7,11 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +31,7 @@ public class FeedActivity extends ParentActivity
 
     // Database stuff
     private DatabaseReader dbReader;
+    private DatabaseWriter dbWriter;
     private Query query;
     private DocumentSnapshot lastVisible;
 
@@ -46,6 +50,7 @@ public class FeedActivity extends ParentActivity
         context = getApplicationContext();
 
         dbReader = new DatabaseReader();
+        dbWriter = new DatabaseWriter();
 
         allPosts = new ArrayList<>();
         userIDs = new ArrayList<>();
@@ -142,7 +147,7 @@ public class FeedActivity extends ParentActivity
         {
             QuerySnapshot postSnapshot = task.getResult();
 
-            //loop through userIDs and get a list of unique names
+            // Loop through userIDs and get a list of unique names
             for (DocumentSnapshot snapshot : postSnapshot.getDocuments())
             {
                 String userID = snapshot.getString("userID");
@@ -221,6 +226,8 @@ public class FeedActivity extends ParentActivity
 
         removePosts();
         loadPosts();
+        //auth.signOut();
+        dbWriter.updateUser("qzTMn9YNS4NKYCPF97Ks7dVOjyX2");
     }
 
     @Override
