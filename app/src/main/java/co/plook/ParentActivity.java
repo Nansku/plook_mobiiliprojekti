@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-//Parent class for all of the other activities to check if user is logged in on every onCreate()
+// Parent class for all of the other activities to check if user is logged in on every onCreate()
 public class ParentActivity extends AppCompatActivity
 {
     protected FirebaseAuth auth;
@@ -27,11 +27,11 @@ public class ParentActivity extends AppCompatActivity
         auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() == null)
         {
-            //send user to login page if not logged in
-            //startSplashScreenActivity();
+            // send user to login page if not logged in
+            // startSplashScreenActivity();
             intent = new Intent(this, MainActivity.class);
 
-            //comment out this line if you want to ignore login check
+            // comment out this line if you want to ignore login check
             startActivity(intent);
         }
     }
