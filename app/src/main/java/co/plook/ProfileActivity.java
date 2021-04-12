@@ -31,13 +31,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-import co.plook.fragments.ChannelsFragment;
-import co.plook.fragments.FeedFragment;
-import co.plook.fragments.ProfileFragment;
-import co.plook.fragments.SettingsFragment;
 
-
-public class ProfileActivity extends AppCompatActivity
+public class ProfileActivity extends ParentActivity
 {   private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
@@ -64,7 +59,7 @@ public class ProfileActivity extends AppCompatActivity
         gridView = findViewById(R.id.postGrid);
 
         // DRAWER MENU
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar = (Toolbar)findViewById(R.id.bar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
@@ -75,9 +70,16 @@ public class ProfileActivity extends AppCompatActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Get userID. If none was passed, use the current user's ID instead.
+        String userID = "";
+        Bundle extras = getIntent().getExtras();
+        if(extras != null)
+            userID = extras.getString("user_id");
+        else
+            userID = auth.getUid();
 
         // FIND PHOTOS FROM FIREBASE
-        Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(task ->
+        Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", userID).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
