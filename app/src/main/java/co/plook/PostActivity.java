@@ -43,7 +43,7 @@ public class PostActivity extends ParentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post);
+        getLayoutInflater().inflate(R.layout.activity_post, contentGroup);
 
         context = getApplicationContext();
 
