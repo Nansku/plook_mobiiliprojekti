@@ -36,7 +36,7 @@
 
         <activity android:name=".ConfirmationActivity" android:exported="true"/>
 
-        <activity android:name=".FeedActivity" android:exported="true" />
+        <activity android:name=".FeedBaseActivity" android:exported="true" />
       
         <activity android:name=".WelcomeActivity" android:exported="true" />
 

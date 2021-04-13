@@ -1,26 +1,17 @@
 package co.plook;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 
 
@@ -49,7 +40,7 @@ public class ProfileActivity extends ParentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
+        getLayoutInflater().inflate(R.layout.activity_feed_base, contentGroup);
 
         userPosts = new ArrayList<Post>();
 

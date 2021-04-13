@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity
         if (auth.getCurrentUser() != null)
         {
             //user is signed in
-            intent = new Intent(this, FeedActivity.class);
+            intent = new Intent(this, FeedBaseActivity.class);
         }
         else
         {

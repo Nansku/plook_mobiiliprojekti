@@ -224,7 +224,7 @@ public class PostActivity extends ParentActivity
 
     public void openFeedActivity(String query)
     {
-        Intent intent = new Intent(context, FeedActivity.class);
+        Intent intent = new Intent(context, FeedBaseActivity.class);
         intent.putExtra("query", query);
 
         startActivity(intent);

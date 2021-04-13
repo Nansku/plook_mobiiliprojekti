@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FeedActivity extends ParentActivity
+public class FeedBaseActivity extends ParentActivity
 {
     // Views & UI
     private Context context;
@@ -47,7 +46,7 @@ public class FeedActivity extends ParentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
+        getLayoutInflater().inflate(R.layout.activity_feed_base, contentGroup);
 
         context = getApplicationContext();
 
@@ -74,7 +73,7 @@ public class FeedActivity extends ParentActivity
         recyclerView = findViewById(R.id.feed_recycle);
 
         feedContentAdapter = new FeedContentAdapter(allPosts, context);
-        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID(), view.findViewById(R.id.post_image)));
+        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
 
         recyclerView.setAdapter(feedContentAdapter);
         recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
@@ -219,12 +218,10 @@ public class FeedActivity extends ParentActivity
         loadedAll = false;
     }
 
-    private void openPostActivity(String postID, ImageView img)
+    private void openPostActivity(String postID)
     {
         Intent intent = new Intent(this, PostActivity.class);
         intent.putExtra("post_id", postID);
-
-        //ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, img, "postImage");
 
         startActivity(intent);
     }
@@ -278,7 +275,7 @@ public class FeedActivity extends ParentActivity
 
     public void openPersonal(View v)
     {
-        Intent intent = new Intent(this, PersonalActivity.class);
+        Intent intent = new Intent(this, ChannelBrowseActivity.class);
 
         startActivity(intent);
     }
