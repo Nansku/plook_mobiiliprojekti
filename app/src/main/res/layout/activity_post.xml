@@ -24,29 +24,60 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/post_caption"
+                <!-- Post Image Header -->
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:layout_marginHorizontal="40dp"
-                    android:layout_marginVertical="10dp"
-                />
+                    android:background="@color/forest">
 
-                <TextView
-                    android:id="@+id/post_username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:layout_marginHorizontal="40dp"
-                    android:layout_marginBottom="10dp"
-                    android:onClick="openProfileActivity"
-                />
+                    <TextView
+                        android:id="@+id/post_caption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:layout_marginHorizontal="40dp"
+                        android:layout_marginVertical="10dp"
+                    />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/post_caption"
+                        android:orientation="horizontal"
+                        android:layout_marginHorizontal="40dp"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/post_username"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text=""
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:onClick="openProfileActivity"
+                        />
+
+                        <TextView
+                            android:id="@+id/post_channel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text=""
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"
+                            android:gravity="end"
+                            android:onClick="openChannelActivity"
+                            />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
 
                 <ImageView
                     android:id="@+id/image"
@@ -56,6 +87,7 @@
                     android:transitionName="postImage"
                 />
 
+                <!-- Post Image Footer -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -68,7 +100,16 @@
                         android:text=""
                         android:textColor="@color/white"
                         android:padding="10dp"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="40dp"
+                    />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@id/post_tags"
+                        android:text="Tags"
+                        android:textColor="@color/white"
+                        android:padding="10dp"
                     />
 
                     <LinearLayout
