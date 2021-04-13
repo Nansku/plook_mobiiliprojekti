@@ -12,6 +12,8 @@
         android:scaleType="centerCrop"
         android:padding="3dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/button"/>
+
+        android:src="@drawable/user_icon"/>
+
 
 </LinearLayout>

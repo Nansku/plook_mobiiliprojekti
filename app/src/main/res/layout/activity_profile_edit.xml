@@ -30,10 +30,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/frame"
         android:layout_marginTop="10dp">
-        <TextView
+        <EditText
+            android:id="@+id/editUsername"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Käyttäjänimi"
+            android:text="Käyttäjän nimi"
             android:textAlignment="center"
             android:textSize="@dimen/username"/>
     </LinearLayout>
@@ -50,8 +51,8 @@
         android:layout_below="@+id/username"
         android:background="@drawable/bio">
 
-        <TextView
-            android:id="@+id/bioTxt"
+        <EditText
+            android:id="@+id/editBio"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:text="BIO"
@@ -61,12 +62,11 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/bioTxt"
+            android:layout_below="@+id/editBio"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/country"
-
+            <EditText
+                android:id="@+id/editCountry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -75,6 +75,7 @@
                 android:layout_alignParentStart="true"
                 android:gravity="start" />
 
+
             <Button
                 android:id="@+id/editProfile"
                 android:layout_width="wrap_content"
@@ -82,8 +83,8 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
                 android:layout_alignParentEnd="true"
-                android:text="@string/edit_profile"
-                 />
+                android:text="@string/save"
+                />
         </RelativeLayout>
     </RelativeLayout>
 
@@ -99,7 +100,6 @@
         android:numColumns="3">
     </GridView>
 
-    <!--<include layout="@layout/navigation_layout" />-->
 
 </RelativeLayout>
 

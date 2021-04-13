@@ -27,7 +27,7 @@ public class PersonalActivity extends ParentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_personal);
+        getLayoutInflater().inflate(R.layout.activity_personal, contentGroup);
 
         dbReader = new DatabaseReader();
 
@@ -36,7 +36,7 @@ public class PersonalActivity extends ParentActivity
 
     private void loadChannels()
     {
-        // Followed channels
+        // Get followed channels
         dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
@@ -46,14 +46,24 @@ public class PersonalActivity extends ParentActivity
                 ViewGroup content = findViewById(R.id.personal_channels_followed);
 
                 List<String> group = (List<String>) document.get("followed_channels");
-                for (String str : group)
+                String[] arrayOfIDs = group.toArray(new String[0]);
+
+                // Get channel names
+                dbReader.findDocumentsWhereIn("channels", "__name__", arrayOfIDs).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
-                    populateChannelsList(str, content);
-                }
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        for (DocumentSnapshot document : task.getResult())
+                        {
+                            populateChannelsList(document.getId(), document.getString("name"), content);
+                        }
+                    }
+                });
             }
         });
 
-        // All channels
+        // Get all channels
         Query query = dbReader.db.collection("channels");
         dbReader.findDocuments(query).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
@@ -64,19 +74,19 @@ public class PersonalActivity extends ParentActivity
 
                 for (DocumentSnapshot document : task.getResult())
                 {
-                    populateChannelsList(document.getId(), content);
+                    populateChannelsList(document.getId(), document.getString("name"), content);
                 }
             }
         });
     }
 
-    private void populateChannelsList(String channelID, ViewGroup content)
+    private void populateChannelsList(String channelID, String channelName, ViewGroup content)
     {
         View child = getLayoutInflater().inflate(R.layout.layout_personal_button, content, false);
         content.addView(child);
 
         TextView name = child.findViewById(R.id.channel_name);
-        name.setText(channelID);
+        name.setText(channelName);
 
         onButtonClicked(child, channelID);
     }

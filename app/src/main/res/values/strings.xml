@@ -5,4 +5,12 @@
     <string name="create_account">Etkö omista tiliä? Rekisteröidy tästä.</string>
     <string name="log_in">Kirjaudu sisään</string>
     <string name="email">Email</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile_picture">profile picture</string>
+    <string name="circle_crop">circle crop</string>
+    <string name="edit_profile">edit profile</string>
+    <string name="save">save profile</string>
 </resources>

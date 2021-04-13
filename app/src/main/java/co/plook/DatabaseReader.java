@@ -23,7 +23,7 @@ public class DatabaseReader
     //private String userID;
 
 
-    public DatabaseReader() 
+    public DatabaseReader()
     {
         db = FirebaseFirestore.getInstance();
     }
@@ -40,6 +40,15 @@ public class DatabaseReader
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereArrayContainsAny(field, Arrays.asList(criteria));
+
+        return q.get().addOnCompleteListener(task -> { });
+    }
+
+    //find documents in collectionPath that have one of 'criteria' lists strings
+    public Task<QuerySnapshot> findDocumentsWhereIn(String collectionPath, String field, String[] criteria)
+    {
+        CollectionReference collRef = db.collection(collectionPath);
+        Query q = collRef.whereIn(field, Arrays.asList(criteria));
 
         return q.get().addOnCompleteListener(task -> { });
     }

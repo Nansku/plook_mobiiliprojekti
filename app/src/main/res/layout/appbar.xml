@@ -3,13 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="@color/forest"
-    android:id="@+id/toolbar"
-    android:theme="@style/CustomTheme">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+    android:theme="@style/CustomTheme"
+    android:fitsSystemWindows="true">
 
         <ImageView
             android:id="@+id/logo"
@@ -17,8 +12,8 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/logo"
             android:src="@drawable/logo"
-            android:layout_centerHorizontal="true"/>
-
-    </RelativeLayout>
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="10dp"/>
 
 </androidx.appcompat.widget.Toolbar>
