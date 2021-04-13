@@ -8,18 +8,6 @@
 
     <include layout="@layout/appbar"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_weight="1"
-        android:layout_margin="2dp"
-        android:text="Channels"
-        android:backgroundTint="@color/lighter_forest"
-        android:onClick="openChannelBrowse"
-        />
-
     <LinearLayout
         android:id="@+id/filters"
         android:layout_width="match_parent"
@@ -62,5 +50,61 @@
         android:paddingHorizontal="5dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:orientation="horizontal"
+            android:background="@color/forest">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Follow"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:clickable="true"
+                android:foreground="@drawable/card_ripple"
+            />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Something"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:clickable="true"
+                android:foreground="@drawable/card_ripple"
+            />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Make a Post"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:clickable="true"
+                android:foreground="@drawable/card_ripple"
+            />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

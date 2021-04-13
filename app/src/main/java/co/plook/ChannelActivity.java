@@ -47,11 +47,4 @@ public class ChannelActivity extends PostDisplayActivity
             }
         });
     }
-
-    public void openChannelBrowse(View v)
-    {
-        Intent intent = new Intent(this, ChannelBrowseActivity.class);
-
-        startActivity(intent);
-    }
 }
