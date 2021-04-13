@@ -1,6 +1,5 @@
 package co.plook;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,9 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -26,18 +22,18 @@ import java.util.Map;
 public class PostDisplayActivity extends ParentActivity
 {
     // Views & UI
-    private Context context;
-    private RecyclerView recyclerView;
+    protected Context context;
     private ArrayList<String> userIDs;
+    private RecyclerView recyclerView;
     private FeedContentAdapter feedContentAdapter;
 
     // Database stuff
-    private DatabaseReader dbReader;
+    protected DatabaseReader dbReader;
     private Query query;
     private DocumentSnapshot lastVisible;
 
     // Posts & loading
-    private ArrayList<Post> allPosts;
+    protected ArrayList<Post> allPosts;
     private final int postLoadAmount = 10;
     private boolean loading = false;
     private boolean loadedAll = false;
@@ -46,7 +42,6 @@ public class PostDisplayActivity extends ParentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
 
         context = getApplicationContext();
 
@@ -55,8 +50,6 @@ public class PostDisplayActivity extends ParentActivity
         allPosts = new ArrayList<>();
         userIDs = new ArrayList<>();
 
-        initializeRecyclerView();
-
         // Make a query based on the sent string (if one was sent, otherwise default to empty).
         Bundle extras = getIntent().getExtras();
         String queryString = "";
@@ -64,13 +57,11 @@ public class PostDisplayActivity extends ParentActivity
             queryString = extras.getString("query", "");
 
         makeQuery(queryString);
-
-        loadPosts();
     }
 
-    private void initializeRecyclerView()
+    protected void initializeRecyclerView(RecyclerView recyclerView)
     {
-        recyclerView = findViewById(R.id.feed_recycle);
+        this.recyclerView = recyclerView;
 
         feedContentAdapter = new FeedContentAdapter(allPosts, context);
         feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
@@ -109,7 +100,7 @@ public class PostDisplayActivity extends ParentActivity
 
     // Syntax: "field/criteria/sorting"
     // Example: "tags/red/time" "userID/insert userID here/time"
-    private void makeQuery(String queryString)
+    protected void makeQuery(String queryString)
     {
         if(queryString.equals(""))
             queryString = "all//time";
@@ -134,7 +125,7 @@ public class PostDisplayActivity extends ParentActivity
         query = query.limit(postLoadAmount);
     }
 
-    private void loadPosts()
+    protected void loadPosts()
     {
         loading = true;
 
@@ -207,7 +198,7 @@ public class PostDisplayActivity extends ParentActivity
             lastVisible = snapshot.getDocuments().get(snapshot.size() - 1);
     }
 
-    private void removePosts()
+    protected void removePosts()
     {
         recyclerView.removeAllViews();
         allPosts.clear();
@@ -240,43 +231,5 @@ public class PostDisplayActivity extends ParentActivity
         //block the user from going back to blank
         //maybe add a feed refresh function here?
         //super.onBackPressed();
-    }
-
-    public void getFollowedPosts(View v)
-    {
-        removePosts();
-
-        dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
-            {
-                QuerySnapshot snapshots = task.getResult();
-
-                DocumentSnapshot document = snapshots.getDocuments().get(0);
-
-                String queryString = "channel/";
-
-                List<String> group = (List<String>) document.get("followed_channels");
-                if (group != null)
-                {
-                    for (String str : group)
-                        queryString += str + ",";
-
-                    queryString += "/time";
-
-                    makeQuery(queryString);
-
-                    loadPosts();
-                }
-            }
-        });
-    }
-
-    public void openPersonal(View v)
-    {
-        Intent intent = new Intent(this, ChannelBrowseActivity.class);
-
-        startActivity(intent);
     }
 }
