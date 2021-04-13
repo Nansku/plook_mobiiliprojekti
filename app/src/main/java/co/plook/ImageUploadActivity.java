@@ -143,50 +143,40 @@ public class ImageUploadActivity extends ParentActivity
 
         Log.d("APP_DEBUG", String.valueOf(requestCode));
             //tarkistaa onko kuvaa valittu ja jos on niin ottaa
-            if(requestCode==1 && resultCode==RESULT_OK && data!= null && data.getData()!= null){
+            if (requestCode==1 && data!= null && data.getData()!= null) {
                 imageUri = data.getData();
 
+                // avaa croppauksen
                 CropImage.ActivityBuilder activity = CropImage.activity(imageUri);
                 activity.setGuidelines(CropImageView.Guidelines.ON);
                 activity.setAspectRatio(3, 4);
                 activity.start(this);
             }
+
+            // Jos request code == croppaa kuva
             else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                Log.d("APP_DEBUG",result.toString());
 
+                // jos result == ok
                 if (resultCode == RESULT_OK) {
+                    //Log.d("APP_DEBUG",result.toString());
                     imageUri = result.getUri();
                     Log.d("APP_DEBUG",imageUri.toString());
-                    profilePic.setImageURI(imageUri);
 
+                    // Lisätään cropattu kuva image viewiin
+                    profilePic.setImageURI(imageUri);
                 }
 
+                // Jos tulee error
                 else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                     Exception error = result.getError();
-
                 }
-        }
+            }
 
+            //jos ok niin laita otetettu kuva image viewiin
             else if (resultCode == RESULT_OK) {
-                //jos ok niin laita image viewiin
                 profilePic.setImageURI(imageUri);
             }
-        
-            /*Intent intent = new Intent(ImageUploadActivity.this, ImageEditActivity.class);
-            intent.putExtra("imageUri", imageUri);
-            startActivity(intent);
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setClass(ImageUploadActivity.this, ImageEditActivity.class);
-                intent.putExtra("imageUri", imageUri.toString());
-                startActivity(intent);
-
-            Bundle bundle = getIntent().getExtras();
-            if (bundle != null && bundle.containsKey("imageUri")) {
-                imageUri = Uri.parse(bundle.getString("resultUri"));*/
-
-
 
         Button uploadButton = (Button)findViewById(R.id.upload);
 
