@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
 
-        <activity android:name=".PersonalActivity" android:exported="true"/>
+        <activity android:name=".ChannelBrowseActivity" android:exported="true"/>
 
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"

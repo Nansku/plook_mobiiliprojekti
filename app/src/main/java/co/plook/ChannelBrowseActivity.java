@@ -18,7 +18,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
-public class PersonalActivity extends ParentActivity
+public class ChannelBrowseActivity extends ParentActivity
 {
     // Database stuff
     private DatabaseReader dbReader;
