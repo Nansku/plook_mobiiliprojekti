@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +27,14 @@ public class FeedActivity extends PostDisplayActivity
         loadPosts();
     }
 
+    public void getAllPosts(View v)
+    {
+        makeQuery("");
+
+        removePosts();
+        loadPosts();
+    }
+
     public void getFollowedPosts(View v)
     {
         removePosts();
@@ -35,18 +42,16 @@ public class FeedActivity extends PostDisplayActivity
         dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            public void onComplete(Task<QuerySnapshot> task)
             {
-                QuerySnapshot snapshots = task.getResult();
-
-                DocumentSnapshot document = snapshots.getDocuments().get(0);
+                DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
                 String queryString = "channel/";
 
-                List<String> group = (List<String>) document.get("followed_channels");
-                if (group != null)
+                List<String> channelIDs = (List<String>) document.get("followed_channels");
+                if (channelIDs != null)
                 {
-                    for (String str : group)
+                    for (String str : channelIDs)
                         queryString += str + ",";
 
                     queryString += "/time";

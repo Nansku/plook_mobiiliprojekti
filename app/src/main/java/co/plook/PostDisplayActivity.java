@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -33,7 +32,7 @@ public class PostDisplayActivity extends ParentActivity
     private DocumentSnapshot lastVisible;
 
     // Posts & loading
-    protected ArrayList<Post> allPosts;
+    private ArrayList<Post> allPosts;
     private final int postLoadAmount = 10;
     private boolean loading = false;
     private boolean loadedAll = false;
@@ -167,7 +166,7 @@ public class PostDisplayActivity extends ParentActivity
                 allPosts.remove(allPosts.size() - 1);
                 feedContentAdapter.notifyItemRemoved(allPosts.size());
 
-                createPosts(usernamePairs, postSnapshot);
+                makePosts(usernamePairs, postSnapshot);
 
                 loading = false;
 
@@ -177,7 +176,7 @@ public class PostDisplayActivity extends ParentActivity
         });
     }
 
-    private void createPosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
+    private void makePosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
     {
         for (QueryDocumentSnapshot document : snapshot)
         {
@@ -215,14 +214,6 @@ public class PostDisplayActivity extends ParentActivity
         intent.putExtra("post_id", postID);
 
         startActivity(intent);
-    }
-
-    public void getAllPosts(View v)
-    {
-        makeQuery("");
-
-        removePosts();
-        loadPosts();
     }
 
     @Override

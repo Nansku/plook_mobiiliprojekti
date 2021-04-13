@@ -13,8 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
-        <activity android:name=".FeedActivity"
-            android:exported="true"/>
+        <activity android:name=".ChannelActivity"></activity>
+        <activity
+            android:name=".FeedActivity"
+            android:exported="true" />
         <activity
             android:name=".ChannelBrowseActivity"
             android:exported="true" />

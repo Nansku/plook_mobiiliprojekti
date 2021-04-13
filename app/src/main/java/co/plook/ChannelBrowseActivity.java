@@ -107,7 +107,7 @@ public class ChannelBrowseActivity extends ParentActivity
 
     void openFeedActivity(String query)
     {
-        Intent intent = new Intent(this, PostDisplayActivity.class);
+        Intent intent = new Intent(this, ChannelActivity.class);
         intent.putExtra("query", query);
 
         startActivity(intent);
