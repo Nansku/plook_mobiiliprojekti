@@ -27,16 +27,18 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:orientation="horizontal"
         android:background="@color/forest"
-        android:padding="15dp">
+        android:paddingHorizontal="15dp">
 
         <TextView
+            android:id="@+id/channel_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="CHANNEL NAME"
+            android:text=""
             android:textColor="@color/white"
             android:textStyle="bold"
             android:gravity="center_vertical"
+            android:textAllCaps="true"
         />
 
         <TextView

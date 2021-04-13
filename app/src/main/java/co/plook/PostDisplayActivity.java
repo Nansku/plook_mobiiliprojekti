@@ -32,6 +32,7 @@ public class PostDisplayActivity extends ParentActivity
     private DocumentSnapshot lastVisible;
 
     // Posts & loading
+    protected Bundle extras;
     private ArrayList<Post> allPosts;
     private final int postLoadAmount = 10;
     private boolean loading = false;
@@ -49,52 +50,14 @@ public class PostDisplayActivity extends ParentActivity
         allPosts = new ArrayList<>();
         userIDs = new ArrayList<>();
 
+        extras = getIntent().getExtras();
+
         // Make a query based on the sent string (if one was sent, otherwise default to empty).
-        Bundle extras = getIntent().getExtras();
         String queryString = "";
         if(extras != null)
             queryString = extras.getString("query", "");
 
         makeQuery(queryString);
-    }
-
-    protected void initializeRecyclerView(RecyclerView recyclerView)
-    {
-        this.recyclerView = recyclerView;
-
-        feedContentAdapter = new FeedContentAdapter(allPosts, context);
-        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
-
-        recyclerView.setAdapter(feedContentAdapter);
-        recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
-
-        recyclerScrollListener();
-    }
-
-    private void recyclerScrollListener()
-    {
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-        {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-            {
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-                if (dy > 0)
-                {
-                    assert layoutManager != null;
-                    int visibleItemCount = layoutManager.getChildCount();
-                    int totalItemCount = layoutManager.getItemCount();
-                    int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
-
-                    if (!loading && !loadedAll)
-                    {
-                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2)
-                            loadPosts();
-                    }
-                }
-            }
-        });
     }
 
     // Syntax: "field/criteria/sorting"
@@ -206,6 +169,45 @@ public class PostDisplayActivity extends ParentActivity
 
         lastVisible = null;
         loadedAll = false;
+    }
+
+    protected void initializeRecyclerView(RecyclerView recyclerView)
+    {
+        this.recyclerView = recyclerView;
+
+        feedContentAdapter = new FeedContentAdapter(allPosts, context);
+        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
+
+        recyclerView.setAdapter(feedContentAdapter);
+        recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
+
+        recyclerScrollListener();
+    }
+
+    private void recyclerScrollListener()
+    {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                if (dy > 0)
+                {
+                    assert layoutManager != null;
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if (!loading && !loadedAll)
+                    {
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2)
+                            loadPosts();
+                    }
+                }
+            }
+        });
     }
 
     private void openPostActivity(String postID)

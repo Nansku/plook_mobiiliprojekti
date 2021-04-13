@@ -100,15 +100,17 @@ public class ChannelBrowseActivity extends ParentActivity
             @Override
             public void onClick(View v)
             {
-                openFeedActivity("channel/" + channelID + "/time");
+                openFeedActivity(channelID);
             }
         });
     }
 
-    void openFeedActivity(String query)
+    void openFeedActivity(String channelID)
     {
         Intent intent = new Intent(this, ChannelActivity.class);
-        intent.putExtra("query", query);
+
+        intent.putExtra("query", "channel/" + channelID + "/time");
+        intent.putExtra("channel_id", channelID);
 
         startActivity(intent);
     }
