@@ -20,25 +20,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-import co.plook.fragments.ChannelsFragment;
-import co.plook.fragments.FeedFragment;
-import co.plook.fragments.ProfileFragment;
-import co.plook.fragments.SettingsFragment;
-
-
 public class ProfileActivity extends ParentActivity
 {
+
     private DatabaseReader dbReader;
     private ArrayList<Post> userPosts;
     GridAdapter gridAdapter;
@@ -59,7 +56,7 @@ public class ProfileActivity extends ParentActivity
         gridView = findViewById(R.id.postGrid);
 
         // FIND PHOTOS FROM FIREBASE
-        Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", "HkiNfJx7Vaaok6L9wo6x34D3Ol03").addOnCompleteListener(task ->
+        Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", "pztOy8uA63XqayPmUnDHBpbaETA3").addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
@@ -81,6 +78,16 @@ public class ProfileActivity extends ParentActivity
             gridView.setAdapter(gridAdapter);
 
             gridAdapter.notifyDataSetChanged();
+
+            Button button = findViewById(R.id.editProfile);
+            button.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class );
+                    startActivity(intent);
+                }
+            });
         });
 
         // ON ITEM LISTENER FOR GRID VIEW
@@ -101,5 +108,7 @@ public class ProfileActivity extends ParentActivity
         intent.putExtra("post_id", postID);
         startActivity(intent);
     }
+
+
 }
 
