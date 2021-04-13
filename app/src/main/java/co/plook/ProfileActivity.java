@@ -40,7 +40,7 @@ public class ProfileActivity extends ParentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        getLayoutInflater().inflate(R.layout.activity_feed_base, contentGroup);
+        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
 
         userPosts = new ArrayList<Post>();
 

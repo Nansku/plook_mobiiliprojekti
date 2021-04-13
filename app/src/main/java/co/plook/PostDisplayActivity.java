@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FeedBaseActivity extends ParentActivity
+public class PostDisplayActivity extends ParentActivity
 {
     // Views & UI
     private Context context;
@@ -46,7 +46,7 @@ public class FeedBaseActivity extends ParentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.activity_feed_base, contentGroup);
+        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
 
         context = getApplicationContext();
 
