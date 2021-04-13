@@ -1,9 +1,7 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +25,7 @@ public class ChannelBrowseActivity extends ParentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.activity_personal, contentGroup);
+        getLayoutInflater().inflate(R.layout.activity_channel_browse, contentGroup);
 
         dbReader = new DatabaseReader();
 
