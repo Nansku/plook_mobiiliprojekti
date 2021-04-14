@@ -1,10 +1,10 @@
 package co.plook;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
-
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,30 +12,41 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 
-
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ProfileActivity extends ParentActivity
-{   private DrawerLayout drawerLayout;
+{
+    private Context context;
+
+    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
-    private NavigationView navigationView;
+    private Button followButton;
 
-    private DatabaseReader dbReader;
-    private ArrayList<Post> userPosts;
-    private Context context;
+    private NavigationView navigationView;
     private ViewGroup content;
     private ViewGroup contentRight;
-    GridAdapter gridAdapter;
-    GridView gridView;
+    private GridAdapter gridAdapter;
+    private GridView gridView;
+
+    private DatabaseReader dbReader;
+    private DatabaseWriter dbWriter;
+
+    private ArrayList<Post> userPosts;
+    private String userID;
+
+    private boolean isFollowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,6 +56,7 @@ public class ProfileActivity extends ParentActivity
         userPosts = new ArrayList<Post>();
 
         dbReader = new DatabaseReader();
+        dbWriter = new DatabaseWriter();
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
         gridView = findViewById(R.id.postGrid);
@@ -54,6 +66,8 @@ public class ProfileActivity extends ParentActivity
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
+        followButton = findViewById(R.id.followButton);
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
@@ -62,15 +76,19 @@ public class ProfileActivity extends ParentActivity
         toggle.syncState();
 
         // Get userID. If none was passed, use the current user's ID instead.
-        String userID = "";
         Bundle extras = getIntent().getExtras();
         if(extras != null)
             userID = extras.getString("user_id");
         else
             userID = auth.getUid();
 
+        if (userID.equals(auth.getUid()))
+            followButton.setVisibility(View.GONE);
+        else
+            checkIfFollowing();
+
         // FIND PHOTOS FROM FIREBASE
-        Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", userID).addOnCompleteListener(task ->
+        Task<QuerySnapshot> postTask = dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
@@ -105,6 +123,31 @@ public class ProfileActivity extends ParentActivity
         });
     }
 
+    private void checkIfFollowing()
+    {
+        dbReader.findDocumentByID("user_contacts", userID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                List<String> followerList = (List<String>)task.getResult().getDocuments().get(0).get("followers");
+                if (followerList == null)
+                    isFollowing = false;
+                else
+                    isFollowing = followerList.contains(auth.getUid());
+
+                followButton.setEnabled(true);
+                updateFollowButton();
+            }
+        });
+    }
+
+    private void updateFollowButton()
+    {
+        String buttonString = isFollowing ? "Unfollow" : "Follow";
+        followButton.setText(buttonString);
+    }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -121,5 +164,12 @@ public class ProfileActivity extends ParentActivity
         startActivity(intent);
     }
 
+    public void followUser(View v)
+    {
+        // auth.getUid() == MINUN ID
+        dbWriter.updateUserFollows(userID, "followers", auth.getUid(), isFollowing);
+        isFollowing = !isFollowing;
+        updateFollowButton();
+    }
 }
 
