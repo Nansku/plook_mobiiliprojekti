@@ -16,16 +16,18 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
-public class PersonalActivity extends ParentActivity
+public class ChannelBrowseActivity extends ParentActivity
 {
     // Database stuff
     private DatabaseReader dbReader;
+
+    private List<String> followed_channels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.activity_personal, contentGroup);
+        getLayoutInflater().inflate(R.layout.activity_channel_browse, contentGroup);
 
         dbReader = new DatabaseReader();
 
@@ -43,15 +45,18 @@ public class PersonalActivity extends ParentActivity
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
                 ViewGroup content = findViewById(R.id.personal_channels_followed);
 
-                List<String> group = (List<String>) document.get("followed_channels");
+                followed_channels = (List<String>) document.get("followed_channels");
 
-                if(group == null)
+                if (followed_channels == null)
                     return;
 
-                String[] arrayOfIDs = group.toArray(new String[0]);
+                String[] channelIDs = followed_channels.toArray(new String[0]);
+
+                if (channelIDs.length <= 0)
+                    return;
 
                 // Get channel names
-                dbReader.findDocumentsWhereIn("channels", "__name__", arrayOfIDs).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                dbReader.findDocumentsWhereIn("channels", "__name__", channelIDs).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
@@ -62,22 +67,26 @@ public class PersonalActivity extends ParentActivity
                         }
                     }
                 });
-            }
-        });
 
-        // Get all channels
-        Query query = dbReader.db.collection("channels");
-        dbReader.findDocuments(query).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
-            {
-                ViewGroup content = findViewById(R.id.personal_channels_all);
-
-                for (DocumentSnapshot document : task.getResult())
+                // Get all channels
+                Query query = dbReader.db.collection("channels");
+                dbReader.findDocuments(query).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
-                    populateChannelsList(document.getId(), document.getString("name"), content);
-                }
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        if (followed_channels == null)
+                            return;
+
+                        ViewGroup content = findViewById(R.id.personal_channels_all);
+
+                        for (DocumentSnapshot document : task.getResult())
+                        {
+                            if (!followed_channels.contains(document.getId()))
+                                populateChannelsList(document.getId(), document.getString("name"), content);
+                        }
+                    }
+                });
             }
         });
     }
@@ -100,15 +109,17 @@ public class PersonalActivity extends ParentActivity
             @Override
             public void onClick(View v)
             {
-                openFeedActivity("channel/" + channelID + "/time");
+                openFeedActivity(channelID);
             }
         });
     }
 
-    void openFeedActivity(String query)
+    void openFeedActivity(String channelID)
     {
-        Intent intent = new Intent(this, FeedActivity.class);
-        intent.putExtra("query", query);
+        Intent intent = new Intent(this, ChannelActivity.class);
+
+        intent.putExtra("query", "channel/" + channelID + "/time");
+        intent.putExtra("channel_id", channelID);
 
         startActivity(intent);
     }

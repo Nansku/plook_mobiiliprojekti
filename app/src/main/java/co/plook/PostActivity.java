@@ -78,7 +78,18 @@ public class PostActivity extends ParentActivity
                         TextView textView_username = findViewById(R.id.post_username);
                         textView_username.setText(username);
 
-                        displayPostDetails(post);
+                        dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                        {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task)
+                            {
+                                String channelName = task.getResult().getDocuments().get(0).getString("name");
+                                TextView textView_channel = findViewById(R.id.post_channel);
+                                textView_channel.setText(channelName);
+
+                                displayPostDetails(post);
+                            }
+                        });
                     }
                 });
             }
@@ -93,6 +104,7 @@ public class PostActivity extends ParentActivity
 
         post.setPostID(document.getId());
         post.setUserID(document.getString("userID"));
+        post.setChannelID(document.getString("channel"));
         post.setCaption(document.getString("caption"));
         post.setDescription(document.getString("description"));
         post.setImageUrl(document.getString("url"));
@@ -234,6 +246,16 @@ public class PostActivity extends ParentActivity
     {
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra("user_id", post.getUserID());
+
+        startActivity(intent);
+    }
+
+    public void openChannelActivity(View v)
+    {
+        Intent intent = new Intent(this, ChannelActivity.class);
+
+        intent.putExtra("query", "channel/" + post.getChannelID() + "/time");
+        intent.putExtra("channel_id", post.getChannelID());
 
         startActivity(intent);
     }
