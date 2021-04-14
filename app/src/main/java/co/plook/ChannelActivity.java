@@ -1,5 +1,6 @@
 package co.plook;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -16,6 +17,11 @@ import java.util.List;
 
 public class ChannelActivity extends PostDisplayActivity
 {
+    private DatabaseWriter dbWriter;
+
+    private String channelID;
+    private boolean isFollowing;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -25,6 +31,8 @@ public class ChannelActivity extends PostDisplayActivity
 
         getLayoutInflater().inflate(R.layout.activity_channel, contentGroup);
 
+        dbWriter = new DatabaseWriter();
+
         RecyclerView recyclerView = findViewById(R.id.channel_recycle);
         initializeRecyclerView(recyclerView);
 
@@ -33,7 +41,7 @@ public class ChannelActivity extends PostDisplayActivity
 
     private void getChannelData()
     {
-        String channelID = extras.getString("channel_id", "");
+        channelID = extras.getString("channel_id", "");
 
         dbReader.findDocumentByID("channels", channelID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
@@ -44,7 +52,31 @@ public class ChannelActivity extends PostDisplayActivity
 
                 TextView textView_channelName = findViewById(R.id.channel_name);
                 textView_channelName.setText(document.getString("name"));
+
+                List<String> followerIDs = (List<String>) document.get("followers");
+                int count = followerIDs == null ? 0 : followerIDs.size();
+
+                TextView textView_channelFollowers = findViewById(R.id.channel_follower_count);
+                textView_channelFollowers.setText(count + " FOLLOWERS");
             }
         });
+
+        dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                DocumentSnapshot document = task.getResult().getDocuments().get(0);
+
+                List<String> followedChannels = (List<String>) document.get("followed_channels");
+                isFollowing = followedChannels.contains(channelID);
+            }
+        });
+    }
+
+    public void toggleFollow(View v)
+    {
+        dbWriter.updateUserContacts(auth.getUid(), "followed_channels", channelID, isFollowing);
+        isFollowing = !isFollowing;
     }
 }
