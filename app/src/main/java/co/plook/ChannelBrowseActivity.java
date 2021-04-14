@@ -21,6 +21,8 @@ public class ChannelBrowseActivity extends ParentActivity
     // Database stuff
     private DatabaseReader dbReader;
 
+    private List<String> followed_channels;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -43,15 +45,18 @@ public class ChannelBrowseActivity extends ParentActivity
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
                 ViewGroup content = findViewById(R.id.personal_channels_followed);
 
-                List<String> group = (List<String>) document.get("followed_channels");
+                followed_channels = (List<String>) document.get("followed_channels");
 
-                if(group == null)
+                if (followed_channels == null)
                     return;
 
-                String[] arrayOfIDs = group.toArray(new String[0]);
+                String[] channelIDs = followed_channels.toArray(new String[0]);
+
+                if (channelIDs.length <= 0)
+                    return;
 
                 // Get channel names
-                dbReader.findDocumentsWhereIn("channels", "__name__", arrayOfIDs).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                dbReader.findDocumentsWhereIn("channels", "__name__", channelIDs).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
@@ -62,22 +67,26 @@ public class ChannelBrowseActivity extends ParentActivity
                         }
                     }
                 });
-            }
-        });
 
-        // Get all channels
-        Query query = dbReader.db.collection("channels");
-        dbReader.findDocuments(query).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
-            {
-                ViewGroup content = findViewById(R.id.personal_channels_all);
-
-                for (DocumentSnapshot document : task.getResult())
+                // Get all channels
+                Query query = dbReader.db.collection("channels");
+                dbReader.findDocuments(query).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
-                    populateChannelsList(document.getId(), document.getString("name"), content);
-                }
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        if (followed_channels == null)
+                            return;
+
+                        ViewGroup content = findViewById(R.id.personal_channels_all);
+
+                        for (DocumentSnapshot document : task.getResult())
+                        {
+                            if (!followed_channels.contains(document.getId()))
+                                populateChannelsList(document.getId(), document.getString("name"), content);
+                        }
+                    }
+                });
             }
         });
     }
