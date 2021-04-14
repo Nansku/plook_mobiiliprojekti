@@ -89,7 +89,7 @@ public class DatabaseWriter
         });
     }
 
-    public void updateUserFollows(String userID, String field, String followID, boolean remove)
+    public void updateUserContacts(String userID, String field, String followID, boolean remove)
     {
         FieldValue fieldValue = remove ? FieldValue.arrayRemove(followID) : FieldValue.arrayUnion(followID);
         db.collection("user_contacts")
@@ -104,23 +104,7 @@ public class DatabaseWriter
                 });
     }
 
-    public void removeFollower(String userID)
-    {
-        //Map<String, Object> updates = new HashMap<>();
-        //updates.put("followers", FieldValue.arrayRemove(auth.getUid()));
-        System.out.println("MINUN OMA UID: " + auth.getUid());
-        db.collection("user_contacts")
-                .document(userID)
-                .update("followers", FieldValue.arrayRemove(auth.getUid()))
-                .addOnCompleteListener(new OnCompleteListener<Void>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
-                    {
 
-                    }
-                });
-    }
 
     public Comment addComment(String userID, String text, String postID)
     {
