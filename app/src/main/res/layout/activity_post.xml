@@ -40,19 +40,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/post_caption"
-                    android:orientation="horizontal"
-                    android:layout_marginHorizontal="40dp"
-                    android:layout_marginBottom="10dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/post_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:paddingStart="40dp"
+                        android:paddingVertical="7dp"
                         android:text=""
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:onClick="openProfileActivity"
+                        android:background="@drawable/card_ripple"
                     />
 
                     <TextView
@@ -60,6 +61,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:paddingEnd="40dp"
+                        android:paddingVertical="7dp"
                         android:text=""
                         android:textColor="@color/white"
                         android:textSize="14sp"
@@ -67,6 +70,7 @@
                         android:textAllCaps="true"
                         android:gravity="end"
                         android:onClick="openChannelActivity"
+                        android:background="@drawable/card_ripple"
                         />
 
                 </LinearLayout>

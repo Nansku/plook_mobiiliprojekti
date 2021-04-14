@@ -167,7 +167,7 @@ public class ProfileActivity extends ParentActivity
     public void followUser(View v)
     {
         // auth.getUid() == MINUN ID
-        dbWriter.updateUserFollows(userID, "followers", auth.getUid(), isFollowing);
+        dbWriter.updateUserContacts(auth.getUid(), "followers", userID, isFollowing);
         isFollowing = !isFollowing;
         updateFollowButton();
     }
