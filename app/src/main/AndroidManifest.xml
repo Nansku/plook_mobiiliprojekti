@@ -23,9 +23,10 @@
             android:theme="@style/Base.Theme.AppCompat" />
 
         <activity
-            android:name=".ImageUploadActivity"
-            android:exported="true" />
+            android:name=".ImageUploadActivity" android:exported="true" />
 
+        <activity
+            android:name=".UploadPostActivity" android:exported="true" />
         <activity android:name=".PostActivity" />
       
         <activity android:name=".ProfileActivity" android:exported="true" />

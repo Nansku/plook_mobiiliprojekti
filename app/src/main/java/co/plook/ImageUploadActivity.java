@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,12 +46,15 @@ import static java.security.AccessController.*;
 public class ImageUploadActivity extends ParentActivity
 {
     private ImageView profilePic;
-    public static Uri imageUri;
+    private Uri imageUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Button mCaptureBtn;
+    Button uploadButton;
+    Button chooseImgButton;
+    RelativeLayout relativeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -59,12 +63,18 @@ public class ImageUploadActivity extends ParentActivity
         setContentView(R.layout.activity_image_upload);
         profilePic = findViewById(R.id.profilePic);
         mCaptureBtn = findViewById(R.id.capture_image_btn);
-        Button uploadButton = (Button) findViewById(R.id.upload);
+        uploadButton = (Button) findViewById(R.id.upload);
+        chooseImgButton = (Button) findViewById(R.id.choose_image_btn);
+        relativeLayout = (RelativeLayout) findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
+        profilePic.setVisibility(GONE);
+        relativeLayout.setVisibility(INVISIBLE);
         uploadButton.setVisibility(INVISIBLE);
-        profilePic.setOnClickListener(new OnClickListener() {
+
+
+        chooseImgButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 choosePicture();
@@ -165,6 +175,9 @@ public class ImageUploadActivity extends ParentActivity
 
                     // Lisätään cropattu kuva image viewiin
                     profilePic.setImageURI(imageUri);
+                    uploadButton.setVisibility(View.VISIBLE);
+                    relativeLayout.setVisibility(View.VISIBLE);
+                    profilePic.setVisibility(View.VISIBLE);
                 }
 
                 // Jos tulee error
@@ -178,13 +191,11 @@ public class ImageUploadActivity extends ParentActivity
                 profilePic.setImageURI(imageUri);
             }
 
-        Button uploadButton = (Button)findViewById(R.id.upload);
-
-        uploadButton.setVisibility(View.VISIBLE);
 
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 uploadPicture(imageUri);
             }
         });
@@ -219,9 +230,8 @@ public class ImageUploadActivity extends ParentActivity
                     Uri downloadUri = task.getResult();
                 }
             }
-        })
-
-                ;
+        });
+        }
                 /*.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
@@ -247,6 +257,6 @@ public class ImageUploadActivity extends ParentActivity
                     }
                 });*/
 
-    }
+
 }
 
