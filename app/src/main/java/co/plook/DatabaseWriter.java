@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class DatabaseWriter
         addToCollectionWithName("users", user, userID);
     }
 
-    public boolean addPost(String userID, String caption, String channel, String description, String[] tags, String url)
+    public boolean addPost(String userID, String caption, String channel, String description, ArrayList<String> tags, String url)
     {
         //First upload the picture to storage and return the imageurl
         //Then add a post document
