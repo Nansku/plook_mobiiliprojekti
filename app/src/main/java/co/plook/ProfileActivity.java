@@ -47,8 +47,7 @@ public class ProfileActivity extends ParentActivity
     private ArrayList<Post> userPosts;
     private String userID;
     private boolean isFollowing = false;
-    GridAdapter gridAdapter;
-    GridView gridView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,14 +59,7 @@ public class ProfileActivity extends ParentActivity
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
         gridView = findViewById(R.id.postGrid);
 
-        // DRAWER MENU
-        toolbar = (Toolbar)findViewById(R.id.bar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-
         followButton = findViewById(R.id.followButton);
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);

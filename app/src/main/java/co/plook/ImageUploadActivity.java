@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -214,6 +215,8 @@ public class ImageUploadActivity extends ParentActivity {
     private void uploadPicture(Uri uri) {
         final String randomKey = UUID.randomUUID().toString();
         StorageReference riversRef = storageReference.child("images/" + randomKey);
+
+
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
         postTags = findViewById(R.id.post_tags);
@@ -241,9 +244,9 @@ public class ImageUploadActivity extends ParentActivity {
                     //TÄÄLLÄ on download token joka menee database kirjoittajaan jotenkin näin
                     //dbWriter.addPost("Caption", "Description", downloadUri.toString());
                     Uri downloadUri = task.getResult();
-
+                    String userID = auth.getUid();
                     dbWriter = new DatabaseWriter();
-                    boolean createTask = dbWriter.addPost("pztOy8uA63XqayPmUnDHBpbaETA3", caption, "DFDRLQyFsu2Fgzji3kHo", description, tags, downloadUri.toString());
+                    dbWriter.addPost(userID, caption,"OIgwEfHvG29j6UIMvy7N", description, tags, downloadUri.toString());
                 }
             }
         });
