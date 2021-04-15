@@ -16,7 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
-//Parent class for all of the other activities to check if user is logged in on every onCreate()
+// Parent class for all of the other activities to check if user is logged in on every onCreate()
 public class ParentActivity extends AppCompatActivity
 {
     private DrawerLayout drawerLayout;
@@ -52,12 +52,12 @@ public class ParentActivity extends AppCompatActivity
         auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() == null)
         {
-            //send user to login page if not logged in
-            //startSplashScreenActivity();
+            // send user to login page if not logged in
+            // startSplashScreenActivity();
             intent = new Intent(this, MainActivity.class);
 
-            //comment out this line if you want to ignore login check
-            //startActivity(intent);
+            // comment out this line if you want to ignore login check
+            startActivity(intent);
         }
     }
 
