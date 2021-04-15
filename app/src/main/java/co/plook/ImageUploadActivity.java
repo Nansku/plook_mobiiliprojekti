@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -55,6 +56,9 @@ public class ImageUploadActivity extends ParentActivity
     Button uploadButton;
     Button chooseImgButton;
     RelativeLayout relativeLayout;
+    EditText postCaption ;
+    EditText postDescription;
+    EditText postTags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -108,14 +112,16 @@ public class ImageUploadActivity extends ParentActivity
         });
     }
 
+
+    // Choose picture from gallery
     private void choosePicture() {
-        //aukasee gallerian
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, 1);
     }
 
+    // Take picture with camera
     private void openCamera() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
@@ -127,6 +133,7 @@ public class ImageUploadActivity extends ParentActivity
         startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE);
     }
 
+    // Ask for permissions
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         //tätä kutsutaan kun käyttäjä painaa allowia tai deny nappulaa pop upista
@@ -146,6 +153,7 @@ public class ImageUploadActivity extends ParentActivity
             }
         }
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -188,22 +196,23 @@ public class ImageUploadActivity extends ParentActivity
 
             //jos ok niin laita otetettu kuva image viewiin
             else if (resultCode == RESULT_OK) {
-                profilePic.setImageURI(imageUri);
+                //profilePic.setImageURI(imageUri);
+                CropImage.ActivityBuilder activity = CropImage.activity(imageUri);
+                activity.setGuidelines(CropImageView.Guidelines.ON);
+                activity.setAspectRatio(4, 5);
+                activity.start(this);
             }
-
 
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 uploadPicture(imageUri);
             }
         });
-
     }
 
+    // Function to upload chosen picture to Firebase
     private void uploadPicture(Uri uri) {
-
         final String randomKey = UUID.randomUUID().toString();
         StorageReference riversRef = storageReference.child("images/" + randomKey);
 
@@ -231,31 +240,11 @@ public class ImageUploadActivity extends ParentActivity
                 }
             }
         });
-        }
-                /*.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
-                    {
-                        Snackbar.make(findViewById(android.R.id.content), "Kuva ladattu", Snackbar.LENGTH_LONG).show();
-                        //System.out.println("UPLOAD SESSION URI: " + taskSnapshot.getUploadSessionUri());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener()
-                {
-                    @Override
-                    public void onFailure(@NonNull Exception e)
-                    {
-                        Toast.makeText(getApplicationContext(), "Lataus epäonnistui", Toast.LENGTH_LONG).show();
-                    }
-                })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>()
-                {
-                    @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot)
-                    {
+    }
 
-                    }
-                });*/
+
+
+
 
 
 }

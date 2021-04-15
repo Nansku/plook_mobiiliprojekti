@@ -34,7 +34,7 @@
             android:src="@drawable/ic_baseline_image_24"-->
 
             <Button
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:id="@+id/capture_image_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="100dp"
-                android:text="upload"
+                android:text="Post"
                 android:layout_marginTop="50dp"
                 android:layout_below="@+id/post_tags"
                 android:layout_centerHorizontal="true"/>
