@@ -13,10 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -39,22 +41,19 @@ public class ProfileActivity extends ParentActivity
     private ViewGroup contentRight;
     private GridAdapter gridAdapter;
     private GridView gridView;
-
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
 
     private ArrayList<Post> userPosts;
     private String userID;
-
     private boolean isFollowing = false;
+    GridAdapter gridAdapter;
+    GridView gridView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
-
         userPosts = new ArrayList<Post>();
-
         dbReader = new DatabaseReader();
         dbWriter = new DatabaseWriter();
         super.onCreate(savedInstanceState);
@@ -70,10 +69,8 @@ public class ProfileActivity extends ParentActivity
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close) ;
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        // INFLATER FOR NAV
+        getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
 
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();
@@ -86,6 +83,9 @@ public class ProfileActivity extends ParentActivity
             followButton.setVisibility(View.GONE);
         else
             checkIfFollowing();
+            
+        // GRIDVIEW
+        gridView = findViewById(R.id.postGrid);
 
         // FIND PHOTOS FROM FIREBASE
         Task<QuerySnapshot> postTask = dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
@@ -110,6 +110,16 @@ public class ProfileActivity extends ParentActivity
             gridView.setAdapter(gridAdapter);
 
             gridAdapter.notifyDataSetChanged();
+
+            Button button = findViewById(R.id.editProfile);
+            button.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class );
+                    startActivity(intent);
+                }
+            });
         });
 
         // ON ITEM LISTENER FOR GRID VIEW
@@ -157,6 +167,7 @@ public class ProfileActivity extends ParentActivity
         }
     }
 
+    // OPEN SINGLE POST IN PostActivity
     private void openPostActivity(String postID) {
 
         Intent intent = new Intent(ProfileActivity.this, PostActivity.class);
