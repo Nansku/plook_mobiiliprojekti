@@ -19,6 +19,7 @@
             android:src="@drawable/ic_launcher_background"
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
+            android:transitionName="postImage"
         />
 
         <RelativeLayout

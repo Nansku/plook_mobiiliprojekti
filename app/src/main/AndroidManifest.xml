@@ -2,10 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="co.plook">
 
-
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 
     <application
@@ -15,35 +14,46 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
-
-        <activity android:name=".PersonalActivity" android:exported="true"/>
-
+        <activity android:name=".ChannelActivity"></activity>
+        <activity
+            android:name=".FeedActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ChannelBrowseActivity"
+            android:exported="true" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-
         <activity
+
             android:name=".ImageUploadActivity" android:exported="true" />
 
         <activity
             android:name=".UploadPostActivity" android:exported="true" />
+
         <activity android:name=".PostActivity" />
       
-        <activity android:name=".ProfileActivity" android:exported="true" />
-
-        <activity android:name=".ProfileEditActivity" android:exported="true" />
-
-        <activity android:name=".LoginActivity" android:exported="true"/>
-
-        <activity android:name=".SignupActivity" android:exported="true" />
-
-        <activity android:name=".ConfirmationActivity" android:exported="true"/>
-
-        <activity android:name=".FeedActivity" android:exported="true" />
-      
-        <activity android:name=".WelcomeActivity" android:exported="true" />
-
-
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="true" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SignupActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ConfirmationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".PostDisplayActivity"
+            android:exported="true" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ProfileEditActivity"
+            android:exported="true" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,6 +61,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

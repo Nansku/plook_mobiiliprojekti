@@ -16,19 +16,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/forest">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <!-- Post Image Header -->
+            <RelativeLayout
+                android:id="@+id/darker_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:background="@color/forest">
 
                 <TextView
                     android:id="@+id/post_caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Hello World"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="18sp"
@@ -36,63 +37,103 @@
                     android:layout_marginVertical="10dp"
                 />
 
-                <TextView
-                    android:id="@+id/post_username"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Username"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:layout_marginHorizontal="40dp"
-                    android:layout_marginBottom="10dp"
-                />
-
-                <ImageView
-                    android:id="@+id/image"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/lighter_forest">
+                    android:layout_below="@id/post_caption"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/post_description"
+                        android:id="@+id/post_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="40dp"
+                        android:paddingVertical="7dp"
                         android:text=""
                         android:textColor="@color/white"
-                        android:padding="10dp"
-                        android:layout_marginBottom="20dp"
-                    />
-
-                    <LinearLayout
-                        android:id="@+id/post_tags"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/post_description"
-                        android:orientation="horizontal"
-                        android:divider="@drawable/divider_feed_content"
-                        android:showDividers="middle"
-                        android:paddingHorizontal="10dp"
-                        android:layout_marginBottom="20dp"
+                        android:textSize="14sp"
+                        android:onClick="openProfileActivity"
+                        android:background="@drawable/card_ripple"
                     />
 
                     <TextView
+                        android:id="@+id/post_channel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/post_tags"
-                        android:text="COMMENTS"
+                        android:layout_weight="1"
+                        android:paddingEnd="40dp"
+                        android:paddingVertical="7dp"
+                        android:text=""
                         android:textColor="@color/white"
-                        android:padding="10dp"
-                    />
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:gravity="end"
+                        android:onClick="openChannelActivity"
+                        android:background="@drawable/card_ripple"
+                        />
 
-                </RelativeLayout>
+                </LinearLayout>
 
-            </LinearLayout>
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:transitionName="postImage"
+            />
+
+            <!-- Post Image Footer -->
+            <RelativeLayout
+                android:id="@+id/lighter_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/lighter_forest">
+
+                <TextView
+                    android:id="@+id/post_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:padding="10dp"
+                    android:layout_marginBottom="40dp"
+                />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/post_tags"
+                    android:text="Tags"
+                    android:textColor="@color/white"
+                    android:padding="10dp"
+                />
+
+                <LinearLayout
+                    android:id="@+id/post_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/post_description"
+                    android:orientation="horizontal"
+                    android:divider="@drawable/divider_feed_content"
+                    android:showDividers="middle"
+                    android:paddingHorizontal="10dp"
+                    android:layout_marginBottom="20dp"
+                />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/post_tags"
+                    android:text="COMMENTS"
+                    android:textColor="@color/white"
+                    android:padding="10dp"
+                />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/post_content"
@@ -101,17 +142,58 @@
                 android:orientation="vertical"
             />
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+            />
+
         </LinearLayout>
 
     </ScrollView>
 
-    <Button
-        android:layout_width="wrap_content"
+    <!-- Controls -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="add comment"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:onClick="writeComment"
-    />
+        app:cardCornerRadius="10dp"
+        android:layout_margin="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:orientation="horizontal"
+            android:background="@color/forest">
+
+            <TextView
+                android:id="@+id/button_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:foreground="@drawable/card_ripple"
+                android:gravity="center"
+                android:text="Button"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/comment_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Comment"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:foreground="@drawable/card_ripple"
+                android:onClick="writeComment"
+            />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

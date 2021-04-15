@@ -36,7 +36,7 @@ public class DatabaseReader
     }
 
     //find documents in collectionPath that have one of 'criteria' lists strings
-    public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String[] criteria)
+    public Task<QuerySnapshot> findDocumentsWhereArrayContainsAny(String collectionPath, String field, String[] criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereArrayContainsAny(field, Arrays.asList(criteria));
@@ -54,7 +54,7 @@ public class DatabaseReader
     }
 
     //find documents in collectionPath that have the string criteria in specified field
-    public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String criteria)
+    public Task<QuerySnapshot> findDocumentsWhereEqualTo(String collectionPath, String field, String criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereEqualTo(field, criteria);

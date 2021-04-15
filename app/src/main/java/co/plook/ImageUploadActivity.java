@@ -2,7 +2,6 @@ package co.plook;
 
 import android.Manifest;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -14,37 +13,34 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+
 import java.security.AccessController;
 import java.util.ArrayList;
+
 import java.util.UUID;
 
 import static android.view.View.*;
-import static java.security.AccessController.*;
-
 
 public class ImageUploadActivity extends ParentActivity {
     private ImageView profilePic;
@@ -183,7 +179,7 @@ public class ImageUploadActivity extends ParentActivity {
                 //Log.d("APP_DEBUG",result.toString());
                 imageUri = result.getUri();
                 Log.d("APP_DEBUG", imageUri.toString());
-
+                
                 // Lisätään cropattu kuva image viewiin
                 profilePic.setImageURI(imageUri);
                 uploadButton.setVisibility(View.VISIBLE);
