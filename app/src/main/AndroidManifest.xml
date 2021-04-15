@@ -46,7 +46,9 @@
         <activity
             android:name=".WelcomeActivity"
             android:exported="true" />
-
+        <activity
+            android:name=".ProfileEditActivity"
+            android:exported="true" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

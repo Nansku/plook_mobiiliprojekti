@@ -160,6 +160,10 @@ public class ImageUploadActivity extends ParentActivity
 
             else if (resultCode == RESULT_OK) {
                 //jos ok niin laita image viewiin
+                CropImage.ActivityBuilder activity = CropImage.activity(imageUri);
+                activity.setGuidelines(CropImageView.Guidelines.ON);
+                activity.setAspectRatio(3, 4);
+                activity.start(this);
                 profilePic.setImageURI(imageUri);
             }
         
