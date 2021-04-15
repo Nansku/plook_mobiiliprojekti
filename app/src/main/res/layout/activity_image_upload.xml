@@ -1,47 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ImageUploadActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp">
 
-    <ImageView
-        android:id="@+id/profilePic"
-        android:layout_width="408dp"
-        android:layout_height="462dp"
-        android:layout_marginBottom="31dp"
-        android:contentDescription="TODO"
-        android:src="@drawable/ic_baseline_image_24"
-        app:layout_constraintBottom_toTopOf="@+id/upload"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/upload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="123dp"
-        android:text="upload"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+            <ImageView
+                android:id="@+id/profilePic"
 
-    <Button
-        android:id="@+id/capture_image_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="596dp"
-        android:text="Capture Image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/profilePic" />
+                android:layout_width="wrap_content"
+                android:layout_height="450dp"
+                android:contentDescription="TODO"
+                android:layout_marginTop="30dp"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintVertical_bias="0.0"
+                android:layout_centerHorizontal="true"/>
+            <!--app:layout_constraintBottom_toTopOf="@+id/capture_image_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_baseline_image_24"-->
 
+            <Button
+                android:layout_marginTop="20dp"
+                android:id="@+id/capture_image_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Capture Image"
+                android:layout_below="@+id/profilePic"
+                android:layout_centerHorizontal="true"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:layout_marginTop="15dp"
+                android:id="@+id/choose_image_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose From Gallery"
+                android:layout_below="@+id/capture_image_btn"
+                android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/textFields"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp" >
+
+            <EditText
+                android:layout_marginTop="30dp"
+                android:id="@+id/post_caption"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Image caption"
+                android:layout_centerHorizontal="true"/>
+
+            <EditText
+                android:layout_marginTop="30dp"
+                android:id="@+id/post_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Image description"
+                android:layout_below="@+id/post_caption"
+                android:layout_centerHorizontal="true"/>
+            <!--app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/post_caption"
+            app:layout_constraintEnd_toEndOf="parent"-->
+
+            <EditText
+                android:layout_marginTop="30dp"
+                android:id="@+id/post_tags"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="#tags"
+                android:layout_below="@+id/post_description"
+                android:layout_centerHorizontal="true"/>
+            <!--app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/post_description"
+            app:layout_constraintEnd_toEndOf="parent"-->
+
+            <Button
+                android:id="@+id/upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
+                android:text="Post"
+                android:layout_marginTop="50dp"
+                android:layout_below="@+id/post_tags"
+                android:layout_centerHorizontal="true"/>
+            <!--app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/post_tags" -->
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
+
