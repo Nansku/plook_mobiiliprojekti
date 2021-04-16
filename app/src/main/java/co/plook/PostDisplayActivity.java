@@ -4,9 +4,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -88,6 +90,16 @@ public class PostDisplayActivity extends ParentActivity
 
         // Get only a set amount of posts at once.
         query = query.limit(postLoadAmount);
+
+        this.queryString = queryString;
+    }
+
+    private void refreshPosts()
+    {
+        makeQuery(queryString);
+
+        removePosts();
+        loadPosts();
     }
 
     protected void loadPosts()
@@ -161,14 +173,6 @@ public class PostDisplayActivity extends ParentActivity
 
         if(snapshot.size() > 0)
             lastVisible = snapshot.getDocuments().get(snapshot.size() - 1);
-    }
-
-    private void refreshPosts()
-    {
-        makeQuery(queryString);
-
-        removePosts();
-        loadPosts();
     }
 
     protected void removePosts()
