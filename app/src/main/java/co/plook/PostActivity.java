@@ -99,6 +99,13 @@ public class PostActivity extends ParentActivity
                         TextView textView_username = findViewById(R.id.post_username);
                         textView_username.setText(username);
 
+                        if (post.getChannelID().equals(""))
+                        {
+                            loadComments();
+                            return;
+                        }
+
+
                         dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                         {
                             @Override
