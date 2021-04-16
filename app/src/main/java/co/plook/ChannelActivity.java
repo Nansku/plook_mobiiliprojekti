@@ -2,6 +2,7 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,6 +36,9 @@ public class ChannelActivity extends PostDisplayActivity
 
         RecyclerView recyclerView = findViewById(R.id.channel_recycle);
         initializeRecyclerView(recyclerView);
+
+        SwipeRefreshLayout swipeContainer = findViewById(R.id.channel_swipeRefresh);
+        initializeSwipeRefreshLayout(swipeContainer);
 
         loadPosts();
     }

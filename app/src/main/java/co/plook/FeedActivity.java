@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
@@ -23,6 +26,9 @@ public class FeedActivity extends PostDisplayActivity
 
         RecyclerView recyclerView = findViewById(R.id.feed_recycle);
         initializeRecyclerView(recyclerView);
+
+        SwipeRefreshLayout swipeContainer = findViewById(R.id.feed_swipeRefresh);
+        initializeSwipeRefreshLayout(swipeContainer);
 
         loadPosts();
     }
@@ -62,12 +68,5 @@ public class FeedActivity extends PostDisplayActivity
                 }
             }
         });
-    }
-
-    public void openChannelBrowse(View v)
-    {
-        Intent intent = new Intent(this, ChannelBrowseActivity.class);
-
-        startActivity(intent);
     }
 }
