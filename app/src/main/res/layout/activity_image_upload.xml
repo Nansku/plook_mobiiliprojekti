@@ -64,7 +64,7 @@
                 android:id="@+id/post_caption"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Image caption"
+                android:hint="Image caption"
                 android:layout_centerHorizontal="true"/>
 
             <EditText
@@ -72,9 +72,9 @@
                 android:id="@+id/post_description"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Image description"
+                android:hint="Image description"
                 android:layout_below="@+id/post_caption"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
             <!--app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/post_caption"
             app:layout_constraintEnd_toEndOf="parent"-->
@@ -84,7 +84,7 @@
                 android:id="@+id/post_tags"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="#tags"
+                android:hint="#tags"
                 android:layout_below="@+id/post_description"
                 android:layout_centerHorizontal="true"/>
             <!--app:layout_constraintStart_toStartOf="parent"
