@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ChannelBrowseActivity">
 
-    <include layout="@layout/appbar"/>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -63,7 +61,6 @@
             />
 
         </LinearLayout>
-
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

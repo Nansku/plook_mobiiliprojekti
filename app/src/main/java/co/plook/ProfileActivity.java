@@ -56,23 +56,24 @@ public class ProfileActivity extends ParentActivity
         dbReader = new DatabaseReader();
         dbWriter = new DatabaseWriter();
         super.onCreate(savedInstanceState);
+
+        // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
         gridView = findViewById(R.id.postGrid);
 
         followButton = findViewById(R.id.followButton);
 
-        // INFLATER FOR NAV
-        getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
-
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();
         if(extras != null)
             userID = extras.getString("user_id");
+
         else
             userID = auth.getUid();
 
         if (userID.equals(auth.getUid()))
             followButton.setVisibility(View.GONE);
+
         else
             checkIfFollowing();
             
@@ -80,7 +81,7 @@ public class ProfileActivity extends ParentActivity
         gridView = findViewById(R.id.postGrid);
 
         // FIND PHOTOS FROM FIREBASE
-        Task<QuerySnapshot> postTask = dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
+        dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;

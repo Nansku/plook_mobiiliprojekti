@@ -81,9 +81,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="60dp"
                 android:onClick="followUser"
-                android:text="Follow"
+                android:text="Follow"/>
                 android:enabled="false"
-                />
+
 
             <Button
                 android:id="@+id/editProfile"
