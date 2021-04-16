@@ -37,7 +37,7 @@ public class ProfileEditActivity extends ParentActivity
         gridView = findViewById(R.id.postGrid);
 
         // FIND PHOTOS FROM FIREBASE
-        Task<QuerySnapshot> postTask = dbReader.findDocumentsWhereEqualTo("posts", "userID", "pztOy8uA63XqayPmUnDHBpbaETA3").addOnCompleteListener(task ->
+        dbReader.findDocumentsWhereEqualTo("posts", "userID", auth.getUid()).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
