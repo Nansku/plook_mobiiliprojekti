@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/feedActivity">
+    <activity
+        android:id="@+id/feedActivity"
+        android:name="co.plook.PostDisplayActivity"
+        android:label="activity_feed"
+        tools:layout="@layout/activity_feed" />
+</navigation>

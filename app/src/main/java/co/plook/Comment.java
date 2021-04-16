@@ -10,23 +10,29 @@ import java.text.SimpleDateFormat;
 public class Comment
 {
     private String userID;
+    private String userName;
     private String text;
     private String repliedToID;
     private Timestamp time;
 
 
-    public Comment(String userID, String text, String repliedToID, Timestamp time)
+    public Comment(String userID, String userName, String text, String repliedToID, Timestamp time)
     {
         this.userID = userID;
+        this.userName = userName;
         this.text = text;
         this.repliedToID = repliedToID;
         this.time = time;
     }
 
+    public void setUserName(String userName) { this.userName = userName; }
+
     public String getUserID()
     {
         return userID;
     }
+
+    public String getUserName() { return userName; }
 
     public String getText()
     {

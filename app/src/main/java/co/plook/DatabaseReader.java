@@ -15,13 +15,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class DatabaseReader
 {
     public FirebaseFirestore db;
 
     //private String userID;
 
-    public DatabaseReader() {
+
+    public DatabaseReader()
+    {
         db = FirebaseFirestore.getInstance();
     }
 
@@ -33,7 +36,7 @@ public class DatabaseReader
     }
 
     //find documents in collectionPath that have one of 'criteria' lists strings
-    public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String[] criteria)
+    public Task<QuerySnapshot> findDocumentsWhereArrayContainsAny(String collectionPath, String field, String[] criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
         Query q = collRef.whereArrayContainsAny(field, Arrays.asList(criteria));
@@ -41,11 +44,20 @@ public class DatabaseReader
         return q.get().addOnCompleteListener(task -> { });
     }
 
-    //find documents in collectionPath that have the string criteria in specified field
-    public Task<QuerySnapshot> findDocuments(String collectionPath, String field, String criteria)
+    //find documents in collectionPath that have one of 'criteria' lists strings
+    public Task<QuerySnapshot> findDocumentsWhereIn(String collectionPath, String field, String[] criteria)
     {
         CollectionReference collRef = db.collection(collectionPath);
-        Query q = collRef.whereArrayContains(field, criteria);
+        Query q = collRef.whereIn(field, Arrays.asList(criteria));
+
+        return q.get().addOnCompleteListener(task -> { });
+    }
+
+    //find documents in collectionPath that have the string criteria in specified field
+    public Task<QuerySnapshot> findDocumentsWhereEqualTo(String collectionPath, String field, String criteria)
+    {
+        CollectionReference collRef = db.collection(collectionPath);
+        Query q = collRef.whereEqualTo(field, criteria);
 
         return q.get().addOnCompleteListener(task -> { });
     }

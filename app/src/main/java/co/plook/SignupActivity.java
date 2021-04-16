@@ -12,28 +12,36 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.internal.FirebaseInstanceIdInternal;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
-public class SignupActivity extends ParentActivity {
+public class SignupActivity extends AppCompatActivity  {
 
     private EditText textPersonName;
     private EditText textEmailAddress;
     private EditText textPassword;
     private EditText textPassword2;
     private Button SignUpButton;
+
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+    private DatabaseWriter dbWriter;
+
     private Boolean emailAddressChecker;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         mAuth = FirebaseAuth.getInstance();
+        dbWriter = new DatabaseWriter();
 
         textPersonName = (EditText) findViewById(R.id.editText);
         textEmailAddress = (EditText) findViewById(R.id.editText2);
@@ -71,22 +79,27 @@ public class SignupActivity extends ParentActivity {
             Toast.makeText(this, "Salasanat eivät vastaa toisiaan", Toast.LENGTH_SHORT).show();
         } else {
             mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> signupTask) {
 
-                            if (task.isSuccessful()) {
+                        if (signupTask.isSuccessful()) {
 
-                                SendEmailVerification();
+                            SendEmailVerification();
 
+                            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(tokenTask -> {
+                                token = tokenTask.getResult();
+                                FirebaseUser taskUser = signupTask.getResult().getUser();
+                                dbWriter.addUser(taskUser.getUid(), username, email, token);
                                 Toast.makeText(SignupActivity.this, "Olet rekisteröity", Toast.LENGTH_SHORT).show();
-                            } else {
-                                String message = task.getException().getMessage();
-                                Toast.makeText(SignupActivity.this, "Virhe kirjautumisessa " + message, Toast.LENGTH_SHORT).show();
-                            }
+                            });
 
+                        } else {
+                            String message = signupTask.getException().getMessage();
+                            Toast.makeText(SignupActivity.this, "Virhe kirjautumisessa " + message, Toast.LENGTH_SHORT).show();
                         }
-                    });
+                    }
+                });
         }
     }
 
@@ -128,7 +141,7 @@ public class SignupActivity extends ParentActivity {
         startActivity(confirmationintent);
         finish();
     }
-    }
+}
 
 
 
