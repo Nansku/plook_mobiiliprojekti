@@ -47,8 +47,7 @@ public class ProfileActivity extends ParentActivity
     private ArrayList<Post> userPosts;
     private String userID;
     private boolean isFollowing = false;
-    GridAdapter gridAdapter;
-    GridView gridView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,14 +59,7 @@ public class ProfileActivity extends ParentActivity
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
         gridView = findViewById(R.id.postGrid);
 
-        // DRAWER MENU
-        toolbar = (Toolbar)findViewById(R.id.bar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-
         followButton = findViewById(R.id.followButton);
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
@@ -135,16 +127,16 @@ public class ProfileActivity extends ParentActivity
 
     private void checkIfFollowing()
     {
-        dbReader.findDocumentByID("user_contacts", userID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
-                List<String> followerList = (List<String>)task.getResult().getDocuments().get(0).get("followers");
-                if (followerList == null)
+                List<String> followedList = (List<String>)task.getResult().getDocuments().get(0).get("followed_users");
+                if (followedList == null)
                     isFollowing = false;
                 else
-                    isFollowing = followerList.contains(auth.getUid());
+                    isFollowing = followedList.contains(userID);
 
                 followButton.setEnabled(true);
                 updateFollowButton();
@@ -178,7 +170,7 @@ public class ProfileActivity extends ParentActivity
     public void followUser(View v)
     {
         // auth.getUid() == MINUN ID
-        dbWriter.updateUserContacts(auth.getUid(), "followers", userID, isFollowing);
+        dbWriter.updateUserContacts(auth.getUid(), "followed_users", userID, isFollowing);
         isFollowing = !isFollowing;
         updateFollowButton();
     }

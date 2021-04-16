@@ -1,16 +1,25 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.palette.graphics.Palette;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -29,6 +38,11 @@ public class PostActivity extends ParentActivity
     private Context context;
     private ViewGroup content;
     private ImageView imageView;
+    private RelativeLayout layout;
+    private RelativeLayout lighter_layout;
+    private ViewGroup viewGroup_tags;
+    private TextView commentButton;
+    private TextView buttonButton;
 
     //database stuff
     private DatabaseReader dbReader;
@@ -38,6 +52,8 @@ public class PostActivity extends ParentActivity
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
+    private ActionBar toolBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,6 +68,11 @@ public class PostActivity extends ParentActivity
 
         content = findViewById(R.id.post_content);
         imageView = findViewById(R.id.image);
+        layout = findViewById(R.id.darker_layout);
+        lighter_layout = findViewById(R.id.lighter_layout);
+
+        commentButton = findViewById(R.id.comment_button);
+        buttonButton = findViewById(R.id.button_button);
 
         post = new Post();
         userIDs = new ArrayList<>();
@@ -118,7 +139,7 @@ public class PostActivity extends ParentActivity
     {
         TextView textView_caption = findViewById(R.id.post_caption);
         TextView textView_description = findViewById(R.id.post_description);
-        ViewGroup viewGroup_tags = findViewById(R.id.post_tags);
+        viewGroup_tags = findViewById(R.id.post_tags);
 
         textView_caption.setText(post.getCaption());
         textView_description.setText(post.getDescription());
@@ -126,7 +147,7 @@ public class PostActivity extends ParentActivity
         // Add tag buttons.
         for (String tag : post.getTags())
         {
-            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, content, false);
+            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, viewGroup_tags, false);
             viewGroup_tags.addView(child);
 
             TextView textView = child.findViewById(R.id.tag_text);
@@ -141,8 +162,66 @@ public class PostActivity extends ParentActivity
             });
         }
 
-        // Add image.
-        Glide.with(context).load(post.getImageUrl()).into(imageView);
+        Glide.with(context)
+                .asBitmap()
+                .load(post.getImageUrl())
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
+                    {
+                        imageView.setImageBitmap(resource);
+                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
+                        {
+                            @Override
+                            public void onGenerated(@Nullable Palette palette)
+                            {
+                                Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
+                                setColors(swatches);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder)
+                    {
+
+                    }
+                });
+
+        /*// Add image.
+        Glide.with(context)
+                .load(post.getImageUrl())
+                .into(imageView);*/
+    }
+
+    public void setColors(Palette.Swatch[] swatch)
+    {
+        layout.setBackgroundColor(swatch[0].getRgb());
+        lighter_layout.setBackgroundColor(swatch[1].getRgb());
+
+        commentButton.setBackgroundColor(swatch[0].getRgb());
+        buttonButton.setBackgroundColor(swatch[0].getRgb());
+
+        ColorDrawable colorDrawable = new ColorDrawable(swatch[0].getRgb());
+        this.getWindow().setStatusBarColor(swatch[0].getRgb());
+
+        //content.setBackgroundColor(swatch[1].getTitleTextColor());
+        //viewGroup_tags.setBackgroundColor(swatch[0].getRgb());
+
+        for (int i = 0; i < content.getChildCount(); i++)
+        {
+            ViewGroup child = (ViewGroup)content.getChildAt(i);
+            child.setBackgroundColor(swatch[0].getRgb());
+            for (int j = 0; j < child.getChildCount(); j++)
+            {
+                ((TextView)child.getChildAt(j)).setTextColor(swatch[0].getTitleTextColor());
+            }
+        }
+
+        for (int i = 0; i < viewGroup_tags.getChildCount(); i++)
+        {
+            ((ViewGroup)viewGroup_tags.getChildAt(i)).getChildAt(0).setBackgroundColor(swatch[0].getRgb());
+        }
     }
 
     private void loadComments()

@@ -20,6 +20,7 @@
 
             <!-- Post Image Header -->
             <RelativeLayout
+                android:id="@+id/darker_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/forest">
@@ -87,6 +88,7 @@
 
             <!-- Post Image Footer -->
             <RelativeLayout
+                android:id="@+id/lighter_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/lighter_forest">
@@ -164,19 +166,20 @@
             android:background="@color/forest">
 
             <TextView
+                android:id="@+id/button_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Button"
-                android:textSize="18sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:gravity="center"
                 android:clickable="true"
                 android:foreground="@drawable/card_ripple"
-            />
+                android:gravity="center"
+                android:text="Button"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/comment_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
