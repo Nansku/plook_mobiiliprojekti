@@ -162,7 +162,7 @@ public class PostActivity extends ParentActivity
             });
         }
 
-        Glide.with(context)
+        /*Glide.with(context)
                 .asBitmap()
                 .load(post.getImageUrl())
                 .into(new CustomTarget<Bitmap>() {
@@ -186,15 +186,15 @@ public class PostActivity extends ParentActivity
                     {
 
                     }
-                });
+                });*/
 
-        /*// Add image.
+        // Add image.
         Glide.with(context)
                 .load(post.getImageUrl())
-                .into(imageView);*/
+                .into(imageView);
     }
 
-    public void setColors(Palette.Swatch[] swatch)
+    /*public void setColors(Palette.Swatch[] swatch)
     {
         layout.setBackgroundColor(swatch[0].getRgb());
         lighter_layout.setBackgroundColor(swatch[1].getRgb());
@@ -222,7 +222,7 @@ public class PostActivity extends ParentActivity
         {
             ((ViewGroup)viewGroup_tags.getChildAt(i)).getChildAt(0).setBackgroundColor(swatch[0].getRgb());
         }
-    }
+    }*/
 
     private void loadComments()
     {

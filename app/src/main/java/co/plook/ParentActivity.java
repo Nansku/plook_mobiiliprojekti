@@ -96,6 +96,8 @@ public class ParentActivity extends AppCompatActivity
     }
 
     public void openChannels(MenuItem item) {
+        intent = new Intent(this, ChannelBrowseActivity.class);
+        startActivity(intent);
     }
 
     public void openSettings(MenuItem item) {
