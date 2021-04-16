@@ -176,7 +176,7 @@ public class PostActivity extends ParentActivity
                             public void onGenerated(@Nullable Palette palette)
                             {
                                 Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
-                                setColors(swatches);
+                                //setColors(swatches);
                             }
                         });
                     }

@@ -57,12 +57,10 @@ public class ProfileActivity extends ParentActivity
         dbWriter = new DatabaseWriter();
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
+
         gridView = findViewById(R.id.postGrid);
 
         followButton = findViewById(R.id.followButton);
-
-        // INFLATER FOR NAV
-        getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
 
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();

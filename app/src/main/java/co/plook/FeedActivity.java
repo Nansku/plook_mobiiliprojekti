@@ -46,9 +46,9 @@ public class FeedActivity extends PostDisplayActivity
             {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
-                String queryString = "channel/";
+                String queryString = "userID/";
 
-                List<String> channelIDs = (List<String>) document.get("followed_channels");
+                List<String> channelIDs = (List<String>) document.get("followed_users");
                 if (channelIDs != null)
                 {
                     for (String str : channelIDs)
