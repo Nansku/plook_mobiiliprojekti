@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view" >
     <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_create_post"
+            android:icon="@drawable/ic_create"
+            android:title="Create Post"
+            android:onClick="openCreatePost"/>
+
         <item android:id="@+id/nav_feed"
             android:icon="@drawable/ic_feed"
             android:title="Feed"
@@ -22,14 +27,11 @@
             android:icon="@drawable/ic_settings"
             android:title="Settings"
             android:onClick="openSettings"/>
+
         <item
-        android:id="@+id/log_out"
+            android:id="@+id/log_out"
             android:icon="@drawable/ic_logout"
-        android:title="Log out"
-        android:onClick="logOut"/>
+            android:title="Log out"
+            android:onClick="logOut"/>
     </group>
-
-
-
-
 </menu>

@@ -2,29 +2,21 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
-
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 
-
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.navigation.NavigationView;
@@ -32,31 +24,63 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class ProfileActivity extends ParentActivity
 {
+    private Context context;
 
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private Toolbar toolbar;
+    private Button followButton;
+
+    private NavigationView navigationView;
+    private ViewGroup content;
+    private ViewGroup contentRight;
+    private GridAdapter gridAdapter;
+    private GridView gridView;
     private DatabaseReader dbReader;
+    private DatabaseWriter dbWriter;
+
     private ArrayList<Post> userPosts;
-    GridAdapter gridAdapter;
-    GridView gridView;
+    private String userID;
+    private boolean isFollowing = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         userPosts = new ArrayList<Post>();
         dbReader = new DatabaseReader();
-
+        dbWriter = new DatabaseWriter();
         super.onCreate(savedInstanceState);
+        getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
+        gridView = findViewById(R.id.postGrid);
+
+        followButton = findViewById(R.id.followButton);
 
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
 
+        // Get userID. If none was passed, use the current user's ID instead.
+        Bundle extras = getIntent().getExtras();
+        if(extras != null)
+            userID = extras.getString("user_id");
+        else
+            userID = auth.getUid();
+
+        if (userID.equals(auth.getUid()))
+            followButton.setVisibility(View.GONE);
+        else
+            checkIfFollowing();
+            
         // GRIDVIEW
         gridView = findViewById(R.id.postGrid);
 
         // FIND PHOTOS FROM FIREBASE
-        Task<QuerySnapshot> postTask = dbReader.findDocuments("posts", "userID", "pztOy8uA63XqayPmUnDHBpbaETA3").addOnCompleteListener(task ->
+        Task<QuerySnapshot> postTask = dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
@@ -101,6 +125,40 @@ public class ProfileActivity extends ParentActivity
         });
     }
 
+    private void checkIfFollowing()
+    {
+        dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                List<String> followedList = (List<String>)task.getResult().getDocuments().get(0).get("followed_users");
+                if (followedList == null)
+                    isFollowing = false;
+                else
+                    isFollowing = followedList.contains(userID);
+
+                followButton.setEnabled(true);
+                updateFollowButton();
+            }
+        });
+    }
+
+    private void updateFollowButton()
+    {
+        String buttonString = isFollowing ? "Unfollow" : "Follow";
+        followButton.setText(buttonString);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     // OPEN SINGLE POST IN PostActivity
     private void openPostActivity(String postID) {
 
@@ -109,6 +167,12 @@ public class ProfileActivity extends ParentActivity
         startActivity(intent);
     }
 
-
+    public void followUser(View v)
+    {
+        // auth.getUid() == MINUN ID
+        dbWriter.updateUserContacts(auth.getUid(), "followed_users", userID, isFollowing);
+        isFollowing = !isFollowing;
+        updateFollowButton();
+    }
 }
 

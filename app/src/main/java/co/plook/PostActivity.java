@@ -1,18 +1,25 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.palette.graphics.Palette;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -31,6 +38,11 @@ public class PostActivity extends ParentActivity
     private Context context;
     private ViewGroup content;
     private ImageView imageView;
+    private RelativeLayout layout;
+    private RelativeLayout lighter_layout;
+    private ViewGroup viewGroup_tags;
+    private TextView commentButton;
+    private TextView buttonButton;
 
     //database stuff
     private DatabaseReader dbReader;
@@ -40,12 +52,14 @@ public class PostActivity extends ParentActivity
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
+    private ActionBar toolBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post);
+        getLayoutInflater().inflate(R.layout.activity_post, contentGroup);
 
         context = getApplicationContext();
 
@@ -54,6 +68,11 @@ public class PostActivity extends ParentActivity
 
         content = findViewById(R.id.post_content);
         imageView = findViewById(R.id.image);
+        layout = findViewById(R.id.darker_layout);
+        lighter_layout = findViewById(R.id.lighter_layout);
+
+        commentButton = findViewById(R.id.comment_button);
+        buttonButton = findViewById(R.id.button_button);
 
         post = new Post();
         userIDs = new ArrayList<>();
@@ -69,48 +88,140 @@ public class PostActivity extends ParentActivity
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
-                showPost(task.getResult());
+                makePost(task.getResult());
+
+                dbReader.findDocumentByID("users", post.getUserID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        String username = task.getResult().getDocuments().get(0).getString("name");
+                        TextView textView_username = findViewById(R.id.post_username);
+                        textView_username.setText(username);
+
+                        dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                        {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task)
+                            {
+                                String channelName = task.getResult().getDocuments().get(0).getString("name");
+                                TextView textView_channel = findViewById(R.id.post_channel);
+                                textView_channel.setText(channelName);
+
+                                displayPostDetails(post);
+                            }
+                        });
+                    }
+                });
             }
         });
 
         loadComments();
     }
 
-    private void showPost(QuerySnapshot documentSnapshots)
+    private void makePost(QuerySnapshot documentSnapshots)
     {
         DocumentSnapshot document = documentSnapshots.getDocuments().get(0);
+
         post.setPostID(document.getId());
+        post.setUserID(document.getString("userID"));
+        post.setChannelID(document.getString("channel"));
         post.setCaption(document.getString("caption"));
         post.setDescription(document.getString("description"));
         post.setImageUrl(document.getString("url"));
 
+        // Add tag buttons.
+        String[] tags = ((List<String>) document.get("tags")).toArray(new String[0]);
+        post.setTags(tags);
+    }
+
+    private void displayPostDetails(Post post)
+    {
         TextView textView_caption = findViewById(R.id.post_caption);
         TextView textView_description = findViewById(R.id.post_description);
-        ViewGroup viewGroup_tags = findViewById(R.id.post_tags);
+        viewGroup_tags = findViewById(R.id.post_tags);
 
         textView_caption.setText(post.getCaption());
         textView_description.setText(post.getDescription());
 
         // Add tag buttons.
-        List<String> group = (List<String>) document.get("tags");
-        for (String str : group)
+        for (String tag : post.getTags())
         {
-            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, content, false);
+            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, viewGroup_tags, false);
             viewGroup_tags.addView(child);
 
             TextView textView = child.findViewById(R.id.tag_text);
-            textView.setText(str);
+            textView.setText(tag);
 
             child.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v) {
-                    openFeedActivity("tags/" + str + "/time");
+                    openFeedActivity("tags/" + tag + "/time");
                 }
             });
         }
 
-        Glide.with(context).load(post.getImageUrl()).into(imageView);
+        Glide.with(context)
+                .asBitmap()
+                .load(post.getImageUrl())
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
+                    {
+                        imageView.setImageBitmap(resource);
+                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
+                        {
+                            @Override
+                            public void onGenerated(@Nullable Palette palette)
+                            {
+                                Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
+                                setColors(swatches);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder)
+                    {
+
+                    }
+                });
+
+        /*// Add image.
+        Glide.with(context)
+                .load(post.getImageUrl())
+                .into(imageView);*/
+    }
+
+    public void setColors(Palette.Swatch[] swatch)
+    {
+        layout.setBackgroundColor(swatch[0].getRgb());
+        lighter_layout.setBackgroundColor(swatch[1].getRgb());
+
+        commentButton.setBackgroundColor(swatch[0].getRgb());
+        buttonButton.setBackgroundColor(swatch[0].getRgb());
+
+        ColorDrawable colorDrawable = new ColorDrawable(swatch[0].getRgb());
+        this.getWindow().setStatusBarColor(swatch[0].getRgb());
+
+        //content.setBackgroundColor(swatch[1].getTitleTextColor());
+        //viewGroup_tags.setBackgroundColor(swatch[0].getRgb());
+
+        for (int i = 0; i < content.getChildCount(); i++)
+        {
+            ViewGroup child = (ViewGroup)content.getChildAt(i);
+            child.setBackgroundColor(swatch[0].getRgb());
+            for (int j = 0; j < child.getChildCount(); j++)
+            {
+                ((TextView)child.getChildAt(j)).setTextColor(swatch[0].getTitleTextColor());
+            }
+        }
+
+        for (int i = 0; i < viewGroup_tags.getChildCount(); i++)
+        {
+            ((ViewGroup)viewGroup_tags.getChildAt(i)).getChildAt(0).setBackgroundColor(swatch[0].getRgb());
+        }
     }
 
     private void loadComments()
@@ -135,6 +246,10 @@ public class PostActivity extends ParentActivity
                 for (int i = 0; i < querySnapshots.size(); i++)
                 {
                     List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
+
+                    if (docs == null || docs.size() <= 0)
+                        continue;
+
                     usernamePairs.put(userIDs.get(i), docs.get(0).getString("name"));
                 }
 
@@ -198,10 +313,28 @@ public class PostActivity extends ParentActivity
         showComments(allComments);
     }
 
-    void openFeedActivity(String query)
+    public void openFeedActivity(String query)
     {
-        Intent intent = new Intent(this, FeedActivity.class);
+        Intent intent = new Intent(context, FeedActivity.class);
         intent.putExtra("query", query);
+
+        startActivity(intent);
+    }
+
+    public void openProfileActivity(View v)
+    {
+        Intent intent = new Intent(context, ProfileActivity.class);
+        intent.putExtra("user_id", post.getUserID());
+
+        startActivity(intent);
+    }
+
+    public void openChannelActivity(View v)
+    {
+        Intent intent = new Intent(this, ChannelActivity.class);
+
+        intent.putExtra("query", "channel/" + post.getChannelID() + "/time");
+        intent.putExtra("channel_id", post.getChannelID());
 
         startActivity(intent);
     }
