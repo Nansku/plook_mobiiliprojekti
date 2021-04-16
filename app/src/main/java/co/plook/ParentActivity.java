@@ -90,9 +90,16 @@ public class ParentActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void openCreatePost(MenuItem item) {
+        intent = new Intent(this, ImageUploadActivity.class);
+        startActivity(intent);
+    }
+
     public void openChannels(MenuItem item) {
     }
 
     public void openSettings(MenuItem item) {
     }
+
+
 }
