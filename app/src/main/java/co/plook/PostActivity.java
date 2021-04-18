@@ -52,7 +52,6 @@ public class PostActivity extends ParentActivity
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
-    private ActionBar toolBar;
 
 
     @Override
@@ -68,9 +67,10 @@ public class PostActivity extends ParentActivity
 
         content = findViewById(R.id.post_content);
         imageView = findViewById(R.id.image);
+
+        // swatch stuff...
         layout = findViewById(R.id.darker_layout);
         lighter_layout = findViewById(R.id.lighter_layout);
-
         commentButton = findViewById(R.id.comment_button);
         buttonButton = findViewById(R.id.button_button);
 
@@ -78,9 +78,15 @@ public class PostActivity extends ParentActivity
         userIDs = new ArrayList<>();
         allComments = new ArrayList<>();
 
-        //postID from feed
+        // postID from feed
         Bundle extras = getIntent().getExtras();
-        String postID = extras.getString("post_id");
+
+        String postID = extras.getString("post");
+        System.out.println("intent extrasin antama postID: " + postID);
+        if (postID == null)
+            postID = extras.getString("post_id");
+
+
         post.setPostID(postID);
 
         dbReader.findDocumentByID("posts", postID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
@@ -177,7 +183,7 @@ public class PostActivity extends ParentActivity
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
                     {
                         imageView.setImageBitmap(resource);
-                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
+                        /*Palette.from(resource).generate(new Palette.PaletteAsyncListener()
                         {
                             @Override
                             public void onGenerated(@Nullable Palette palette)
@@ -185,7 +191,7 @@ public class PostActivity extends ParentActivity
                                 Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
                                 setColors(swatches);
                             }
-                        });
+                        });*/
                     }
 
                     @Override
