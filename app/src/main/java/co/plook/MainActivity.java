@@ -11,12 +11,17 @@ public class MainActivity extends AppCompatActivity
 {
     FirebaseAuth auth;
     Intent intent;
+    MyFirebaseMessagingService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        service = new MyFirebaseMessagingService();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        String action = getIntent().getAction();
+        System.out.println("getIntent().getAction(): " + action);
 
         auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null)
@@ -30,5 +35,7 @@ public class MainActivity extends AppCompatActivity
             intent = new Intent(this, WelcomeActivity.class);
         }
         startActivity(intent);
+
+        finish();
     }
 }
