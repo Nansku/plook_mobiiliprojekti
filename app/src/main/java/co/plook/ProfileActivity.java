@@ -1,25 +1,19 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -29,16 +23,9 @@ import java.util.List;
 
 public class ProfileActivity extends ParentActivity
 {
-    private Context context;
-
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
-    private Toolbar toolbar;
     private Button followButton;
+    private TextView profileNameTextView;
 
-    private NavigationView navigationView;
-    private ViewGroup content;
-    private ViewGroup contentRight;
     private GridAdapter gridAdapter;
     private GridView gridView;
     private DatabaseReader dbReader;
@@ -52,17 +39,21 @@ public class ProfileActivity extends ParentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        userPosts = new ArrayList<Post>();
+        super.onCreate(savedInstanceState);
+        currentActivity = this;
+        navigationView.getMenu().getItem(3).setChecked(true);
+
+        userPosts = new ArrayList<>();
         dbReader = new DatabaseReader();
         dbWriter = new DatabaseWriter();
-        super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
-        gridView = findViewById(R.id.postGrid);
-
-        followButton = findViewById(R.id.followButton);
 
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
+
+        gridView = findViewById(R.id.postGrid);
+
+        followButton = findViewById(R.id.followButton);
+        profileNameTextView = findViewById(R.id.usernameTextview);
 
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();
@@ -78,6 +69,12 @@ public class ProfileActivity extends ParentActivity
             
         // GRIDVIEW
         gridView = findViewById(R.id.postGrid);
+
+        // get nickname for TextView (this should come from auth.getCurrentUser())
+        dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
+            String nickname = (String)task.getResult().getDocuments().get(0).get("name");
+            profileNameTextView.setText(nickname);
+        });
 
         // FIND PHOTOS FROM FIREBASE
         Task<QuerySnapshot> postTask = dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
@@ -148,15 +145,6 @@ public class ProfileActivity extends ParentActivity
     {
         String buttonString = isFollowing ? "Unfollow" : "Follow";
         followButton.setText(buttonString);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     // OPEN SINGLE POST IN PostActivity

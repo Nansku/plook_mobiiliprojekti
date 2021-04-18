@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
@@ -19,12 +20,20 @@ public class FeedActivity extends PostDisplayActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        currentActivity = this;
+        navigationView.getMenu().getItem(1).setChecked(true);
         getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
 
         RecyclerView recyclerView = findViewById(R.id.feed_recycle);
         initializeRecyclerView(recyclerView);
 
         loadPosts();
+
+        // token debug
+        /*FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            System.out.println("MINUN TOKEN: " + task.getResult());;
+        });*/
     }
 
     public void getAllPosts(View v)
