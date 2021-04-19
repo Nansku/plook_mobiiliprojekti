@@ -245,12 +245,4 @@ public class PostDisplayActivity extends ParentActivity
 
         startActivity(intent);
     }
-
-    @Override
-    public void onBackPressed()
-    {
-        //block the user from going back to blank
-        //maybe add a feed refresh function here?
-        //super.onBackPressed();
-    }
 }

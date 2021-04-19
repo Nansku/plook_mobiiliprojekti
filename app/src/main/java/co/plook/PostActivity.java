@@ -55,7 +55,6 @@ public class PostActivity extends ParentActivity
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
-    private ActionBar toolBar;
 
 
     @Override
@@ -72,9 +71,10 @@ public class PostActivity extends ParentActivity
         scrollView = findViewById(R.id.post_scrollView);
         content = findViewById(R.id.post_content);
         imageView = findViewById(R.id.image);
+
+        // swatch stuff...
         layout = findViewById(R.id.darker_layout);
         lighter_layout = findViewById(R.id.lighter_layout);
-
         commentButton = findViewById(R.id.comment_button);
         buttonButton = findViewById(R.id.button_button);
 
@@ -86,7 +86,12 @@ public class PostActivity extends ParentActivity
 
         //postID from feed
         Bundle extras = getIntent().getExtras();
-        String postID = extras.getString("post_id");
+
+        String postID = extras.getString("post");
+        if (postID == null)
+            postID = extras.getString("post_id");
+
+
         post.setPostID(postID);
 
         loadPostData();
@@ -131,6 +136,13 @@ public class PostActivity extends ParentActivity
                         String username = task.getResult().getDocuments().get(0).getString("name");
                         TextView textView_username = findViewById(R.id.post_username);
                         textView_username.setText(username);
+
+                        if (post.getChannelID().equals(""))
+                        {
+                            loadComments();
+                            return;
+                        }
+
 
                         dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                         {
@@ -204,7 +216,7 @@ public class PostActivity extends ParentActivity
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
                     {
                         imageView.setImageBitmap(resource);
-                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
+                        /*Palette.from(resource).generate(new Palette.PaletteAsyncListener()
                         {
                             @Override
                             public void onGenerated(@Nullable Palette palette)
@@ -212,7 +224,7 @@ public class PostActivity extends ParentActivity
                                 Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
                                 //setColors(swatches);
                             }
-                        });
+                        });*/
                     }
 
                     @Override
