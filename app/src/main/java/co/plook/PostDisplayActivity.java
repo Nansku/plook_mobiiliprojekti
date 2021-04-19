@@ -2,10 +2,13 @@ package co.plook;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -29,6 +32,7 @@ public class PostDisplayActivity extends ParentActivity
     // Database stuff
     protected DatabaseReader dbReader;
     private Query query;
+    private String queryString;
     private DocumentSnapshot lastVisible;
 
     // Posts & loading
@@ -53,9 +57,10 @@ public class PostDisplayActivity extends ParentActivity
         extras = getIntent().getExtras();
 
         // Make a query based on the sent string (if one was sent, otherwise default to empty).
-        String queryString = "";
         if(extras != null)
             queryString = extras.getString("query", "");
+        else
+            queryString = "";
 
         makeQuery(queryString);
     }
@@ -85,6 +90,16 @@ public class PostDisplayActivity extends ParentActivity
 
         // Get only a set amount of posts at once.
         query = query.limit(postLoadAmount);
+
+        this.queryString = queryString;
+    }
+
+    private void refreshPosts()
+    {
+        makeQuery(queryString);
+
+        removePosts();
+        loadPosts();
     }
 
     protected void loadPosts()
@@ -206,6 +221,19 @@ public class PostDisplayActivity extends ParentActivity
                             loadPosts();
                     }
                 }
+            }
+        });
+    }
+
+    protected void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)
+    {
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh()
+            {
+                refreshPosts();
+                swipeContainer.setRefreshing(false);
             }
         });
     }

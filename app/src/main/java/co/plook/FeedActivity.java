@@ -1,10 +1,10 @@
 package co.plook;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,6 +27,9 @@ public class FeedActivity extends PostDisplayActivity
 
         RecyclerView recyclerView = findViewById(R.id.feed_recycle);
         initializeRecyclerView(recyclerView);
+
+        SwipeRefreshLayout swipeContainer = findViewById(R.id.feed_swipeRefresh);
+        initializeSwipeRefreshLayout(swipeContainer);
 
         loadPosts();
 
@@ -55,9 +58,9 @@ public class FeedActivity extends PostDisplayActivity
             {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
-                String queryString = "channel/";
+                String queryString = "userID/";
 
-                List<String> channelIDs = (List<String>) document.get("followed_channels");
+                List<String> channelIDs = (List<String>) document.get("followed_users");
                 if (channelIDs != null)
                 {
                     for (String str : channelIDs)
@@ -71,12 +74,5 @@ public class FeedActivity extends PostDisplayActivity
                 }
             }
         });
-    }
-
-    public void openChannelBrowse(View v)
-    {
-        Intent intent = new Intent(this, ChannelBrowseActivity.class);
-
-        startActivity(intent);
     }
 }
