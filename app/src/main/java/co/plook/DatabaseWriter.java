@@ -28,12 +28,10 @@ public class DatabaseWriter
         auth = FirebaseAuth.getInstance();
     }
 
-    public void addUser(String userID, String nickname, String email, String token)
+    public void addUser(String userID, String nickname, String token)
     {
         Map<String, Object> user = new HashMap<>();
-        user.put("id", userID);
         user.put("name", nickname);
-        user.put("email", email);
         user.put("token", token);
 
         addToCollectionWithName("users", user, userID);
