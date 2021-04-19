@@ -64,19 +64,19 @@ public class DatabaseWriter
                 .document(userID)
                 .update(updatedUserMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>()
-        {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("UpdateUserLog", userID + " successfully updated!");
-            }
-        }).addOnFailureListener(new OnFailureListener()
-        {
-            @Override
-            public void onFailure(@NonNull Exception e)
-            {
-                Log.d("UpdateUserLog", "ERROR: " + e.getMessage());
-            }
-        });
+                {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("UpdateUserLog", userID + " successfully updated!");
+                    }
+                }).addOnFailureListener(new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        Log.d("UpdateUserLog", "ERROR: " + e.getMessage());
+                    }
+                });
     }
 
     public void updateUserContacts(String userID, String field, String followID, boolean remove)

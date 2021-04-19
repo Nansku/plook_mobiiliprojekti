@@ -72,4 +72,37 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/filters"
+        android:orientation="vertical"
+        android:background="#BF000000">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="NEW"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:onClick="getAllPosts"
+            android:foreground="@drawable/card_ripple"
+        />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="HOT"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:onClick="getAllPosts"
+            android:foreground="@drawable/card_ripple"
+            />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

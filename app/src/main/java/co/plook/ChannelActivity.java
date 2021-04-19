@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -20,6 +21,7 @@ public class ChannelActivity extends PostDisplayActivity
     private DatabaseWriter dbWriter;
 
     private String channelID;
+    private int followerCount;
     private boolean isFollowing;
 
     @Override
@@ -46,6 +48,7 @@ public class ChannelActivity extends PostDisplayActivity
     {
         channelID = extras.getString("channel_id", "");
 
+        // Get channel name and follower count.
         dbReader.findDocumentByID("channels", channelID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
@@ -57,22 +60,14 @@ public class ChannelActivity extends PostDisplayActivity
                 textView_channelName.setText(document.getString("name"));
 
                 List<String> followerIDs = (List<String>) document.get("followers");
-                int count = followerIDs == null ? 0 : followerIDs.size();
+                followerCount = followerIDs == null ? 0 : followerIDs.size();
 
                 TextView textView_channelFollowers = findViewById(R.id.channel_follower_count);
-                textView_channelFollowers.setText(count + " FOLLOWERS");
-            }
-        });
+                textView_channelFollowers.setText(followerCount + " FOLLOWERS");
 
-        dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task)
-            {
-                DocumentSnapshot document = task.getResult().getDocuments().get(0);
-
-                List<String> followedChannels = (List<String>) document.get("followed_channels");
-                isFollowing = followedChannels.contains(channelID);
+                // Check if already following this channel.
+                isFollowing = followerIDs.contains(auth.getUid());
+                System.out.println("MINUN FOLLOW STATE: " + isFollowing);
             }
         });
     }
@@ -80,8 +75,11 @@ public class ChannelActivity extends PostDisplayActivity
     public void toggleFollow(View v)
     {
         dbWriter.updateUserContacts(auth.getUid(), "followed_channels", channelID, isFollowing);
-        isFollowing = !isFollowing;
 
-        getChannelData();
+        isFollowing = !isFollowing;
+        followerCount += isFollowing ? 1 : -1;
+
+        TextView textView_channelFollowers = findViewById(R.id.channel_follower_count);
+        textView_channelFollowers.setText(followerCount + " FOLLOWERS");
     }
 }

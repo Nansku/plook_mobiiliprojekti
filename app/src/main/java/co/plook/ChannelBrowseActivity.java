@@ -47,26 +47,20 @@ public class ChannelBrowseActivity extends ParentActivity
 
                 followed_channels = (List<String>) document.get("followed_channels");
 
-                if (followed_channels == null)
-                    return;
-
                 String[] channelIDs = followed_channels.toArray(new String[0]);
 
-                if (channelIDs.length <= 0)
-                    return;
-
-                // Get channel names
-                dbReader.findDocumentsWhereIn("channels", "__name__", channelIDs).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                if (channelIDs.length > 0)
                 {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task)
-                    {
-                        for (DocumentSnapshot document : task.getResult())
-                        {
-                            populateChannelsList(document.getId(), document.getString("name"), content);
+                    // Get followed channels
+                    dbReader.findDocumentsWhereIn("channels", "__name__", channelIDs).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                populateChannelsList(document.getId(), document.getString("name"), content);
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 // Get all channels
                 Query query = dbReader.db.collection("channels");
@@ -75,14 +69,11 @@ public class ChannelBrowseActivity extends ParentActivity
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
                     {
-                        if (followed_channels == null)
-                            return;
-
                         ViewGroup content = findViewById(R.id.personal_channels_all);
 
                         for (DocumentSnapshot document : task.getResult())
                         {
-                            if (!followed_channels.contains(document.getId()))
+                            if (followed_channels == null || !followed_channels.contains(document.getId()))
                                 populateChannelsList(document.getId(), document.getString("name"), content);
                         }
                     }

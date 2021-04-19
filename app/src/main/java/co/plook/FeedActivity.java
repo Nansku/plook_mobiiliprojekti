@@ -45,6 +45,8 @@ public class FeedActivity extends PostDisplayActivity
 
         removePosts();
         loadPosts();
+
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> System.out.println("TOKENINI: " + task.getResult()));
     }
 
     public void getFollowedPosts(View v)

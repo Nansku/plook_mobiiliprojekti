@@ -139,7 +139,7 @@ public class PostActivity extends ParentActivity
 
                         if (post.getChannelID().equals(""))
                         {
-                            loadComments();
+                            loadComments(false);
                             return;
                         }
 
