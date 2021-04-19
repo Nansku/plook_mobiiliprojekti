@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridView;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ public class ProfileEditActivity extends ParentActivity
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
-            System.out.println(snapshot.getDocuments().toString());
             for (QueryDocumentSnapshot document : snapshot)
             {   Post post = new Post();
                 post.setPostID(document.getId());

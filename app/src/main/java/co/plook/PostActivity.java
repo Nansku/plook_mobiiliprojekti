@@ -82,7 +82,6 @@ public class PostActivity extends ParentActivity
         Bundle extras = getIntent().getExtras();
 
         String postID = extras.getString("post");
-        System.out.println("intent extrasin antama postID: " + postID);
         if (postID == null)
             postID = extras.getString("post_id");
 

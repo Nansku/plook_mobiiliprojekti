@@ -1,9 +1,6 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
-import androidx.drawerlayout.widget.DrawerLayout;
-
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -81,7 +78,6 @@ public class ProfileActivity extends ParentActivity
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
-            System.out.println(snapshot.getDocuments().toString());
             for (QueryDocumentSnapshot document : snapshot)
             {   Post post = new Post();
                 post.setPostID(document.getId());
@@ -91,8 +87,6 @@ public class ProfileActivity extends ParentActivity
 
                 userPosts.add(post);
             }
-
-            System.out.println(userPosts.size());
 
             gridAdapter = new GridAdapter(this, R.layout.activity_profile_post, userPosts);
 
