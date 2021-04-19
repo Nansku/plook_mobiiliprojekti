@@ -20,9 +20,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String action = getIntent().getAction();
-        System.out.println("getIntent().getAction(): " + action);
-
         auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null)
         {
