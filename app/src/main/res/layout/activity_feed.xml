@@ -14,31 +14,43 @@
         android:orientation="horizontal"
         android:background="@color/forest">
 
-        <Button
+        <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_margin="2dp"
+            android:gravity="center"
+            android:text="NEWEST"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
             android:onClick="getAllPosts"
-            android:text="ALL"
+            android:foreground="@drawable/card_ripple"
         />
 
-        <Button
+        <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_margin="2dp"
+            android:gravity="center"
+            android:text="FOLLOWING"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
             android:onClick="getFollowedPosts"
-            android:text="Followed"
+            android:foreground="@drawable/card_ripple"
         />
 
-        <Button
-            android:id="@+id/testButton"
+        <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="2dp"
-            android:text="Search"
+            android:layout_weight="0.25"
+            android:gravity="center"
+            android:text="F"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:onClick="getFollowedPosts"
+            android:foreground="@drawable/card_ripple"
         />
 
     </LinearLayout>

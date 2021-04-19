@@ -81,5 +81,7 @@ public class ChannelActivity extends PostDisplayActivity
     {
         dbWriter.updateUserContacts(auth.getUid(), "followed_channels", channelID, isFollowing);
         isFollowing = !isFollowing;
+
+        getChannelData();
     }
 }

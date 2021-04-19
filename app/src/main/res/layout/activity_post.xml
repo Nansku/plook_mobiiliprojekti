@@ -186,7 +186,8 @@
                 android:text="Button"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+            />
 
             <TextView
                 android:id="@+id/comment_button"
