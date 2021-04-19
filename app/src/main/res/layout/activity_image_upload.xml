@@ -35,7 +35,9 @@
                 android:layout_height="80dp"
                 android:text="Camera"
                 android:layout_toStartOf="@+id/choose_image_btn"
-                android:background="@drawable/circle_button"
+                android:background="@drawable/circle_button_lg"
+
+                app:backgroundTint="@color/lighter_forest2"
                 android:drawableTop="@drawable/ic_open_camera"
                 android:textSize="12dp"/>
 
@@ -46,7 +48,8 @@
                 android:layout_width="100dp"
                 android:layout_height="80dp"
                 android:text="@string/gallery"
-                android:background="@drawable/circle_button"
+                android:background="@drawable/circle_button_lg"
+                app:backgroundTint="@color/lighter_forest2"
                 android:drawableTop="@drawable/ic_open_gallery"
                 android:layout_alignParentEnd="true"
                 android:textSize="12sp"/>

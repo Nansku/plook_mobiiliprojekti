@@ -35,7 +35,7 @@ public class ProfileActivity extends ParentActivity
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
     private Button followButton;
-
+    private Button editProfileButton;
     private NavigationView navigationView;
     private ViewGroup content;
     private ViewGroup contentRight;
@@ -62,21 +62,25 @@ public class ProfileActivity extends ParentActivity
         gridView = findViewById(R.id.postGrid);
 
         followButton = findViewById(R.id.followButton);
-
+        editProfileButton = findViewById(R.id.editProfile);
+        editProfileButton.setVisibility(View.GONE);
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();
-        if(extras != null)
+
+        if (extras != null) {
             userID = extras.getString("user_id");
-
-        else
+        } else {
             userID = auth.getUid();
+        }
 
-        if (userID.equals(auth.getUid()))
+
+        if (userID.equals(auth.getUid())) {
             followButton.setVisibility(View.GONE);
+            editProfileButton.setVisibility(View.VISIBLE);
 
-        else
+        } else {
             checkIfFollowing();
-            
+        }
         // GRIDVIEW
         gridView = findViewById(R.id.postGrid);
 
@@ -104,8 +108,8 @@ public class ProfileActivity extends ParentActivity
 
             gridAdapter.notifyDataSetChanged();
 
-            Button button = findViewById(R.id.editProfile);
-            button.setOnClickListener(new View.OnClickListener() {
+
+            editProfileButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
