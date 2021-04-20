@@ -77,7 +77,7 @@ public class ImageUploadActivity extends ParentActivity {
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
         // Visibility specifications
-        profilePic.setVisibility(GONE);
+        // profilePic.setVisibility(GONE);
         relativeLayout.setVisibility(INVISIBLE);
         uploadButton.setVisibility(INVISIBLE);
 

@@ -13,4 +13,6 @@
     <string name="circle_crop">circle crop</string>
     <string name="edit_profile">edit profile</string>
     <string name="save">save profile</string>
+    <string name="picture_for_post">picture for post</string>
+    <string name="gallery">Gallery</string>
 </resources>

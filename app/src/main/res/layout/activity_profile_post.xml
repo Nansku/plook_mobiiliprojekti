@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingStart="2dp"
+    android:paddingEnd="2dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="3dp">
 
-    <ImageView
-        android:id="@+id/image"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:scaleType="centerCrop"
-        android:padding="3dp"
-        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp" >
 
-        android:src="@drawable/user_icon"/>
-
+            <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center_horizontal" />
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>
