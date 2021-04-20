@@ -6,9 +6,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -30,7 +32,6 @@ import java.util.List;
 public class ProfileActivity extends ParentActivity
 {
     private Context context;
-
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
@@ -49,6 +50,7 @@ public class ProfileActivity extends ParentActivity
     private boolean isFollowing = false;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -59,7 +61,7 @@ public class ProfileActivity extends ParentActivity
 
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
-        gridView = findViewById(R.id.postGrid);
+        //gridView = findViewById(R.id.postGrid);
 
         followButton = findViewById(R.id.followButton);
         editProfileButton = findViewById(R.id.editProfile);
@@ -81,8 +83,11 @@ public class ProfileActivity extends ParentActivity
         } else {
             checkIfFollowing();
         }
+
         // GRIDVIEW
-        gridView = findViewById(R.id.postGrid);
+        gridView = (ExpandableHeightGridView) findViewById(R.id.postGrid);
+        // HACK TO EXPAND GRIDVIEW TO BOTTOM
+        ((ExpandableHeightGridView) gridView).setExpanded(true);
 
         // FIND PHOTOS FROM FIREBASE
         dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
@@ -104,6 +109,7 @@ public class ProfileActivity extends ParentActivity
 
             gridAdapter = new GridAdapter(this, R.layout.activity_profile_post, userPosts);
 
+
             gridView.setAdapter(gridAdapter);
 
             gridAdapter.notifyDataSetChanged();
@@ -119,6 +125,14 @@ public class ProfileActivity extends ParentActivity
             });
         });
 
+        // MAKES GRID NOT SCROLLABLE
+        /*gridView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return event.getAction() == MotionEvent.ACTION_MOVE;
+            }
+        });*/
+
         // ON ITEM LISTENER FOR GRID VIEW
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -128,6 +142,8 @@ public class ProfileActivity extends ParentActivity
             }
 
         });
+
+
     }
 
     private void checkIfFollowing()
