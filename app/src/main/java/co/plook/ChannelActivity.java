@@ -56,17 +56,18 @@ public class ChannelActivity extends PostDisplayActivity
             {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
+                // Channel name
                 TextView textView_channelName = findViewById(R.id.channel_name);
                 textView_channelName.setText(document.getString("name"));
 
+                // Channel follower count
                 List<String> followerIDs = (List<String>) document.get("followers");
                 followerCount = followerIDs == null ? 0 : followerIDs.size();
-
                 TextView textView_channelFollowers = findViewById(R.id.channel_follower_count);
                 textView_channelFollowers.setText(followerCount + " FOLLOWERS");
 
                 // Check if already following this channel.
-                isFollowing = followerIDs.contains(auth.getUid());
+                isFollowing = followerIDs == null ? false : followerIDs.contains(auth.getUid());
                 System.out.println("MINUN FOLLOW STATE: " + isFollowing);
             }
         });

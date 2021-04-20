@@ -63,6 +63,7 @@
                 android:dividerPadding="50dp">
 
                 <ImageView
+                    android:id="@+id/post_voteUp"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:src="@color/teal_700"
@@ -79,6 +80,7 @@
                 />
 
                 <ImageView
+                    android:id="@+id/post_voteDown"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:src="@color/teal_700"

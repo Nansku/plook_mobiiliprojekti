@@ -16,6 +16,9 @@ import java.util.List;
 
 public class FeedActivity extends PostDisplayActivity
 {
+    private View filtersLayout;
+    private String[] filterSettings = {"all/", "/", "time"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -31,6 +34,8 @@ public class FeedActivity extends PostDisplayActivity
         SwipeRefreshLayout swipeContainer = findViewById(R.id.feed_swipeRefresh);
         initializeSwipeRefreshLayout(swipeContainer);
 
+        filtersLayout = findViewById(R.id.feed_filters);
+
         loadPosts();
 
         // token debug
@@ -39,20 +44,16 @@ public class FeedActivity extends PostDisplayActivity
         });*/
     }
 
-    public void getAllPosts(View v)
+    public void setFilterCriteriaAll(View v)
     {
-        makeQuery("");
+        filterSettings[0] = "all/";
+        filterSettings[1] = "/";
 
-        removePosts();
-        loadPosts();
-
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> System.out.println("TOKENINI: " + task.getResult()));
+        refreshContent();
     }
 
-    public void getFollowedPosts(View v)
+    public void setFilterCriteriaFollowing(View v)
     {
-        removePosts();
-
         dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
@@ -60,21 +61,59 @@ public class FeedActivity extends PostDisplayActivity
             {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
-                String queryString = "userID/";
+                filterSettings[0] = "userID/";
+                filterSettings[1] = "";
 
                 List<String> channelIDs = (List<String>) document.get("followed_users");
                 if (channelIDs != null)
                 {
                     for (String str : channelIDs)
-                        queryString += str + ",";
+                        filterSettings[1] += str + ",";
 
-                    queryString += "/time";
-
-                    makeQuery(queryString);
-
-                    loadPosts();
                 }
+
+                filterSettings[1] += "/";
+
+                refreshContent();
             }
         });
+    }
+
+    public void setFilterSortingTime(View v)
+    {
+        filterSettings[2] = "time";
+
+        refreshContent();
+
+        toggleFiltersMenu(null);
+    }
+
+    public void setFilterSortingVotes(View v)
+    {
+        filterSettings[2] = "time";
+
+        refreshContent();
+
+        toggleFiltersMenu(null);
+    }
+
+    private void refreshContent()
+    {
+        StringBuilder queryString = new StringBuilder();
+        for(String str : filterSettings)
+            queryString.append(str);
+
+        makeQuery(queryString.toString());
+
+        removePosts();
+        loadPosts();
+    }
+
+    public void toggleFiltersMenu(View v)
+    {
+        if (filtersLayout.getVisibility() == View.VISIBLE)
+            filtersLayout.setVisibility(View.GONE);
+        else
+            filtersLayout.setVisibility(View.VISIBLE);
     }
 }
