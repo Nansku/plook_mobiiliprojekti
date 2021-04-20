@@ -18,6 +18,7 @@ import java.util.List;
 
 public class ChannelBrowseActivity extends ParentActivity
 {
+
     // Database stuff
     private DatabaseReader dbReader;
 

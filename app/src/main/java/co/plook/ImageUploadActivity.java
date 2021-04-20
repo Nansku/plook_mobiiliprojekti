@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,7 +77,7 @@ public class ImageUploadActivity extends ParentActivity {
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
         // Visibility specifications
-        profilePic.setVisibility(GONE);
+        // profilePic.setVisibility(GONE);
         relativeLayout.setVisibility(INVISIBLE);
         uploadButton.setVisibility(INVISIBLE);
 
@@ -247,6 +248,9 @@ public class ImageUploadActivity extends ParentActivity {
                     String userID = auth.getUid();
                     dbWriter = new DatabaseWriter();
                     dbWriter.addPost(userID, caption,"OIgwEfHvG29j6UIMvy7N", description, tags, downloadUri.toString());
+
+                    Intent intent = new Intent(ImageUploadActivity.this, FeedActivity.class);
+                    startActivity(intent);
                 }
             }
         });
