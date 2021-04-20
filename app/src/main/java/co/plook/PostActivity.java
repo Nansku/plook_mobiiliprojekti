@@ -325,6 +325,12 @@ public class PostActivity extends ParentActivity
         showComments(allComments);
     }
 
+    public void deletePost(View v)
+    {
+        dbWriter.deletePost(post.getPostID());
+        openFeedActivity("");
+    }
+
     public void openFeedActivity(String query)
     {
         Intent intent = new Intent(context, FeedActivity.class);

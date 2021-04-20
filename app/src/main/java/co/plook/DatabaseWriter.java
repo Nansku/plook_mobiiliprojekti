@@ -53,9 +53,18 @@ public class DatabaseWriter
         addToCollection("posts", post);
     }
 
-    public void deletePost()
+    // deletes a post using a postID. cloud will do a check on authorization to decide whether deleting is allowed or not
+    public void deletePost(String postID)
     {
-
+        db.collection("posts")
+                .document(postID)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("dbWrite", "DocumentSnapshot successfully deleted!");
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("dbWrite", "Error deleting document", e);
+                });
     }
 
     public void updateUser(String collectionPath, String userID,  HashMap<String, Object> updatedUserMap)

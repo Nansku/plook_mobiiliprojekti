@@ -27,7 +27,7 @@
 
                 <TextView
                     android:id="@+id/post_caption"
-                    android:layout_width="match_parent"
+                    android:layout_width="240dp"
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textColor="@color/white"
@@ -36,6 +36,19 @@
                     android:layout_marginHorizontal="40dp"
                     android:layout_marginVertical="10dp"
                 />
+
+                <TextView
+                    android:id="@+id/delete_post"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/post_caption"
+                    android:text="Delete"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginVertical="10dp"
+                    android:onClick="deletePost"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
