@@ -216,7 +216,7 @@ public class PostActivity extends ParentActivity
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
                     {
                         imageView.setImageBitmap(resource);
-                        /*Palette.from(resource).generate(new Palette.PaletteAsyncListener()
+                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
                         {
                             @Override
                             public void onGenerated(@Nullable Palette palette)
@@ -224,7 +224,7 @@ public class PostActivity extends ParentActivity
                                 Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
                                 //setColors(swatches);
                             }
-                        });*/
+                        });
                     }
 
                     @Override

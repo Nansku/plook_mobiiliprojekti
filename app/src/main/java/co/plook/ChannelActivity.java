@@ -1,6 +1,5 @@
 package co.plook;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -9,7 +8,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -23,6 +21,8 @@ public class ChannelActivity extends PostDisplayActivity
     private String channelID;
     private int followerCount;
     private boolean isFollowing;
+
+    private View filtersLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -40,6 +40,8 @@ public class ChannelActivity extends PostDisplayActivity
 
         SwipeRefreshLayout swipeContainer = findViewById(R.id.channel_swipeRefresh);
         initializeSwipeRefreshLayout(swipeContainer);
+
+        filtersLayout = findViewById(R.id.channel_filters);
 
         loadPosts();
     }
@@ -82,5 +84,39 @@ public class ChannelActivity extends PostDisplayActivity
 
         TextView textView_channelFollowers = findViewById(R.id.channel_follower_count);
         textView_channelFollowers.setText(followerCount + " FOLLOWERS");
+    }
+
+    public void setFilterSortingTime(View v)
+    {
+        querySettings[2] = "time";
+
+        refreshContent();
+
+        toggleFiltersMenu(null);
+    }
+
+    public void setFilterSortingVotes(View v)
+    {
+        querySettings[2] = "score";
+
+        refreshContent();
+
+        toggleFiltersMenu(null);
+    }
+
+    private void refreshContent()
+    {
+        makeQuery(querySettings[0], querySettings[1], querySettings[2]);
+
+        removePosts();
+        loadPosts();
+    }
+
+    public void toggleFiltersMenu(View v)
+    {
+        if (filtersLayout.getVisibility() == View.VISIBLE)
+            filtersLayout.setVisibility(View.GONE);
+        else
+            filtersLayout.setVisibility(View.VISIBLE);
     }
 }

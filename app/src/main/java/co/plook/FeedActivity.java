@@ -10,14 +10,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
 public class FeedActivity extends PostDisplayActivity
 {
     private View filtersLayout;
-    private String[] filterSettings = {"all/", "/", "time"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,17 +35,12 @@ public class FeedActivity extends PostDisplayActivity
         filtersLayout = findViewById(R.id.feed_filters);
 
         loadPosts();
-
-        // token debug
-        /*FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            System.out.println("MINUN TOKEN: " + task.getResult());;
-        });*/
     }
 
     public void setFilterCriteriaAll(View v)
     {
-        filterSettings[0] = "all/";
-        filterSettings[1] = "/";
+        querySettings[0] = "all";
+        querySettings[1] = "";
 
         refreshContent();
     }
@@ -61,18 +54,16 @@ public class FeedActivity extends PostDisplayActivity
             {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
-                filterSettings[0] = "userID/";
-                filterSettings[1] = "";
+                querySettings[0] = "userID";
+                querySettings[1] = "";
 
                 List<String> channelIDs = (List<String>) document.get("followed_users");
                 if (channelIDs != null)
                 {
                     for (String str : channelIDs)
-                        filterSettings[1] += str + ",";
+                        querySettings[1] += str + ",";
 
                 }
-
-                filterSettings[1] += "/";
 
                 refreshContent();
             }
@@ -81,7 +72,7 @@ public class FeedActivity extends PostDisplayActivity
 
     public void setFilterSortingTime(View v)
     {
-        filterSettings[2] = "time";
+        querySettings[2] = "time";
 
         refreshContent();
 
@@ -90,7 +81,7 @@ public class FeedActivity extends PostDisplayActivity
 
     public void setFilterSortingVotes(View v)
     {
-        filterSettings[2] = "score";
+        querySettings[2] = "score";
 
         refreshContent();
 
@@ -99,11 +90,7 @@ public class FeedActivity extends PostDisplayActivity
 
     private void refreshContent()
     {
-        StringBuilder queryString = new StringBuilder();
-        for(String str : filterSettings)
-            queryString.append(str);
-
-        makeQuery(queryString.toString());
+        makeQuery(querySettings[0], querySettings[1], querySettings[2]);
 
         removePosts();
         loadPosts();
