@@ -4,12 +4,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -32,8 +30,8 @@ public class PostDisplayActivity extends ParentActivity
 
     // Database stuff
     protected DatabaseReader dbReader;
+    protected String[] querySettings = {"all", "", "time"};
     protected Query query;
-    private String queryString;
     private DocumentSnapshot lastVisible;
 
     // Posts & loading
@@ -57,47 +55,54 @@ public class PostDisplayActivity extends ParentActivity
 
         extras = getIntent().getExtras();
 
-        // Make a query based on the sent string (if one was sent, otherwise default to empty).
+        // Make a query based on the sent string (if one was sent, otherwise default to "all//time").
+        // Syntax: "field/criteria,criteria,criteria/sorting"
+        // Example: "tags/red/score" "userID/User1,User2/time"
         if(extras != null)
-            queryString = extras.getString("query", "");
-        else
-            queryString = "";
+        {
+            String queryString = extras.getString("query", "all//time");
 
-        makeQuery(queryString);
+            querySettings = queryString.split("/");
+
+
+            makeQuery(querySettings[0], querySettings[1], querySettings[2]);
+        }
+        else
+        {
+            makeQuery("all", "", "time");
+        }
+
+
     }
 
-    // Syntax: "field/criteria/sorting"
-    // Example: "tags/red/time" "userID/insert userID here/time"
-    protected void makeQuery(String queryString)
+    protected void makeQuery(String field, String criteria, String sorting)
     {
-        if(queryString.equals(""))
-            queryString = "all//time";
-
-        String[] queryParts = queryString.split("/");
-        String[] criteria = queryParts[1].split(",");
-
+        // Collection is always "posts".
         query = dbReader.db.collection("posts");
 
-        // Field is a single item.
-        if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
-            query = query.whereIn(queryParts[0], Arrays.asList(criteria));
+        // Split criteria into its ows array.
+        String[] criteriaArray = criteria.split(",");
 
-        // Field is an array of items.
-        else if (queryParts[0].equals("tags"))
-            query = query.whereArrayContains(queryParts[0], queryParts[1]);
+        // Check which field is used for filtering, should always be either "userID", "channel" or "tags" (or "", in which case we don't filter).
+        // "tags" field is an array, so "whereArrayContainsAny" is used instead of "whereIn".
+        if(criteriaArray.length > 0)
+        {
+            if (field.equals("userID") || field.equals("channel"))
+                query = query.whereIn(field, Arrays.asList(criteriaArray));
+            else if (field.equals("tags"))
+                query = query.whereArrayContainsAny(field, Arrays.asList(criteriaArray));
+        }
 
-        // Sort by
-        query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
+        // Sort by either "time" or "score"
+        query = query.orderBy(sorting, Query.Direction.DESCENDING);
 
         // Get only a set amount of posts at once.
         query = query.limit(postLoadAmount);
-
-        this.queryString = queryString;
     }
 
     private void refreshPosts()
     {
-        makeQuery(queryString);
+        makeQuery(querySettings[0], querySettings[1], querySettings[2]);
 
         removePosts();
         loadPosts();
@@ -131,8 +136,17 @@ public class PostDisplayActivity extends ParentActivity
             {
                 List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
 
+                // If there's nothing to show, remove the loading icon.
                 if(querySnapshots == null || querySnapshots.size() <= 0)
+                {
+                    allPosts.remove(allPosts.size() - 1);
+                    feedContentAdapter.notifyItemRemoved(allPosts.size());
+
+                    loading = false;
+                    loadedAll = true;
+
                     return;
+                }
 
                 Map<String, String> usernamePairs = new HashMap<>();
 

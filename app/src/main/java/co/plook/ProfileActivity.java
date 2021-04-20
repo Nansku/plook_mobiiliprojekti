@@ -35,9 +35,6 @@ public class ProfileActivity extends ParentActivity
     private TextView profileNameTextView;
     private Button followButton;
     private Button editProfileButton;
-    private NavigationView navigationView;
-    private ViewGroup content;
-    private ViewGroup contentRight;
     private GridAdapter gridAdapter;
     private GridView gridView;
     private DatabaseReader dbReader;
