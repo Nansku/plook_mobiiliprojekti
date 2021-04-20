@@ -2,10 +2,12 @@ package co.plook;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -28,7 +30,8 @@ public class PostDisplayActivity extends ParentActivity
 
     // Database stuff
     protected DatabaseReader dbReader;
-    private Query query;
+    protected String[] querySettings = {"all", "", "time"};
+    protected Query query;
     private DocumentSnapshot lastVisible;
 
     // Posts & loading
@@ -52,39 +55,57 @@ public class PostDisplayActivity extends ParentActivity
 
         extras = getIntent().getExtras();
 
-        // Make a query based on the sent string (if one was sent, otherwise default to empty).
-        String queryString = "";
+        // Make a query based on the sent string (if one was sent, otherwise default to "all//time").
+        // Syntax: "field/criteria,criteria,criteria/sorting"
+        // Example: "tags/red/score" "userID/User1,User2/time"
         if(extras != null)
-            queryString = extras.getString("query", "");
+        {
+            String queryString = extras.getString("query", "all//time");
 
-        makeQuery(queryString);
+            querySettings = queryString.split("/");
+
+
+            makeQuery(querySettings[0], querySettings[1], querySettings[2]);
+        }
+        else
+        {
+            makeQuery("all", "", "time");
+        }
+
+
     }
 
-    // Syntax: "field/criteria/sorting"
-    // Example: "tags/red/time" "userID/insert userID here/time"
-    protected void makeQuery(String queryString)
+    protected void makeQuery(String field, String criteria, String sorting)
     {
-        if(queryString.equals(""))
-            queryString = "all//time";
-
-        String[] queryParts = queryString.split("/");
-        String[] criteria = queryParts[1].split(",");
-
+        // Collection is always "posts".
         query = dbReader.db.collection("posts");
 
-        // Field is a single item.
-        if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
-            query = query.whereIn(queryParts[0], Arrays.asList(criteria));
+        // Split criteria into its ows array.
+        String[] criteriaArray = criteria.split(",");
 
-        // Field is an array of items.
-        else if (queryParts[0].equals("tags"))
-            query = query.whereArrayContains(queryParts[0], queryParts[1]);
+        // Check which field is used for filtering, should always be either "userID", "channel" or "tags" (or "", in which case we don't filter).
+        // "tags" field is an array, so "whereArrayContainsAny" is used instead of "whereIn".
+        if(criteriaArray.length > 0)
+        {
+            if (field.equals("userID") || field.equals("channel"))
+                query = query.whereIn(field, Arrays.asList(criteriaArray));
+            else if (field.equals("tags"))
+                query = query.whereArrayContainsAny(field, Arrays.asList(criteriaArray));
+        }
 
-        // Sort by
-        query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
+        // Sort by either "time" or "score"
+        query = query.orderBy(sorting, Query.Direction.DESCENDING);
 
         // Get only a set amount of posts at once.
         query = query.limit(postLoadAmount);
+    }
+
+    private void refreshPosts()
+    {
+        makeQuery(querySettings[0], querySettings[1], querySettings[2]);
+
+        removePosts();
+        loadPosts();
     }
 
     protected void loadPosts()
@@ -115,8 +136,17 @@ public class PostDisplayActivity extends ParentActivity
             {
                 List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
 
+                // If there's nothing to show, remove the loading icon.
                 if(querySnapshots == null || querySnapshots.size() <= 0)
+                {
+                    allPosts.remove(allPosts.size() - 1);
+                    feedContentAdapter.notifyItemRemoved(allPosts.size());
+
+                    loading = false;
+                    loadedAll = true;
+
                     return;
+                }
 
                 Map<String, String> usernamePairs = new HashMap<>();
 
@@ -151,6 +181,9 @@ public class PostDisplayActivity extends ParentActivity
             post.setImageUrl(document.getString("url"));
             post.setUserID(usernamePairs.get(document.get("userID")));
 
+            long score = document.getLong("score") == null ? 0 : document.getLong("score");
+            post.setScore(score);
+
             allPosts.add(post);
         }
 
@@ -176,7 +209,20 @@ public class PostDisplayActivity extends ParentActivity
         this.recyclerView = recyclerView;
 
         feedContentAdapter = new FeedContentAdapter(allPosts, context);
-        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
+        feedContentAdapter.setOnItemClickedListener(new FeedContentAdapter.ClickListener()
+        {
+            @Override
+            public void onItemClick(int position, View view)
+            {
+                openPostActivity(allPosts.get(position).getPostID());
+            }
+
+            @Override
+            public void onVoteClick(int position, int vote)
+            {
+                votePost(allPosts.get(position).getPostID(), vote);
+            }
+        });
 
         recyclerView.setAdapter(feedContentAdapter);
         recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
@@ -208,6 +254,24 @@ public class PostDisplayActivity extends ParentActivity
                 }
             }
         });
+    }
+
+    protected void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)
+    {
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh()
+            {
+                refreshPosts();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+    }
+
+    private void votePost(String postID, int vote)
+    {
+        System.out.println("YOU VOTED: " + vote + " ON POST: " + postID);
     }
 
     private void openPostActivity(String postID)

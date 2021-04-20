@@ -1,8 +1,16 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.widget.Toolbar;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -20,9 +28,13 @@ import java.util.List;
 
 public class ProfileActivity extends ParentActivity
 {
-    private Button followButton;
+    private Context context;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private Toolbar toolbar;
     private TextView profileNameTextView;
-
+    private Button followButton;
+    private Button editProfileButton;
     private GridAdapter gridAdapter;
     private GridView gridView;
     private DatabaseReader dbReader;
@@ -33,6 +45,7 @@ public class ProfileActivity extends ParentActivity
     private boolean isFollowing = false;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -52,20 +65,31 @@ public class ProfileActivity extends ParentActivity
         followButton = findViewById(R.id.followButton);
         profileNameTextView = findViewById(R.id.usernameTextview);
 
+        followButton = findViewById(R.id.followButton);
+        editProfileButton = findViewById(R.id.editProfile);
+        editProfileButton.setVisibility(View.GONE);
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();
-        if(extras != null)
-            userID = extras.getString("user_id");
-        else
-            userID = auth.getUid();
 
-        if (userID.equals(auth.getUid()))
+        if (extras != null) {
+            userID = extras.getString("user_id");
+        } else {
+            userID = auth.getUid();
+        }
+
+
+        if (userID.equals(auth.getUid())) {
             followButton.setVisibility(View.GONE);
-        else
+            editProfileButton.setVisibility(View.VISIBLE);
+
+        } else {
             checkIfFollowing();
-            
+        }
+
         // GRIDVIEW
-        gridView = findViewById(R.id.postGrid);
+        gridView = (ExpandableHeightGridView) findViewById(R.id.postGrid);
+        // HACK TO EXPAND GRIDVIEW TO BOTTOM
+        ((ExpandableHeightGridView) gridView).setExpanded(true);
 
         // get nickname for TextView (this should come from auth.getCurrentUser())
         dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
@@ -74,7 +98,7 @@ public class ProfileActivity extends ParentActivity
         });
 
         // FIND PHOTOS FROM FIREBASE
-        Task<QuerySnapshot> postTask = dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
+        dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
@@ -90,12 +114,13 @@ public class ProfileActivity extends ParentActivity
 
             gridAdapter = new GridAdapter(this, R.layout.activity_profile_post, userPosts);
 
+
             gridView.setAdapter(gridAdapter);
 
             gridAdapter.notifyDataSetChanged();
 
-            Button button = findViewById(R.id.editProfile);
-            button.setOnClickListener(new View.OnClickListener() {
+
+            editProfileButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -104,6 +129,14 @@ public class ProfileActivity extends ParentActivity
                 }
             });
         });
+
+        // MAKES GRID NOT SCROLLABLE
+        /*gridView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return event.getAction() == MotionEvent.ACTION_MOVE;
+            }
+        });*/
 
         // ON ITEM LISTENER FOR GRID VIEW
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -114,6 +147,8 @@ public class ProfileActivity extends ParentActivity
             }
 
         });
+
+
     }
 
     private void checkIfFollowing()
