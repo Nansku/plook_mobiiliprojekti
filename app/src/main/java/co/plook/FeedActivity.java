@@ -39,8 +39,8 @@ public class FeedActivity extends PostDisplayActivity
 
     public void setFilterCriteriaAll(View v)
     {
-        querySettings[0] = "all/";
-        querySettings[1] = "/";
+        querySettings[0] = "all";
+        querySettings[1] = "";
 
         refreshContent();
     }
@@ -54,7 +54,7 @@ public class FeedActivity extends PostDisplayActivity
             {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
-                querySettings[0] = "userID/";
+                querySettings[0] = "userID";
                 querySettings[1] = "";
 
                 List<String> channelIDs = (List<String>) document.get("followed_users");
@@ -64,8 +64,6 @@ public class FeedActivity extends PostDisplayActivity
                         querySettings[1] += str + ",";
 
                 }
-
-                querySettings[1] += "/";
 
                 refreshContent();
             }
