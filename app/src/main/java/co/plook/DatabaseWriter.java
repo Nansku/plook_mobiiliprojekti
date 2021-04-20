@@ -45,6 +45,7 @@ public class DatabaseWriter
         post.put("caption", caption);
         post.put("channel", channel);
         post.put("description", description);
+        post.put("score", 0);
         post.put("tags", tags);
         post.put("time", timeNow);
         post.put("url", url);
