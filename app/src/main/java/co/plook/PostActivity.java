@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.palette.graphics.Palette;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -36,6 +38,7 @@ public class PostActivity extends ParentActivity
 {
     //views
     private Context context;
+    private ScrollView scrollView;
     private ViewGroup content;
     private ImageView imageView;
     private RelativeLayout layout;
@@ -52,7 +55,6 @@ public class PostActivity extends ParentActivity
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
-    private ActionBar toolBar;
 
 
     @Override
@@ -66,11 +68,13 @@ public class PostActivity extends ParentActivity
         dbReader = new DatabaseReader();
         dbWriter = new DatabaseWriter();
 
+        scrollView = findViewById(R.id.post_scrollView);
         content = findViewById(R.id.post_content);
         imageView = findViewById(R.id.image);
+
+        // swatch stuff...
         layout = findViewById(R.id.darker_layout);
         lighter_layout = findViewById(R.id.lighter_layout);
-
         commentButton = findViewById(R.id.comment_button);
         buttonButton = findViewById(R.id.button_button);
 
@@ -78,12 +82,46 @@ public class PostActivity extends ParentActivity
         userIDs = new ArrayList<>();
         allComments = new ArrayList<>();
 
+        initializeSwipeRefreshLayout();
+
         //postID from feed
         Bundle extras = getIntent().getExtras();
-        String postID = extras.getString("post_id");
+
+        String postID = extras.getString("post");
+        if (postID == null)
+            postID = extras.getString("post_id");
+
+
         post.setPostID(postID);
 
-        dbReader.findDocumentByID("posts", postID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        loadPostData();
+        loadComments(false);
+    }
+
+    private void initializeSwipeRefreshLayout()
+    {
+        SwipeRefreshLayout swipeContainer = findViewById(R.id.post_swipeRefresh);
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh()
+            {
+                refreshPost();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+    }
+
+    private void refreshPost()
+    {
+        loadPostData();
+        loadComments(false);
+    }
+
+    private void loadPostData()
+    {
+        dbReader.findDocumentByID("posts", post.getPostID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
@@ -98,6 +136,13 @@ public class PostActivity extends ParentActivity
                         String username = task.getResult().getDocuments().get(0).getString("name");
                         TextView textView_username = findViewById(R.id.post_username);
                         textView_username.setText(username);
+
+                        if (post.getChannelID().equals(""))
+                        {
+                            loadComments(false);
+                            return;
+                        }
+
 
                         dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                         {
@@ -115,8 +160,6 @@ public class PostActivity extends ParentActivity
                 });
             }
         });
-
-        loadComments();
     }
 
     private void makePost(QuerySnapshot documentSnapshots)
@@ -144,6 +187,9 @@ public class PostActivity extends ParentActivity
         textView_caption.setText(post.getCaption());
         textView_description.setText(post.getDescription());
 
+        // Remove tags buttons.
+        viewGroup_tags.removeAllViews();
+
         // Add tag buttons.
         for (String tag : post.getTags())
         {
@@ -170,15 +216,15 @@ public class PostActivity extends ParentActivity
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
                     {
                         imageView.setImageBitmap(resource);
-                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
+                        /*Palette.from(resource).generate(new Palette.PaletteAsyncListener()
                         {
                             @Override
                             public void onGenerated(@Nullable Palette palette)
                             {
                                 Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
-                                setColors(swatches);
+                                //setColors(swatches);
                             }
-                        });
+                        });*/
                     }
 
                     @Override
@@ -224,8 +270,10 @@ public class PostActivity extends ParentActivity
         }
     }*/
 
-    private void loadComments()
+    private void loadComments(boolean scrollToBottom)
     {
+        removeComments();
+
         dbReader.findSubcollection("comment_sections", post.getPostID(), "comments").addOnCompleteListener(task ->
         {
             QuerySnapshot commentSnapshots = task.getResult();
@@ -254,6 +302,10 @@ public class PostActivity extends ParentActivity
                 }
 
                 addComments(usernamePairs, commentSnapshots);
+                showComments(allComments);
+
+                if(scrollToBottom)
+                    scrollView.fullScroll(View.FOCUS_DOWN);
             });
         });
     }
@@ -266,8 +318,6 @@ public class PostActivity extends ParentActivity
             Comment comment = new Comment(document.getString("userID"), displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
             allComments.add(comment);
         }
-
-        showComments(allComments);
     }
 
     private void showComments(List<Comment> comments)
@@ -293,6 +343,7 @@ public class PostActivity extends ParentActivity
 
     private void removeComments()
     {
+        allComments.clear();
         content.removeAllViews();
     }
 
@@ -306,11 +357,7 @@ public class PostActivity extends ParentActivity
         Comment commentToAdd = dbWriter.addComment(auth.getUid(), commentText, post.getPostID());
         commentToAdd.setUserName(auth.getCurrentUser().getDisplayName());
 
-        //hmm does 'allComments' have to be global or do we remove the parameter from 'showComment'??
-        allComments.add(commentToAdd);
-
-        removeComments();
-        showComments(allComments);
+        loadComments(true);
     }
 
     public void openFeedActivity(String query)

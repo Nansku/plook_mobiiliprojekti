@@ -6,66 +6,106 @@
     android:layout_height="match_parent"
     tools:context=".FeedActivity">
 
-    <!-- toolbar tulee ParentActivityn kautta -->
-    <!--<include layout="@layout/appbar"/>-->
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_weight="1"
-        android:layout_margin="2dp"
-        android:text="Channels"
-        android:backgroundTint="@color/lighter_forest"
-        android:onClick="openChannelBrowse"
-    />
-
     <LinearLayout
-        android:id="@+id/filters"
+        android:id="@+id/feed_menu"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:orientation="horizontal"
         android:background="@color/forest">
 
-        <Button
+        <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_margin="2dp"
-            android:onClick="getAllPosts"
+            android:gravity="center"
             android:text="ALL"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:onClick="setFilterCriteriaAll"
+            android:foreground="@drawable/card_ripple"
         />
 
-        <Button
+        <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_margin="2dp"
-            android:onClick="getFollowedPosts"
-            android:text="Followed"
+            android:gravity="center"
+            android:text="FOLLOWING"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:onClick="setFilterCriteriaFollowing"
+            android:foreground="@drawable/card_ripple"
         />
 
-        <Button
-            android:id="@+id/testButton"
+        <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="2dp"
-            android:text="Search"
+            android:layout_weight="0.25"
+            android:gravity="center"
+            android:text="F"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:onClick="toggleFiltersMenu"
+            android:foreground="@drawable/card_ripple"
         />
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/feed_recycle"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/feed_swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/filters"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingHorizontal="5dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    />
+        app:layout_constraintTop_toBottomOf="@+id/feed_menu"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/feed_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="5dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <RadioGroup
+        android:id="@+id/feed_filters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/feed_menu"
+        android:background="#BF000000"
+        android:visibility="gone">
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="50dp"
+            android:gravity="center_vertical"
+            android:text="NEWEST"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:onClick="setFilterSortingTime"
+            android:foreground="@drawable/card_ripple"
+        />
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="50dp"
+            android:gravity="center_vertical"
+            android:text="POPULAR"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:onClick="setFilterSortingVotes"
+            android:foreground="@drawable/card_ripple"
+        />
+
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

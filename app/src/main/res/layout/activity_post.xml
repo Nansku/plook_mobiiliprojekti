@@ -6,150 +6,160 @@
     android:layout_height="match_parent"
     tools:context=".PostActivity">
 
-    <ScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/post_swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:scrollbars="none">
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/post_scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:scrollbars="none">
 
-            <!-- Post Image Header -->
-            <RelativeLayout
-                android:id="@+id/darker_layout"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/forest">
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/post_caption"
+                <!-- Post Image Header -->
+                <RelativeLayout
+                    android:id="@+id/darker_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:layout_marginHorizontal="40dp"
-                    android:layout_marginVertical="10dp"
-                />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/post_caption"
-                    android:orientation="horizontal">
+                    android:background="@color/forest">
 
                     <TextView
-                        android:id="@+id/post_username"
+                        android:id="@+id/post_caption"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="40dp"
-                        android:paddingVertical="7dp"
                         android:text=""
                         android:textColor="@color/white"
-                        android:textSize="14sp"
-                        android:onClick="openProfileActivity"
-                        android:background="@drawable/card_ripple"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:layout_marginHorizontal="40dp"
+                        android:layout_marginVertical="10dp"
+                    />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/post_caption"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/post_username"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingStart="40dp"
+                            android:paddingVertical="7dp"
+                            android:text=""
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:onClick="openProfileActivity"
+                            android:background="@drawable/card_ripple"
+                        />
+
+                        <TextView
+                            android:id="@+id/post_channel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingEnd="40dp"
+                            android:paddingVertical="7dp"
+                            android:text=""
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"
+                            android:gravity="end"
+                            android:onClick="openChannelActivity"
+                            android:background="@drawable/card_ripple"
+                            />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <!-- The Image Itself! -->
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/placeholder"
+                    android:adjustViewBounds="true"
+                    android:transitionName="postImage"
+                />
+
+                <!-- Post Image Footer -->
+                <RelativeLayout
+                    android:id="@+id/lighter_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/lighter_forest">
+
+                    <TextView
+                        android:id="@+id/post_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:padding="10dp"
+                        android:layout_marginBottom="40dp"
                     />
 
                     <TextView
-                        android:id="@+id/post_channel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingEnd="40dp"
-                        android:paddingVertical="7dp"
-                        android:text=""
+                        android:layout_above="@id/post_tags"
+                        android:text="Tags"
                         android:textColor="@color/white"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textAllCaps="true"
-                        android:gravity="end"
-                        android:onClick="openChannelActivity"
-                        android:background="@drawable/card_ripple"
-                        />
+                        android:padding="10dp"
+                    />
 
-                </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/post_tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/post_description"
+                        android:orientation="horizontal"
+                        android:divider="@drawable/divider_feed_content"
+                        android:showDividers="middle"
+                        android:paddingHorizontal="10dp"
+                        android:layout_marginBottom="20dp"
+                    />
 
-            </RelativeLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/post_tags"
+                        android:text="COMMENTS"
+                        android:textColor="@color/white"
+                        android:padding="10dp"
+                    />
 
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:transitionName="postImage"
-            />
-
-            <!-- Post Image Footer -->
-            <RelativeLayout
-                android:id="@+id/lighter_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/lighter_forest">
-
-                <TextView
-                    android:id="@+id/post_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:padding="10dp"
-                    android:layout_marginBottom="40dp"
-                />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@id/post_tags"
-                    android:text="Tags"
-                    android:textColor="@color/white"
-                    android:padding="10dp"
-                />
+                </RelativeLayout>
 
                 <LinearLayout
-                    android:id="@+id/post_tags"
+                    android:id="@+id/post_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/post_description"
-                    android:orientation="horizontal"
-                    android:divider="@drawable/divider_feed_content"
-                    android:showDividers="middle"
-                    android:paddingHorizontal="10dp"
-                    android:layout_marginBottom="20dp"
+                    android:orientation="vertical"
                 />
 
-                <TextView
+                <Space
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/post_tags"
-                    android:text="COMMENTS"
-                    android:textColor="@color/white"
-                    android:padding="10dp"
+                    android:layout_height="65dp"
                 />
 
-            </RelativeLayout>
+            </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/post_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-            />
+        </ScrollView>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="65dp"
-            />
-
-        </LinearLayout>
-
-    </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!-- Controls -->
     <androidx.cardview.widget.CardView
@@ -176,7 +186,8 @@
                 android:text="Button"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+            />
 
             <TextView
                 android:id="@+id/comment_button"

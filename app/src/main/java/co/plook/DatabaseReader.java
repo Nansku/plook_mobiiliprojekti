@@ -22,13 +22,14 @@ public class DatabaseReader
 
     //private String userID;
 
-
     public DatabaseReader()
     {
         db = FirebaseFirestore.getInstance();
     }
 
     //WIP logic that determines what the type of queried field is
+
+
 
     public Task<QuerySnapshot> findDocuments(Query q)
     {
@@ -80,7 +81,6 @@ public class DatabaseReader
         return q.get().addOnCompleteListener(task -> { });
     }
 
-    //siirrä database luokkaan ja muuta parametriksi ArrayList<String>
     public Task<List<Object>> requestNicknames(ArrayList<String> userIDs)
     {
         Task[] tasks = new Task[userIDs.size()];

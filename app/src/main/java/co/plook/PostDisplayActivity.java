@@ -2,10 +2,14 @@ package co.plook;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -28,7 +32,8 @@ public class PostDisplayActivity extends ParentActivity
 
     // Database stuff
     protected DatabaseReader dbReader;
-    private Query query;
+    protected Query query;
+    private String queryString;
     private DocumentSnapshot lastVisible;
 
     // Posts & loading
@@ -53,9 +58,10 @@ public class PostDisplayActivity extends ParentActivity
         extras = getIntent().getExtras();
 
         // Make a query based on the sent string (if one was sent, otherwise default to empty).
-        String queryString = "";
         if(extras != null)
             queryString = extras.getString("query", "");
+        else
+            queryString = "";
 
         makeQuery(queryString);
     }
@@ -85,6 +91,16 @@ public class PostDisplayActivity extends ParentActivity
 
         // Get only a set amount of posts at once.
         query = query.limit(postLoadAmount);
+
+        this.queryString = queryString;
+    }
+
+    private void refreshPosts()
+    {
+        makeQuery(queryString);
+
+        removePosts();
+        loadPosts();
     }
 
     protected void loadPosts()
@@ -151,6 +167,9 @@ public class PostDisplayActivity extends ParentActivity
             post.setImageUrl(document.getString("url"));
             post.setUserID(usernamePairs.get(document.get("userID")));
 
+            long score = document.getLong("score") == null ? 0 : document.getLong("score");
+            post.setScore(score);
+
             allPosts.add(post);
         }
 
@@ -176,7 +195,20 @@ public class PostDisplayActivity extends ParentActivity
         this.recyclerView = recyclerView;
 
         feedContentAdapter = new FeedContentAdapter(allPosts, context);
-        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
+        feedContentAdapter.setOnItemClickedListener(new FeedContentAdapter.ClickListener()
+        {
+            @Override
+            public void onItemClick(int position, View view)
+            {
+                openPostActivity(allPosts.get(position).getPostID());
+            }
+
+            @Override
+            public void onVoteClick(int position, int vote)
+            {
+                votePost(allPosts.get(position).getPostID(), vote);
+            }
+        });
 
         recyclerView.setAdapter(feedContentAdapter);
         recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
@@ -210,19 +242,29 @@ public class PostDisplayActivity extends ParentActivity
         });
     }
 
+    protected void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)
+    {
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh()
+            {
+                refreshPosts();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+    }
+
+    private void votePost(String postID, int vote)
+    {
+        System.out.println("YOU VOTED: " + vote + " ON POST: " + postID);
+    }
+
     private void openPostActivity(String postID)
     {
         Intent intent = new Intent(this, PostActivity.class);
         intent.putExtra("post_id", postID);
 
         startActivity(intent);
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        //block the user from going back to blank
-        //maybe add a feed refresh function here?
-        //super.onBackPressed();
     }
 }

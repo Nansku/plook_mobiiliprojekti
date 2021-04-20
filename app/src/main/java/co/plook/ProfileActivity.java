@@ -12,16 +12,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -35,6 +32,7 @@ public class ProfileActivity extends ParentActivity
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
+    private TextView profileNameTextView;
     private Button followButton;
     private Button editProfileButton;
     private NavigationView navigationView;
@@ -54,14 +52,21 @@ public class ProfileActivity extends ParentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        userPosts = new ArrayList<Post>();
+        super.onCreate(savedInstanceState);
+        currentActivity = this;
+        navigationView.getMenu().getItem(3).setChecked(true);
+
+        userPosts = new ArrayList<>();
         dbReader = new DatabaseReader();
         dbWriter = new DatabaseWriter();
-        super.onCreate(savedInstanceState);
 
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile, contentGroup);
-        //gridView = findViewById(R.id.postGrid);
+
+        gridView = findViewById(R.id.postGrid);
+
+        followButton = findViewById(R.id.followButton);
+        profileNameTextView = findViewById(R.id.usernameTextview);
 
         followButton = findViewById(R.id.followButton);
         editProfileButton = findViewById(R.id.editProfile);
@@ -89,12 +94,17 @@ public class ProfileActivity extends ParentActivity
         // HACK TO EXPAND GRIDVIEW TO BOTTOM
         ((ExpandableHeightGridView) gridView).setExpanded(true);
 
+        // get nickname for TextView (this should come from auth.getCurrentUser())
+        dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
+            String nickname = (String)task.getResult().getDocuments().get(0).get("name");
+            profileNameTextView.setText(nickname);
+        });
+
         // FIND PHOTOS FROM FIREBASE
         dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
-            System.out.println(snapshot.getDocuments().toString());
             for (QueryDocumentSnapshot document : snapshot)
             {   Post post = new Post();
                 post.setPostID(document.getId());
@@ -104,8 +114,6 @@ public class ProfileActivity extends ParentActivity
 
                 userPosts.add(post);
             }
-
-            System.out.println(userPosts.size());
 
             gridAdapter = new GridAdapter(this, R.layout.activity_profile_post, userPosts);
 
@@ -169,15 +177,6 @@ public class ProfileActivity extends ParentActivity
     {
         String buttonString = isFollowing ? "Unfollow" : "Follow";
         followButton.setText(buttonString);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     // OPEN SINGLE POST IN PostActivity
