@@ -167,6 +167,9 @@ public class PostDisplayActivity extends ParentActivity
             post.setImageUrl(document.getString("url"));
             post.setUserID(usernamePairs.get(document.get("userID")));
 
+            long score = document.getLong("score") == null ? 0 : document.getLong("score");
+            post.setScore(score);
+
             allPosts.add(post);
         }
 

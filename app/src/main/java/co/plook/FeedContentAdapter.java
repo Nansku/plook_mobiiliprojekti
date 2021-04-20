@@ -33,6 +33,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     {
         private final TextView textView_caption;
         private final TextView textView_username;
+        private final TextView textView_score;
         private final ImageView imageView_image;
 
         private View view_voteUp;
@@ -44,6 +45,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             textView_caption = view.findViewById(R.id.post_caption);
             textView_username = view.findViewById(R.id.post_username);
+            textView_score = view.findViewById(R.id.post_score);
             imageView_image = view.findViewById(R.id.post_image);
 
             view_voteUp = view.findViewById(R.id.post_voteUp);
@@ -58,6 +60,8 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView getTextView_caption() { return textView_caption; }
 
         public TextView getTextView_username() { return textView_username; }
+
+        public TextView getTextView_score() { return textView_score; }
 
         public ImageView getImageView_image() { return imageView_image; }
 
@@ -118,6 +122,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         viewHolder.getTextView_caption().setText(post.getCaption());
         viewHolder.getTextView_username().setText(post.getUserID());
+        viewHolder.getTextView_score().setText(String.valueOf(post.getScore()));
 
         Glide.with(context).load(post.getImageUrl()).into(viewHolder.getImageView_image());
     }

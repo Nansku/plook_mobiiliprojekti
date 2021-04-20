@@ -90,7 +90,7 @@ public class FeedActivity extends PostDisplayActivity
 
     public void setFilterSortingVotes(View v)
     {
-        filterSettings[2] = "time";
+        filterSettings[2] = "score";
 
         refreshContent();
 

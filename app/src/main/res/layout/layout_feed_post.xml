@@ -62,14 +62,8 @@
                 android:showDividers="middle"
                 android:dividerPadding="50dp">
 
-                <ImageView
-                    android:id="@+id/post_voteUp"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@color/teal_700"
-                />
-
                 <TextView
+                    android:id="@+id/post_score"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="0"
@@ -77,6 +71,13 @@
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:gravity="bottom"
+                />
+
+                <ImageView
+                    android:id="@+id/post_voteUp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@color/teal_700"
                 />
 
                 <ImageView
@@ -85,16 +86,6 @@
                     android:layout_height="30dp"
                     android:src="@color/teal_700"
                     />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="0"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:gravity="bottom"
-                />
 
             </LinearLayout>
 
