@@ -2,7 +2,6 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.palette.graphics.Palette;
 
 import android.content.Context;
@@ -43,6 +42,8 @@ public class PostActivity extends ParentActivity
     private ViewGroup viewGroup_tags;
     private TextView commentButton;
     private TextView buttonButton;
+    private TextView deletePostTextView;
+    private TextView nicknameTextView;
 
     //database stuff
     private DatabaseReader dbReader;
@@ -67,6 +68,8 @@ public class PostActivity extends ParentActivity
 
         content = findViewById(R.id.post_content);
         imageView = findViewById(R.id.image);
+        deletePostTextView = findViewById(R.id.delete_post);
+        nicknameTextView = findViewById(R.id.post_username);
 
         // swatch stuff...
         layout = findViewById(R.id.darker_layout);
@@ -95,14 +98,17 @@ public class PostActivity extends ParentActivity
             {
                 makePost(task.getResult());
 
+                if (post.getUserID().equals(auth.getUid()))
+                    deletePostTextView.setVisibility(View.VISIBLE);
+
                 dbReader.findDocumentByID("users", post.getUserID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
                     {
-                        String username = task.getResult().getDocuments().get(0).getString("name");
-                        TextView textView_username = findViewById(R.id.post_username);
-                        textView_username.setText(username);
+                        String nickname = task.getResult().getDocuments().get(0).getString("name");
+
+                        nicknameTextView.setText(nickname);
 
                         if (post.getChannelID().equals(""))
                         {
