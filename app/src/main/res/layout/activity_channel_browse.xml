@@ -23,7 +23,7 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:onClick="getAllPosts"
+            android:onClick="setFilterCriteriaAll"
             android:foreground="@drawable/card_ripple"
         />
 
@@ -36,20 +36,7 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:onClick="getFollowedPosts"
-            android:foreground="@drawable/card_ripple"
-        />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.25"
-            android:gravity="center"
-            android:text="F"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:onClick="getFollowedPosts"
+            android:onClick="setFilterCriteriaFollowing"
             android:foreground="@drawable/card_ripple"
         />
 
@@ -102,7 +89,6 @@
             />
 
         </LinearLayout>
-
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

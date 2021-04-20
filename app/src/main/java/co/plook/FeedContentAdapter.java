@@ -33,21 +33,35 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     {
         private final TextView textView_caption;
         private final TextView textView_username;
+        private final TextView textView_score;
         private final ImageView imageView_image;
+
+        private View view_voteUp;
+        private View view_voteDown;
 
         public PostViewHolder(View view)
         {
             super(view);
-            view.setOnClickListener(this);
 
             textView_caption = view.findViewById(R.id.post_caption);
             textView_username = view.findViewById(R.id.post_username);
+            textView_score = view.findViewById(R.id.post_score);
             imageView_image = view.findViewById(R.id.post_image);
+
+            view_voteUp = view.findViewById(R.id.post_voteUp);
+            view_voteDown = view.findViewById(R.id.post_voteDown);
+
+            view.setOnClickListener(this);
+
+            view_voteUp.setOnClickListener(v -> clickListener.onVoteClick(getAdapterPosition(), 1));
+            view_voteDown.setOnClickListener(v -> clickListener.onVoteClick(getAdapterPosition(), -1));
         }
 
         public TextView getTextView_caption() { return textView_caption; }
 
         public TextView getTextView_username() { return textView_username; }
+
+        public TextView getTextView_score() { return textView_score; }
 
         public ImageView getImageView_image() { return imageView_image; }
 
@@ -108,6 +122,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         viewHolder.getTextView_caption().setText(post.getCaption());
         viewHolder.getTextView_username().setText(post.getUserID());
+        viewHolder.getTextView_score().setText(String.valueOf(post.getScore()));
 
         Glide.with(context).load(post.getImageUrl()).into(viewHolder.getImageView_image());
     }
@@ -120,6 +135,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public interface ClickListener
     {
         void onItemClick(int position, View view);
+        void onVoteClick(int position, int vote);
     }
 
     public void setOnItemClickedListener(ClickListener clickedListener)

@@ -139,7 +139,7 @@ public class PostActivity extends ParentActivity
 
                         if (post.getChannelID().equals(""))
                         {
-                            loadComments();
+                            loadComments(false);
                             return;
                         }
 
@@ -208,7 +208,7 @@ public class PostActivity extends ParentActivity
             });
         }
 
-        Glide.with(context)
+        /*Glide.with(context)
                 .asBitmap()
                 .load(post.getImageUrl())
                 .into(new CustomTarget<Bitmap>() {
@@ -216,7 +216,7 @@ public class PostActivity extends ParentActivity
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
                     {
                         imageView.setImageBitmap(resource);
-                        /*Palette.from(resource).generate(new Palette.PaletteAsyncListener()
+                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
                         {
                             @Override
                             public void onGenerated(@Nullable Palette palette)
@@ -224,7 +224,7 @@ public class PostActivity extends ParentActivity
                                 Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
                                 //setColors(swatches);
                             }
-                        });*/
+                        });
                     }
 
                     @Override
@@ -232,15 +232,15 @@ public class PostActivity extends ParentActivity
                     {
 
                     }
-                });
+                });*/
 
-        /*// Add image.
+        // Add image.
         Glide.with(context)
                 .load(post.getImageUrl())
-                .into(imageView);*/
+                .into(imageView);
     }
 
-    public void setColors(Palette.Swatch[] swatch)
+    /*public void setColors(Palette.Swatch[] swatch)
     {
         layout.setBackgroundColor(swatch[0].getRgb());
         lighter_layout.setBackgroundColor(swatch[1].getRgb());
@@ -268,7 +268,7 @@ public class PostActivity extends ParentActivity
         {
             ((ViewGroup)viewGroup_tags.getChildAt(i)).getChildAt(0).setBackgroundColor(swatch[0].getRgb());
         }
-    }
+    }*/
 
     private void loadComments(boolean scrollToBottom)
     {

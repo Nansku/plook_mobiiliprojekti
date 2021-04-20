@@ -8,48 +8,51 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp">
 
+        <ImageView
+            android:id="@+id/profilePic"
+            android:layout_width="wrap_content"
+            android:layout_height="450dp"
+            android:src="@drawable/start_plooking"
+            android:contentDescription="@string/picture_for_post"
+            android:layout_marginTop="30dp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintVertical_bias="0.0" />
+
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:gravity="center">
 
-            <ImageView
-                android:id="@+id/profilePic"
-
-                android:layout_width="wrap_content"
-                android:layout_height="450dp"
-                android:contentDescription="TODO"
+            <Button
                 android:layout_marginTop="30dp"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintVertical_bias="0.0"
-                android:layout_centerHorizontal="true"/>
-            <!--app:layout_constraintBottom_toTopOf="@+id/capture_image_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_baseline_image_24"-->
-
-            <Button
-                android:layout_marginTop="20dp"
                 android:id="@+id/capture_image_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Capture Image"
-                android:layout_below="@+id/profilePic"
-                android:layout_centerHorizontal="true"/>
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:text="Camera"
+                android:layout_toStartOf="@+id/choose_image_btn"
+                android:background="@drawable/circle_button_lg"
+
+                app:backgroundTint="@color/lighter_forest2"
+                android:drawableTop="@drawable/ic_open_camera"
+                android:textSize="12dp"/>
 
             <Button
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="20dp"
                 android:id="@+id/choose_image_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Choose From Gallery"
-                android:layout_below="@+id/capture_image_btn"
-                android:layout_centerHorizontal="true"/>
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:text="@string/gallery"
+                android:background="@drawable/circle_button_lg"
+                app:backgroundTint="@color/lighter_forest2"
+                android:drawableTop="@drawable/ic_open_gallery"
+                android:layout_alignParentEnd="true"
+                android:textSize="12sp"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -75,9 +78,7 @@
                 android:hint="Image description"
                 android:layout_below="@+id/post_caption"
                 android:layout_centerHorizontal="true" />
-            <!--app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/post_caption"
-            app:layout_constraintEnd_toEndOf="parent"-->
+
 
             <EditText
                 android:layout_marginTop="30dp"

@@ -11,6 +11,7 @@ public class Post
     private String userID;
     private String channelID;
     private String[] tags;
+    private long score;
 
     public Post()
     {
@@ -21,9 +22,10 @@ public class Post
         userID = "";
         channelID = "";
         tags = new String[0];
+        score = 0;
     }
 
-    public Post(String caption, String description, String imageUrl, String postID, String userID, String channelID, String[] tags)
+    public Post(String caption, String description, String imageUrl, String postID, String userID, String channelID, String[] tags, int score)
     {
         this.caption = caption;
         this.description = description;
@@ -32,6 +34,7 @@ public class Post
         this.userID = userID;
         this.channelID = channelID;
         this.tags = tags;
+        this.score = score;
     }
 
     public void setPostID(String postID) { this.postID = postID; }
@@ -48,6 +51,8 @@ public class Post
 
     public void setTags(String[] tags) { this.tags = tags; }
 
+    public void setScore(long score) { this.score = score; }
+
     public String getPostID() { return postID; }
 
     public String getCaption() { return caption; }
@@ -61,4 +66,6 @@ public class Post
     public String getChannelID() { return channelID; }
 
     public String[] getTags() { return tags; }
+
+    public long getScore() { return score; }
 }
