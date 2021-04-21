@@ -1,9 +1,15 @@
 package co.plook;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Set;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService
 {
@@ -20,6 +26,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
     {
         super.onNewToken(s);
         System.out.println("onNewToken: " + s);
-        // send new token to somewhere...
+        SharedPreferences preferences = this.getSharedPreferences("token", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("token", s).apply();
     }
 }
