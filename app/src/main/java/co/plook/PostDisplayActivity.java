@@ -7,6 +7,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
+import android.util.Log;
 import android.view.View;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,6 +40,7 @@ public class PostDisplayActivity extends ParentActivity
     protected Bundle extras;
     private ArrayList<Post> allPosts;
     private final int postLoadAmount = 10;
+    private final int postLoadThreshold = 2;
     private boolean loading = false;
     private boolean loadedAll = false;
 
@@ -61,9 +64,8 @@ public class PostDisplayActivity extends ParentActivity
         if(extras != null)
         {
             String queryString = extras.getString("query", "all//time");
-
+            // Split the queryString into 3 parts (0 = field, 1 = criteria, 2 = sorting).
             querySettings = queryString.split("/");
-
 
             makeQuery(querySettings[0], querySettings[1], querySettings[2]);
         }
@@ -71,8 +73,6 @@ public class PostDisplayActivity extends ParentActivity
         {
             makeQuery("all", "", "time");
         }
-
-
     }
 
     protected void makeQuery(String field, String criteria, String sorting)
@@ -100,11 +100,11 @@ public class PostDisplayActivity extends ParentActivity
         query = query.limit(postLoadAmount);
     }
 
-    private void refreshPosts()
+    protected void refreshPosts()
     {
         makeQuery(querySettings[0], querySettings[1], querySettings[2]);
 
-        removePosts();
+        deletePosts();
         loadPosts();
     }
 
@@ -137,7 +137,7 @@ public class PostDisplayActivity extends ParentActivity
                 List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
 
                 // If there's nothing to show, remove the loading icon.
-                if(querySnapshots == null || querySnapshots.size() <= 0)
+                if (querySnapshots == null || querySnapshots.size() <= 0)
                 {
                     allPosts.remove(allPosts.size() - 1);
                     feedContentAdapter.notifyItemRemoved(allPosts.size());
@@ -159,18 +159,20 @@ public class PostDisplayActivity extends ParentActivity
                 allPosts.remove(allPosts.size() - 1);
                 feedContentAdapter.notifyItemRemoved(allPosts.size());
 
-                makePosts(usernamePairs, postSnapshot);
-
                 loading = false;
 
-                if(postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
+                if (postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
                     loadedAll = true;
+
+                createPosts(usernamePairs, postSnapshot);
             });
         });
     }
 
-    private void makePosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
+    private void createPosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
     {
+        int oldPostCount = allPosts.size();
+
         for (QueryDocumentSnapshot document : snapshot)
         {
             Post post = new Post();
@@ -187,13 +189,13 @@ public class PostDisplayActivity extends ParentActivity
             allPosts.add(post);
         }
 
-        feedContentAdapter.notifyDataSetChanged();
+        feedContentAdapter.notifyItemRangeChanged(oldPostCount - 1, snapshot.size());
 
-        if(snapshot.size() > 0)
+        if (snapshot.size() > 0)
             lastVisible = snapshot.getDocuments().get(snapshot.size() - 1);
     }
 
-    protected void removePosts()
+    protected void deletePosts()
     {
         recyclerView.removeAllViews();
         allPosts.clear();
@@ -202,6 +204,19 @@ public class PostDisplayActivity extends ParentActivity
 
         lastVisible = null;
         loadedAll = false;
+    }
+
+    private void votePost(String postID, int vote)
+    {
+        System.out.println("YOU VOTED: " + vote + " ON POST: " + postID);
+    }
+
+    private void openPostActivity(String postID)
+    {
+        Intent intent = new Intent(this, PostActivity.class);
+        intent.putExtra("post_id", postID);
+
+        startActivity(intent);
     }
 
     protected void initializeRecyclerView(RecyclerView recyclerView)
@@ -230,6 +245,7 @@ public class PostDisplayActivity extends ParentActivity
         recyclerScrollListener();
     }
 
+    // Load more posts as the user scrolls down.
     private void recyclerScrollListener()
     {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -248,7 +264,7 @@ public class PostDisplayActivity extends ParentActivity
 
                     if (!loading && !loadedAll)
                     {
-                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2)
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - postLoadThreshold)
                             loadPosts();
                     }
                 }
@@ -258,27 +274,10 @@ public class PostDisplayActivity extends ParentActivity
 
     protected void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)
     {
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        swipeContainer.setOnRefreshListener(() ->
         {
-            @Override
-            public void onRefresh()
-            {
-                refreshPosts();
-                swipeContainer.setRefreshing(false);
-            }
+            refreshPosts();
+            swipeContainer.setRefreshing(false);
         });
-    }
-
-    private void votePost(String postID, int vote)
-    {
-        System.out.println("YOU VOTED: " + vote + " ON POST: " + postID);
-    }
-
-    private void openPostActivity(String postID)
-    {
-        Intent intent = new Intent(this, PostActivity.class);
-        intent.putExtra("post_id", postID);
-
-        startActivity(intent);
     }
 }

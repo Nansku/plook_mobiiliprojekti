@@ -18,7 +18,6 @@ import java.util.List;
 
 public class ChannelBrowseActivity extends ParentActivity
 {
-
     // Database stuff
     private DatabaseReader dbReader;
 
@@ -32,6 +31,15 @@ public class ChannelBrowseActivity extends ParentActivity
 
         dbReader = new DatabaseReader();
 
+        loadChannels();
+    }
+
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+
+        deleteChannels();
         loadChannels();
     }
 
@@ -81,6 +89,17 @@ public class ChannelBrowseActivity extends ParentActivity
                 });
             }
         });
+    }
+
+    void deleteChannels()
+    {
+        ViewGroup followedContent = findViewById(R.id.personal_channels_followed);
+        followedContent.removeAllViews();
+
+        ViewGroup allContent = findViewById(R.id.personal_channels_all);
+        allContent.removeAllViews();
+
+        followed_channels.clear();
     }
 
     private void populateChannelsList(DocumentSnapshot channelData, ViewGroup content)
