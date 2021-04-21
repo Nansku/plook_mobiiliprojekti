@@ -68,23 +68,23 @@ public class DatabaseWriter
                 });
     }
 
-    public void updateUser(String collectionPath, String userID,  HashMap<String, Object> updatedUserMap)
+    public void updateField(String collectionPath, String docID, HashMap<String, Object> updatedMap)
     {
         db.collection(collectionPath)
-                .document(userID)
-                .update(updatedUserMap)
+                .document(docID)
+                .update(updatedMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>()
                 {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("UpdateUserLog", userID + " successfully updated!");
+                        Log.d("UpdateField", docID + "'s field successfully updated!");
                     }
                 }).addOnFailureListener(new OnFailureListener()
                 {
                     @Override
                     public void onFailure(@NonNull Exception e)
                     {
-                        Log.d("UpdateUserLog", "ERROR: " + e.getMessage());
+                        Log.d("UpdateField", "ERROR: " + e.getMessage());
                     }
                 });
     }
@@ -150,7 +150,7 @@ public class DatabaseWriter
                     @Override
                     public void onSuccess(DocumentReference documentReference)
                     {
-                        System.out.println("DocumentSnapshot added with ID: " + documentReference.getId());
+                        System.out.println("Document: " + documentReference.getId() + " added to " + collectionPath);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener()
@@ -191,7 +191,7 @@ public class DatabaseWriter
                     @Override
                     public void onSuccess(DocumentReference documentReference)
                     {
-                        System.out.println("DocumentSnapshot added with ID: " + documentReference.getId());
+                        System.out.println("Document: " + documentReference.getId() + " added to path: " + collectionPath + "/" + documentID + "/" + subcollectionPath);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener()
