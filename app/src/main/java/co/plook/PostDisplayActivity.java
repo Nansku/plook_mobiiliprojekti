@@ -126,7 +126,7 @@ public class PostDisplayActivity extends ParentActivity
             query = query.startAfter(lastVisible);
 
         Map<String, String> usernamePairs = new HashMap<>();
-        ArrayList<Long> myVotes = new ArrayList<>();
+        Map<String, Long> myVotesPerPost = new HashMap<>();
 
         List<Task<Void>> subTasks = new ArrayList<>();
 
@@ -148,10 +148,10 @@ public class PostDisplayActivity extends ParentActivity
                     if(task1.getResult().getDocuments().size() > 0)
                     {
                         DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
-                        myVotes.add(doc.getLong("vote"));
+                        myVotesPerPost.put(snapshot.getId(), doc.getLong("vote"));
                     }
                     else
-                        myVotes.add(0L);
+                        myVotesPerPost.put(snapshot.getId(), 0L);
                 });
 
                 subTasks.add(voteTask);
@@ -197,13 +197,13 @@ public class PostDisplayActivity extends ParentActivity
                     if (postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
                         loadedAll = true;
 
-                    createPosts(usernamePairs, myVotes, postSnapshot);
+                    createPosts(usernamePairs, myVotesPerPost, postSnapshot);
                 }
             });
         });
     }
 
-    private void createPosts(Map<String, String> usernamePairs, ArrayList<Long> myVotes, QuerySnapshot snapshot)
+    private void createPosts(Map<String, String> usernamePairs, Map<String, Long> myVotesPerPost, QuerySnapshot snapshot)
     {
         int oldPostCount = allPosts.size();
 
@@ -221,7 +221,7 @@ public class PostDisplayActivity extends ParentActivity
 
             long score = document.getLong("score") == null ? 0 : document.getLong("score");
             post.setScore(score);
-            post.setMyVote(myVotes.get(i));
+            post.setMyVote(myVotesPerPost.get(document.getId()));
 
             allPosts.add(post);
         }
