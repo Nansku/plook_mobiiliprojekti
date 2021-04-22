@@ -90,7 +90,7 @@ public class ChannelActivity extends PostDisplayActivity
     {
         querySettings[2] = "time";
 
-        refreshContent();
+        refreshPosts();
 
         toggleFiltersMenu(null);
     }
@@ -99,17 +99,9 @@ public class ChannelActivity extends PostDisplayActivity
     {
         querySettings[2] = "score";
 
-        refreshContent();
+        refreshPosts();
 
         toggleFiltersMenu(null);
-    }
-
-    private void refreshContent()
-    {
-        makeQuery(querySettings[0], querySettings[1], querySettings[2]);
-
-        removePosts();
-        loadPosts();
     }
 
     public void toggleFiltersMenu(View v)

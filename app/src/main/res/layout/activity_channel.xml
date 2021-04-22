@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="50dp"
             android:gravity="center_vertical"
-            android:text="NEWEST"
+            android:text="LATEST"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
