@@ -17,6 +17,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -47,7 +48,7 @@ public class DatabaseWriter
         addToCollectionWithName("users", user, userID);
     }
 
-    public boolean addPost(String userID, String caption, String channel, String description, ArrayList<String> tags, String url)
+    public boolean addPost(String userID, String caption, String channel, String description, String[] tags, String url)
     {
         //First upload the picture to storage and return the imageurl
         //Then add a post document
@@ -58,7 +59,7 @@ public class DatabaseWriter
         post.put("caption", caption);
         post.put("channel", channel);
         post.put("description", description);
-        post.put("tags", tags);
+        post.put("tags", Arrays.asList(tags));
         post.put("time", timeNow);
         post.put("url", url);
         post.put("userID", userID);

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -50,6 +51,7 @@ public class ImageUploadActivity extends ParentActivity {
     private DatabaseWriter dbWriter;
     private FirebaseStorage storage;
     private StorageReference storageReference;
+
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Button mCaptureBtn;
@@ -72,6 +74,7 @@ public class ImageUploadActivity extends ParentActivity {
         relativeLayout = (RelativeLayout) findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+
 
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
@@ -217,17 +220,19 @@ public class ImageUploadActivity extends ParentActivity {
         final String randomKey = UUID.randomUUID().toString();
         StorageReference riversRef = storageReference.child("images/" + randomKey);
 
-
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
         postTags = findViewById(R.id.post_tags);
 
         String caption = postCaption.getText().toString();
         String description = postDescription.getText().toString();
-        postTags.getText().toString();
-        ArrayList<String> tags = new ArrayList<>();
+
+        //ArrayList<String> tags = new ArrayList<>();
         //String[] tags = {postTags.getText().toString()};
-        tags.add(postTags.getText().toString());
+        //tags.add(postTags.getText().toString());
+
+        String[] tags = postTags.getText().toString().trim().replaceAll("([ ][;])\\s+","").split(",");
+
 
         Task<Uri> urlTask = riversRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
@@ -235,6 +240,7 @@ public class ImageUploadActivity extends ParentActivity {
                 if (!task.isSuccessful()) {
                     throw task.getException();
                 }
+
 
                 return riversRef.getDownloadUrl();
             }
