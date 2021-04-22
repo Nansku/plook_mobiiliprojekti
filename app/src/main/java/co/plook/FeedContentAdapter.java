@@ -1,6 +1,7 @@
 package co.plook;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -135,24 +137,24 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         Glide.with(context).load(post.getImageUrl()).into(viewHolder.getImageView_image());
 
-        int colorGreen = Color.GREEN;
-        int colorRed = Color.RED;
-        int colorWhite = Color.WHITE;
+        int colorGreen = ResourcesCompat.getColor(context.getResources(), R.color.vote_up, context.getTheme());
+        int colorRed = ResourcesCompat.getColor(context.getResources(), R.color.vote_down, context.getTheme());
+        int colorNeutral = ResourcesCompat.getColor(context.getResources(), R.color.vote_neutral, context.getTheme());
 
-        if (localDataSet.get(position).getMyVote() > 0)
+        if (post.getMyVote() > 0)
         {
-            viewHolder.getImageView_voteUp().setColorFilter(colorGreen, PorterDuff.Mode.SRC_ATOP);
-            viewHolder.getImageView_voteDown().setColorFilter(colorWhite, PorterDuff.Mode.SRC_ATOP);
+            viewHolder.getImageView_voteUp().setColorFilter(colorGreen, PorterDuff.Mode.MULTIPLY);
+            viewHolder.getImageView_voteDown().setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
         }
-        else if (localDataSet.get(position).getMyVote() < 0)
+        else if (post.getMyVote() < 0)
         {
-            viewHolder.getImageView_voteUp().setColorFilter(colorWhite, PorterDuff.Mode.SRC_ATOP);
-            viewHolder.getImageView_voteDown().setColorFilter(colorRed, PorterDuff.Mode.SRC_ATOP);
+            viewHolder.getImageView_voteUp().setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            viewHolder.getImageView_voteDown().setColorFilter(colorRed, PorterDuff.Mode.MULTIPLY);
         }
         else
         {
-            viewHolder.getImageView_voteUp().setColorFilter(colorWhite, PorterDuff.Mode.SRC_ATOP);
-            viewHolder.getImageView_voteDown().setColorFilter(colorWhite, PorterDuff.Mode.SRC_ATOP);
+            viewHolder.getImageView_voteUp().setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            viewHolder.getImageView_voteDown().setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
         }
     }
 
