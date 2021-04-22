@@ -53,14 +53,12 @@
             />
 
             <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/post_votes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/post_username"
-                android:layout_alignParentEnd="true"
-                android:divider="@drawable/divider_feed_content"
-                android:showDividers="middle"
-                android:dividerPadding="50dp">
+                android:layout_alignParentEnd="true">
 
                 <TextView
                     android:id="@+id/post_score"
@@ -70,23 +68,24 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:gravity="bottom"
+                    android:gravity="center_vertical"
+                    android:layout_marginEnd="10dp"
                 />
 
                 <ImageView
                     android:id="@+id/post_voteUp"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_baseline_thumb_up_24"
-                    android:layout_marginEnd="5dp"
+                    android:layout_marginEnd="10dp"
                 />
 
                 <ImageView
                     android:id="@+id/post_voteDown"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_baseline_thumb_down_24"
-                    />
+                />
 
             </LinearLayout>
 
