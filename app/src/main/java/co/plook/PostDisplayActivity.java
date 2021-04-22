@@ -1,5 +1,6 @@
 package co.plook;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -7,10 +8,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Debug;
-import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -32,6 +34,7 @@ public class PostDisplayActivity extends ParentActivity
 
     // Database stuff
     protected DatabaseReader dbReader;
+    protected DatabaseWriter dbWriter;
     protected String[] querySettings = {"all", "", "time"};
     protected Query query;
     private DocumentSnapshot lastVisible;
@@ -43,6 +46,7 @@ public class PostDisplayActivity extends ParentActivity
     private final int postLoadThreshold = 2;
     private boolean loading = false;
     private boolean loadedAll = false;
+    private QuerySnapshot postSnapshot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,6 +56,7 @@ public class PostDisplayActivity extends ParentActivity
         context = getApplicationContext();
 
         dbReader = new DatabaseReader();
+        dbWriter = new DatabaseWriter();
 
         allPosts = new ArrayList<>();
         userIDs = new ArrayList<>();
@@ -116,25 +121,47 @@ public class PostDisplayActivity extends ParentActivity
         feedContentAdapter.notifyItemInserted(allPosts.size() - 1);
 
         // Ignore posts before (and including) the last one. This way no duplicates should appear.
-        // If this is the first time loading the activity, or if the user somehow refreshes, then start from the first post.
+        // If this is the first time loading the activity, or if the user has refreshed the page, then start from the first post.
         if (lastVisible != null)
             query = query.startAfter(lastVisible);
 
+        Map<String, String> usernamePairs = new HashMap<>();
+        ArrayList<Long> myVotes = new ArrayList<>();
+
+        List<Task<Void>> subTasks = new ArrayList<>();
+
         dbReader.findDocuments(query).addOnCompleteListener(task ->
         {
-            QuerySnapshot postSnapshot = task.getResult();
+            postSnapshot = task.getResult();
 
-            // Loop through userIDs and get a list of unique names
+            // Loop through the posts and get a list of unique userIDs and also gets the user's vote for each post.
             for (DocumentSnapshot snapshot : postSnapshot.getDocuments())
             {
+                // Get unique userIDs.
                 String userID = snapshot.getString("userID");
                 if (!userIDs.contains(userID))
                     userIDs.add(userID);
+
+                // Get user's vote per post.
+                Task voteTask = dbReader.findDocumentByID("posts/" + snapshot.getId() + "/user_actions", auth.getUid()).addOnCompleteListener(task1 ->
+                {
+                    if(task1.getResult().getDocuments().size() > 0)
+                    {
+                        DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                        myVotes.add(doc.getLong("vote"));
+                    }
+                    else
+                        myVotes.add(0L);
+                });
+
+                subTasks.add(voteTask);
             }
 
-            dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
+            // For each unique userID, get that user's username.
+            // Once we've done that, we can display the posts with proper data.
+            Task nicknameTask = dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
             {
-                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult();
 
                 // If there's nothing to show, remove the loading icon.
                 if (querySnapshots == null || querySnapshots.size() <= 0)
@@ -148,33 +175,42 @@ public class PostDisplayActivity extends ParentActivity
                     return;
                 }
 
-                Map<String, String> usernamePairs = new HashMap<>();
-
                 for (int i = 0; i < querySnapshots.size(); i++)
                 {
-                    List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
-                    usernamePairs.put(userIDs.get(i), docs.get(0).getString("name"));
+                    DocumentSnapshot doc = querySnapshots.get(i).getDocuments().get(0);
+                    usernamePairs.put(userIDs.get(i), doc.getString("name"));
                 }
+            });
 
-                allPosts.remove(allPosts.size() - 1);
-                feedContentAdapter.notifyItemRemoved(allPosts.size());
+            subTasks.add(nicknameTask);
 
-                loading = false;
+            Tasks.whenAllSuccess(subTasks).addOnCompleteListener(new OnCompleteListener<List<Object>>()
+            {
+                @Override
+                public void onComplete(@NonNull Task<List<Object>> task)
+                {
+                    allPosts.remove(allPosts.size() - 1);
+                    feedContentAdapter.notifyItemRemoved(allPosts.size());
 
-                if (postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
-                    loadedAll = true;
+                    loading = false;
 
-                createPosts(usernamePairs, postSnapshot);
+                    if (postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
+                        loadedAll = true;
+
+                    createPosts(usernamePairs, myVotes, postSnapshot);
+                }
             });
         });
     }
 
-    private void createPosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
+    private void createPosts(Map<String, String> usernamePairs, ArrayList<Long> myVotes, QuerySnapshot snapshot)
     {
         int oldPostCount = allPosts.size();
 
-        for (QueryDocumentSnapshot document : snapshot)
+        for (int i = 0; i < snapshot.size(); i++)
         {
+            DocumentSnapshot document = snapshot.getDocuments().get(i);
+
             Post post = new Post();
 
             post.setPostID(document.getId());
@@ -185,6 +221,7 @@ public class PostDisplayActivity extends ParentActivity
 
             long score = document.getLong("score") == null ? 0 : document.getLong("score");
             post.setScore(score);
+            post.setMyVote(myVotes.get(i));
 
             allPosts.add(post);
         }
@@ -206,19 +243,6 @@ public class PostDisplayActivity extends ParentActivity
         loadedAll = false;
     }
 
-    private void votePost(String postID, int vote)
-    {
-        System.out.println("YOU VOTED: " + vote + " ON POST: " + postID);
-    }
-
-    private void openPostActivity(String postID)
-    {
-        Intent intent = new Intent(this, PostActivity.class);
-        intent.putExtra("post_id", postID);
-
-        startActivity(intent);
-    }
-
     protected void initializeRecyclerView(RecyclerView recyclerView)
     {
         this.recyclerView = recyclerView;
@@ -235,7 +259,7 @@ public class PostDisplayActivity extends ParentActivity
             @Override
             public void onVoteClick(int position, int vote)
             {
-                votePost(allPosts.get(position).getPostID(), vote);
+                votePost(position, vote);
             }
         });
 
@@ -276,8 +300,36 @@ public class PostDisplayActivity extends ParentActivity
     {
         swipeContainer.setOnRefreshListener(() ->
         {
-            refreshPosts();
-            swipeContainer.setRefreshing(false);
+            if(!loading)
+            {
+                refreshPosts();
+                swipeContainer.setRefreshing(false);
+            }
         });
+    }
+
+    private void votePost(int position, int vote)
+    {
+        Post post = allPosts.get(position);
+
+        if(vote == post.getMyVote())
+            vote = 0;
+
+        dbWriter.addVote(auth.getUid(), post.getPostID(), vote);
+
+        long difference = vote - post.getMyVote();
+
+        post.setScore(post.getScore() + difference);
+        post.setMyVote(vote);
+
+        feedContentAdapter.notifyItemChanged(position);
+    }
+
+    private void openPostActivity(String postID)
+    {
+        Intent intent = new Intent(this, PostActivity.class);
+        intent.putExtra("post_id", postID);
+
+        startActivity(intent);
     }
 }
