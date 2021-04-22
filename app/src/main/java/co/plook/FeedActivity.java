@@ -42,11 +42,12 @@ public class FeedActivity extends PostDisplayActivity
         querySettings[0] = "all";
         querySettings[1] = "";
 
-        refreshContent();
+        refreshPosts();
     }
 
     public void setFilterCriteriaFollowing(View v)
     {
+        // Get followed users and use their IDs as the criteria.
         dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
@@ -60,12 +61,11 @@ public class FeedActivity extends PostDisplayActivity
                 List<String> channelIDs = (List<String>) document.get("followed_users");
                 if (channelIDs != null)
                 {
-                    for (String str : channelIDs)
-                        querySettings[1] += str + ",";
-
+                    for (String id : channelIDs)
+                        querySettings[1] += id + ",";
                 }
 
-                refreshContent();
+                refreshPosts();
             }
         });
     }
@@ -74,7 +74,7 @@ public class FeedActivity extends PostDisplayActivity
     {
         querySettings[2] = "time";
 
-        refreshContent();
+        refreshPosts();
 
         toggleFiltersMenu(null);
     }
@@ -83,17 +83,9 @@ public class FeedActivity extends PostDisplayActivity
     {
         querySettings[2] = "score";
 
-        refreshContent();
+        refreshPosts();
 
         toggleFiltersMenu(null);
-    }
-
-    private void refreshContent()
-    {
-        makeQuery(querySettings[0], querySettings[1], querySettings[2]);
-
-        removePosts();
-        loadPosts();
     }
 
     public void toggleFiltersMenu(View v)

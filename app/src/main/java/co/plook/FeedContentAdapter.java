@@ -21,7 +21,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final ArrayList<Post> localDataSet;
     private final Context context;
 
-    private static ClickListener clickListener;
+    private ClickListener clickListener;
 
     public FeedContentAdapter(ArrayList<Post> dataSet, Context context)
     {
@@ -36,10 +36,12 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private final TextView textView_score;
         private final ImageView imageView_image;
 
-        private View view_voteUp;
-        private View view_voteDown;
+        private final View view_voteUp;
+        private final View view_voteDown;
 
-        public PostViewHolder(View view)
+        ClickListener clickListener;
+
+        public PostViewHolder(View view, ClickListener clickListener)
         {
             super(view);
 
@@ -51,10 +53,13 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             view_voteUp = view.findViewById(R.id.post_voteUp);
             view_voteDown = view.findViewById(R.id.post_voteDown);
 
-            view.setOnClickListener(this);
+            this.clickListener = clickListener;
 
+            view.setOnClickListener(this);
             view_voteUp.setOnClickListener(v -> clickListener.onVoteClick(getAdapterPosition(), 1));
             view_voteDown.setOnClickListener(v -> clickListener.onVoteClick(getAdapterPosition(), -1));
+
+
         }
 
         public TextView getTextView_caption() { return textView_caption; }
@@ -86,7 +91,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (viewType == VIEW_TYPE_POST)
         {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_feed_post, viewGroup, false);
-            return new PostViewHolder(view);
+            return new PostViewHolder(view, clickListener);
         }
         else
         {

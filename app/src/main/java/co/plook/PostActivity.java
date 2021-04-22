@@ -7,9 +7,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +16,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -85,7 +80,7 @@ public class PostActivity extends ParentActivity
         userIDs = new ArrayList<>();
         allComments = new ArrayList<>();
 
-        initializeSwipeRefreshLayout();
+        initializeSwipeRefreshLayout(findViewById(R.id.post_swipeRefresh));
 
         //postID from feed
         Bundle extras = getIntent().getExtras();
@@ -99,21 +94,6 @@ public class PostActivity extends ParentActivity
 
         loadPostData();
         loadComments(false);
-    }
-
-    private void initializeSwipeRefreshLayout()
-    {
-        SwipeRefreshLayout swipeContainer = findViewById(R.id.post_swipeRefresh);
-
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
-        {
-            @Override
-            public void onRefresh()
-            {
-                refreshPost();
-                swipeContainer.setRefreshing(false);
-            }
-        });
     }
 
     private void refreshPost()
@@ -396,5 +376,14 @@ public class PostActivity extends ParentActivity
         intent.putExtra("channel_id", post.getChannelID());
 
         startActivity(intent);
+    }
+
+    private void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)
+    {
+        swipeContainer.setOnRefreshListener(() ->
+        {
+            refreshPost();
+            swipeContainer.setRefreshing(false);
+        });
     }
 }
