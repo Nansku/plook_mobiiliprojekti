@@ -6,13 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
-import android.widget.EdgeEffect;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +23,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseUser;
+
+import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -35,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private Context context;
 
     private FirebaseAuth mAuth;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +61,12 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        LogInButton.setOnClickListener(new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            AllowLogIn();
-        }
-    });
+        LogInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AllowLogIn();
+            }
+        });
 
         ForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,8 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                 passwordResetDialog.create().show();
             }
         });
-
-}
+    }
 
 
     private void SendUserToSignupActivity() {
@@ -133,42 +132,58 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         else {
-            //Toast.makeText(LoginActivity.this, "Testi", Toast.LENGTH_SHORT).show();
-            
             mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                
-                                ShowMessage("Olet kirjautunut sisään.");
-                                SendUserToMainActivity();
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            ShowMessage("Olet kirjautunut sisään.");
+                            checkToken();
+                            SendUserToMainActivity();
 
 
-                            } else {
-                                String message = task.getException().getMessage();
-                                ShowMessage("Virhe kirjautumisessa."+message);
-                            }
-
-
+                        } else {
+                            String message = task.getException().getMessage();
+                            ShowMessage("Virhe kirjautumisessa."+message);
                         }
-                    });
+                    }
+                });
         }
     }
 
 
-        private void SendUserToMainActivity()
-        {
-            Intent mainIntent =new Intent (LoginActivity.this, MainActivity.class);
-            mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(mainIntent);
-            finish();
-        }
+    private void SendUserToMainActivity()
+    {
+        Intent mainIntent =new Intent (LoginActivity.this, MainActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainIntent);
+        finish();
+    }
 
-        private void ShowMessage(String message)
+    private void ShowMessage(String message)
+    {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void checkToken()
+    {
+        preferences = this.getSharedPreferences("token", Context.MODE_PRIVATE);
+        String token = preferences.getString("token", "");
+        if (!token.equals(""))
         {
-              Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            DatabaseWriter dbWriter = new DatabaseWriter();
+
+            HashMap<String, Object> tokenMap = new HashMap<>();
+            tokenMap.put("token", token);
+
+            System.out.println("Uploading new token!");
+            dbWriter.updateField("tokens", mAuth.getUid(), tokenMap);
+
+            // clear stored data so we won't upload any unchanged tokens
+            preferences.edit().clear().apply();
         }
     }
+}
 
 

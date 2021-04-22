@@ -40,7 +40,6 @@ public class ParentActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
-        messagingService = new MyFirebaseMessagingService();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation_layout);
 
