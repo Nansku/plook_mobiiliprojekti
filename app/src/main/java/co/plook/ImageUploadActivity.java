@@ -215,7 +215,7 @@ public class ImageUploadActivity extends ParentActivity {
     // Function to upload chosen picture to Firebase
     private void uploadPicture(Uri uri) {
         final String randomKey = UUID.randomUUID().toString();
-        StorageReference riversRef = storageReference.child("images/" + randomKey);
+        StorageReference imageRef = storageReference.child("images/" + auth.getUid() + "/" + randomKey);
 
 
         postCaption = findViewById(R.id.post_caption);
@@ -229,21 +229,19 @@ public class ImageUploadActivity extends ParentActivity {
         //String[] tags = {postTags.getText().toString()};
         tags.add(postTags.getText().toString());
 
-        Task<Uri> urlTask = riversRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+        imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                 if (!task.isSuccessful()) {
                     throw task.getException();
                 }
 
-                return riversRef.getDownloadUrl();
+                return imageRef.getDownloadUrl();
             }
         }).addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    //TÄÄLLÄ on download token joka menee database kirjoittajaan jotenkin näin
-                    //dbWriter.addPost("Caption", "Description", downloadUri.toString());
                     Uri downloadUri = task.getResult();
                     String userID = auth.getUid();
                     dbWriter = new DatabaseWriter();
