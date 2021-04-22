@@ -1,7 +1,5 @@
 package co.plook;
 
-import java.util.List;
-
 public class Post
 {
     private String caption;
@@ -12,6 +10,7 @@ public class Post
     private String channelID;
     private String[] tags;
     private long score;
+    private long myVote;
 
     public Post()
     {
@@ -23,6 +22,7 @@ public class Post
         channelID = "";
         tags = new String[0];
         score = 0;
+        myVote = 0;
     }
 
     public Post(String caption, String description, String imageUrl, String postID, String userID, String channelID, String[] tags, int score)
@@ -35,6 +35,7 @@ public class Post
         this.channelID = channelID;
         this.tags = tags;
         this.score = score;
+        myVote = 0;
     }
 
     public void setPostID(String postID) { this.postID = postID; }
@@ -53,6 +54,8 @@ public class Post
 
     public void setScore(long score) { this.score = score; }
 
+    public void setMyVote(long myVote) { this.myVote = myVote; }
+
     public String getPostID() { return postID; }
 
     public String getCaption() { return caption; }
@@ -68,4 +71,6 @@ public class Post
     public String[] getTags() { return tags; }
 
     public long getScore() { return score; }
+
+    public long getMyVote() { return myVote; }
 }

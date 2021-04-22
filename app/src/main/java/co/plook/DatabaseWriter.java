@@ -120,15 +120,13 @@ public class DatabaseWriter
         return new Comment(userID, "", text, "vastattu tälle", timeNow);
     }
 
-    public void addVote(String userID, String postID, boolean upOrDown)
+    public void addVote(String userID, String postID, int vote)
     {
-        Map<String, Object> vote = new HashMap<>();
+        Map<String, Object> action = new HashMap<>();
 
-        vote.put("userID", userID);
-        vote.put("postID", postID);
-        vote.put("vote", upOrDown);
+        action.put("vote", vote);
 
-        addToCollectionWithName("votes", vote, userID + "_" + postID);
+        addToSubcollectionWithName("posts", postID, "user_actions", action, userID);
         //After this we could use cloud functions to count increment post scores
     }
 
@@ -200,6 +198,24 @@ public class DatabaseWriter
                     public void onFailure(@NonNull Exception e)
                     {
                         System.out.println("Error adding document" + e.getMessage());
+                    }
+                });
+    }
+
+    private void addToSubcollectionWithName(String collectionPath, String documentID, String subcollectionPath, Map document, String docName)
+    {
+        // Add a new document with a generated ID
+        db.collection(collectionPath)
+                .document(documentID)
+                .collection(subcollectionPath)
+                .document(docName)
+                .set(document)
+                .addOnSuccessListener(new OnSuccessListener<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void aVoid)
+                    {
+                        System.out.println("Document add successful! -> " + collectionPath);
                     }
                 });
     }
