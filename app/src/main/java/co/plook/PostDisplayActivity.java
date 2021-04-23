@@ -15,7 +15,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -47,6 +46,7 @@ public class PostDisplayActivity extends ParentActivity
     private boolean loading = false;
     private boolean loadedAll = false;
     private QuerySnapshot postSnapshot;
+    private int lastClickedPostPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -86,8 +86,7 @@ public class PostDisplayActivity extends ParentActivity
         super.onRestart();
 
         // Update all posts after coming back from another activity.
-        for (int i = 0; i < allPosts.size(); i++)
-            updatePostData(i);
+        updatePostData(lastClickedPostPosition);
     }
 
     protected void makeQuery(String field, String criteria, String sorting)
@@ -404,6 +403,8 @@ public class PostDisplayActivity extends ParentActivity
 
     private void openPostActivity(int position)
     {
+        lastClickedPostPosition = position;
+
         Post post = allPosts.get(position);
 
         Intent intent = new Intent(this, PostActivity.class);
