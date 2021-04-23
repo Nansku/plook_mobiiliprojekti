@@ -84,7 +84,6 @@ public class SignupActivity extends AppCompatActivity  {
                             SendEmailVerification();
 
                             FirebaseMessaging.getInstance().getToken().addOnCompleteListener(tokenTask -> {
-                                token = tokenTask.getResult();
                                 FirebaseUser taskUser = signupTask.getResult().getUser();
                                 dbWriter.addUser(taskUser.getUid(), username);
                                 Toast.makeText(SignupActivity.this, "Olet rekisteröity", Toast.LENGTH_SHORT).show();
