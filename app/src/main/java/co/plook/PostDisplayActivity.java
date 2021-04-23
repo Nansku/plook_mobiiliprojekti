@@ -1,12 +1,18 @@
 package co.plook;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -28,15 +34,19 @@ public class PostDisplayActivity extends ParentActivity
 
     // Database stuff
     protected DatabaseReader dbReader;
-    private Query query;
+    protected DatabaseWriter dbWriter;
+    protected String[] querySettings = {"all", "", "time"};
+    protected Query query;
     private DocumentSnapshot lastVisible;
 
     // Posts & loading
     protected Bundle extras;
     private ArrayList<Post> allPosts;
     private final int postLoadAmount = 10;
+    private final int postLoadThreshold = 2;
     private boolean loading = false;
     private boolean loadedAll = false;
+    private QuerySnapshot postSnapshot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,45 +56,61 @@ public class PostDisplayActivity extends ParentActivity
         context = getApplicationContext();
 
         dbReader = new DatabaseReader();
+        dbWriter = new DatabaseWriter();
 
         allPosts = new ArrayList<>();
         userIDs = new ArrayList<>();
 
         extras = getIntent().getExtras();
 
-        // Make a query based on the sent string (if one was sent, otherwise default to empty).
-        String queryString = "";
+        // Make a query based on the sent string (if one was sent, otherwise default to "all//time").
+        // Syntax: "field/criteria,criteria,criteria/sorting"
+        // Example: "tags/red/score" "userID/User1,User2/time"
         if(extras != null)
-            queryString = extras.getString("query", "");
+        {
+            String queryString = extras.getString("query", "all//time");
+            // Split the queryString into 3 parts (0 = field, 1 = criteria, 2 = sorting).
+            querySettings = queryString.split("/");
 
-        makeQuery(queryString);
+            makeQuery(querySettings[0], querySettings[1], querySettings[2]);
+        }
+        else
+        {
+            makeQuery("all", "", "time");
+        }
     }
 
-    // Syntax: "field/criteria/sorting"
-    // Example: "tags/red/time" "userID/insert userID here/time"
-    protected void makeQuery(String queryString)
+    protected void makeQuery(String field, String criteria, String sorting)
     {
-        if(queryString.equals(""))
-            queryString = "all//time";
-
-        String[] queryParts = queryString.split("/");
-        String[] criteria = queryParts[1].split(",");
-
+        // Collection is always "posts".
         query = dbReader.db.collection("posts");
 
-        // Field is a single item.
-        if (queryParts[0].equals("userID") || queryParts[0].equals("channel"))
-            query = query.whereIn(queryParts[0], Arrays.asList(criteria));
+        // Split criteria into its ows array.
+        String[] criteriaArray = criteria.split(",");
 
-        // Field is an array of items.
-        else if (queryParts[0].equals("tags"))
-            query = query.whereArrayContains(queryParts[0], queryParts[1]);
+        // Check which field is used for filtering, should always be either "userID", "channel" or "tags" (or "", in which case we don't filter).
+        // "tags" field is an array, so "whereArrayContainsAny" is used instead of "whereIn".
+        if(criteriaArray.length > 0)
+        {
+            if (field.equals("userID") || field.equals("channel"))
+                query = query.whereIn(field, Arrays.asList(criteriaArray));
+            else if (field.equals("tags"))
+                query = query.whereArrayContainsAny(field, Arrays.asList(criteriaArray));
+        }
 
-        // Sort by
-        query = query.orderBy(queryParts[2], Query.Direction.DESCENDING);
+        // Sort by either "time" or "score"
+        query = query.orderBy(sorting, Query.Direction.DESCENDING);
 
         // Get only a set amount of posts at once.
         query = query.limit(postLoadAmount);
+    }
+
+    protected void refreshPosts()
+    {
+        makeQuery(querySettings[0], querySettings[1], querySettings[2]);
+
+        deletePosts();
+        loadPosts();
     }
 
     protected void loadPosts()
@@ -95,54 +121,96 @@ public class PostDisplayActivity extends ParentActivity
         feedContentAdapter.notifyItemInserted(allPosts.size() - 1);
 
         // Ignore posts before (and including) the last one. This way no duplicates should appear.
-        // If this is the first time loading the activity, or if the user somehow refreshes, then start from the first post.
+        // If this is the first time loading the activity, or if the user has refreshed the page, then start from the first post.
         if (lastVisible != null)
             query = query.startAfter(lastVisible);
 
+        Map<String, String> usernamePairs = new HashMap<>();
+        Map<String, Long> myVotesPerPost = new HashMap<>();
+
+        List<Task<Void>> subTasks = new ArrayList<>();
+
         dbReader.findDocuments(query).addOnCompleteListener(task ->
         {
-            QuerySnapshot postSnapshot = task.getResult();
+            postSnapshot = task.getResult();
 
-            // Loop through userIDs and get a list of unique names
+            // Loop through the posts and get a list of unique userIDs and also gets the user's vote for each post.
             for (DocumentSnapshot snapshot : postSnapshot.getDocuments())
             {
+                // Get unique userIDs.
                 String userID = snapshot.getString("userID");
                 if (!userIDs.contains(userID))
                     userIDs.add(userID);
+
+                // Get user's vote per post.
+                Task voteTask = dbReader.findDocumentByID("posts/" + snapshot.getId() + "/user_actions", auth.getUid()).addOnCompleteListener(task1 ->
+                {
+                    if(task1.getResult().getDocuments().size() > 0)
+                    {
+                        DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                        myVotesPerPost.put(snapshot.getId(), doc.getLong("vote"));
+                    }
+                    else
+                        myVotesPerPost.put(snapshot.getId(), 0L);
+                });
+
+                subTasks.add(voteTask);
             }
 
-            dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
+            // For each unique userID, get that user's username.
+            // Once we've done that, we can display the posts with proper data.
+            Task nicknameTask = dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
             {
-                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); // @Iikka what/how is this??
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult();
 
-                if(querySnapshots == null || querySnapshots.size() <= 0)
+                // If there's nothing to show, remove the loading icon.
+                if (querySnapshots == null || querySnapshots.size() <= 0)
+                {
+                    allPosts.remove(allPosts.size() - 1);
+                    feedContentAdapter.notifyItemRemoved(allPosts.size());
+
+                    loading = false;
+                    loadedAll = true;
+
                     return;
-
-                Map<String, String> usernamePairs = new HashMap<>();
+                }
 
                 for (int i = 0; i < querySnapshots.size(); i++)
                 {
-                    List<DocumentSnapshot> docs = querySnapshots.get(i).getDocuments();
-                    usernamePairs.put(userIDs.get(i), docs.get(0).getString("name"));
+                    DocumentSnapshot doc = querySnapshots.get(i).getDocuments().get(0);
+                    usernamePairs.put(userIDs.get(i), doc.getString("name"));
                 }
+            });
 
-                allPosts.remove(allPosts.size() - 1);
-                feedContentAdapter.notifyItemRemoved(allPosts.size());
+            subTasks.add(nicknameTask);
 
-                makePosts(usernamePairs, postSnapshot);
+            Tasks.whenAllSuccess(subTasks).addOnCompleteListener(new OnCompleteListener<List<Object>>()
+            {
+                @Override
+                public void onComplete(@NonNull Task<List<Object>> task)
+                {
+                    allPosts.remove(allPosts.size() - 1);
+                    feedContentAdapter.notifyItemRemoved(allPosts.size());
 
-                loading = false;
+                    loading = false;
 
-                if(postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
-                    loadedAll = true;
+                    if (postSnapshot.isEmpty() || postSnapshot.size() < postLoadAmount)
+                        loadedAll = true;
+
+                    createPosts(usernamePairs, myVotesPerPost, postSnapshot);
+                }
             });
         });
     }
 
-    private void makePosts(Map<String, String> usernamePairs, QuerySnapshot snapshot)
+    private void createPosts(Map<String, String> usernamePairs, Map<String, Long> myVotesPerPost, QuerySnapshot snapshot)
     {
-        for (QueryDocumentSnapshot document : snapshot)
+        int oldPostCount = allPosts.size();
+
+        for (int i = 0; i < snapshot.size(); i++)
         {
+            DocumentSnapshot document = snapshot.getDocuments().get(i);
+
             Post post = new Post();
 
             post.setPostID(document.getId());
@@ -151,16 +219,20 @@ public class PostDisplayActivity extends ParentActivity
             post.setImageUrl(document.getString("url"));
             post.setUserID(usernamePairs.get(document.get("userID")));
 
+            long score = document.getLong("score") == null ? 0 : document.getLong("score");
+            post.setScore(score);
+            post.setMyVote(myVotesPerPost.get(document.getId()));
+
             allPosts.add(post);
         }
 
-        feedContentAdapter.notifyDataSetChanged();
+        feedContentAdapter.notifyItemRangeChanged(oldPostCount - 1, snapshot.size());
 
-        if(snapshot.size() > 0)
+        if (snapshot.size() > 0)
             lastVisible = snapshot.getDocuments().get(snapshot.size() - 1);
     }
 
-    protected void removePosts()
+    protected void deletePosts()
     {
         recyclerView.removeAllViews();
         allPosts.clear();
@@ -176,7 +248,20 @@ public class PostDisplayActivity extends ParentActivity
         this.recyclerView = recyclerView;
 
         feedContentAdapter = new FeedContentAdapter(allPosts, context);
-        feedContentAdapter.setOnItemClickedListener((position, view) -> openPostActivity(allPosts.get(position).getPostID()));
+        feedContentAdapter.setOnItemClickedListener(new FeedContentAdapter.ClickListener()
+        {
+            @Override
+            public void onItemClick(int position, View view)
+            {
+                openPostActivity(allPosts.get(position).getPostID());
+            }
+
+            @Override
+            public void onVoteClick(int position, int vote)
+            {
+                votePost(position, vote);
+            }
+        });
 
         recyclerView.setAdapter(feedContentAdapter);
         recyclerView.addItemDecoration(new LinearSpacesItemDecoration(context, 5));
@@ -184,6 +269,7 @@ public class PostDisplayActivity extends ParentActivity
         recyclerScrollListener();
     }
 
+    // Load more posts as the user scrolls down.
     private void recyclerScrollListener()
     {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -202,12 +288,41 @@ public class PostDisplayActivity extends ParentActivity
 
                     if (!loading && !loadedAll)
                     {
-                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2)
+                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - postLoadThreshold)
                             loadPosts();
                     }
                 }
             }
         });
+    }
+
+    protected void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)
+    {
+        swipeContainer.setOnRefreshListener(() ->
+        {
+            if(!loading)
+            {
+                refreshPosts();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+    }
+
+    private void votePost(int position, int vote)
+    {
+        Post post = allPosts.get(position);
+
+        if(vote == post.getMyVote())
+            vote = 0;
+
+        dbWriter.addVote(auth.getUid(), post.getPostID(), vote);
+
+        long difference = vote - post.getMyVote();
+
+        post.setScore(post.getScore() + difference);
+        post.setMyVote(vote);
+
+        feedContentAdapter.notifyItemChanged(position);
     }
 
     private void openPostActivity(String postID)
@@ -216,13 +331,5 @@ public class PostDisplayActivity extends ParentActivity
         intent.putExtra("post_id", postID);
 
         startActivity(intent);
-    }
-
-    @Override
-    public void onBackPressed()
-    {
-        //block the user from going back to blank
-        //maybe add a feed refresh function here?
-        //super.onBackPressed();
     }
 }

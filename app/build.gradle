@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'com.google.gms.google-services'
 }
 
 android {
@@ -32,6 +31,8 @@ android {
 dependencies {
 
     implementation 'androidx.palette:palette:1.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+
     def nav_version = "2.3.5"
 
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
@@ -60,7 +61,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
-
-
 }
+
+apply plugin: 'com.google.gms.google-services'

@@ -1,10 +1,10 @@
 package co.plook;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -15,30 +15,39 @@ import java.util.List;
 
 public class FeedActivity extends PostDisplayActivity
 {
+    private View filtersLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        currentActivity = this;
+        navigationView.getMenu().getItem(1).setChecked(true);
         getLayoutInflater().inflate(R.layout.activity_feed, contentGroup);
 
         RecyclerView recyclerView = findViewById(R.id.feed_recycle);
         initializeRecyclerView(recyclerView);
 
+        SwipeRefreshLayout swipeContainer = findViewById(R.id.feed_swipeRefresh);
+        initializeSwipeRefreshLayout(swipeContainer);
+
+        filtersLayout = findViewById(R.id.feed_filters);
+
         loadPosts();
     }
 
-    public void getAllPosts(View v)
+    public void setFilterCriteriaAll(View v)
     {
-        makeQuery("");
+        querySettings[0] = "all";
+        querySettings[1] = "";
 
-        removePosts();
-        loadPosts();
+        refreshPosts();
     }
 
-    public void getFollowedPosts(View v)
+    public void setFilterCriteriaFollowing(View v)
     {
-        removePosts();
-
+        // Get followed users and use their IDs as the criteria.
         dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
@@ -46,28 +55,44 @@ public class FeedActivity extends PostDisplayActivity
             {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
 
-                String queryString = "channel/";
+                querySettings[0] = "userID";
+                querySettings[1] = "";
 
-                List<String> channelIDs = (List<String>) document.get("followed_channels");
+                List<String> channelIDs = (List<String>) document.get("followed_users");
                 if (channelIDs != null)
                 {
-                    for (String str : channelIDs)
-                        queryString += str + ",";
-
-                    queryString += "/time";
-
-                    makeQuery(queryString);
-
-                    loadPosts();
+                    for (String id : channelIDs)
+                        querySettings[1] += id + ",";
                 }
+
+                refreshPosts();
             }
         });
     }
 
-    public void openChannelBrowse(View v)
+    public void setFilterSortingTime(View v)
     {
-        Intent intent = new Intent(this, ChannelBrowseActivity.class);
+        querySettings[2] = "time";
 
-        startActivity(intent);
+        refreshPosts();
+
+        toggleFiltersMenu(null);
+    }
+
+    public void setFilterSortingVotes(View v)
+    {
+        querySettings[2] = "score";
+
+        refreshPosts();
+
+        toggleFiltersMenu(null);
+    }
+
+    public void toggleFiltersMenu(View v)
+    {
+        if (filtersLayout.getVisibility() == View.VISIBLE)
+            filtersLayout.setVisibility(View.GONE);
+        else
+            filtersLayout.setVisibility(View.VISIBLE);
     }
 }
