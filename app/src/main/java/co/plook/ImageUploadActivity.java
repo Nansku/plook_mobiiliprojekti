@@ -231,7 +231,7 @@ public class ImageUploadActivity extends ParentActivity {
         //String[] tags = {postTags.getText().toString()};
         //tags.add(postTags.getText().toString());
 
-        String[] tags = postTags.getText().toString().trim().replaceAll("([ ][;])\\s+","").split(",");
+        String[] tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
 
 
         imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
