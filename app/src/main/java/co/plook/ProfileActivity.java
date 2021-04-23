@@ -22,6 +22,7 @@ import com.bumptech.glide.util.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -83,7 +84,6 @@ public class ProfileActivity extends ParentActivity
         } else {
             userID = auth.getUid();
         }
-
 
         if (userID.equals(auth.getUid())) {
             followButton.setVisibility(View.GONE);

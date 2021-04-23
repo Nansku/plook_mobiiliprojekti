@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,10 +21,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,6 +65,9 @@ public class ImageUploadActivity extends ParentActivity {
     EditText postCaption;
     EditText postDescription;
     EditText postTags;
+    AutoCompleteTextView tagSuggestions;
+    String[] tags;
+    TagLayout tagList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +81,11 @@ public class ImageUploadActivity extends ParentActivity {
         relativeLayout = (RelativeLayout) findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-
+        postCaption = findViewById(R.id.post_caption);
+        postDescription = findViewById(R.id.post_description);
+        postTags = findViewById(R.id.post_tags);
+        tagSuggestions = (AutoCompleteTextView) findViewById(R.id.tag_list);
+        tagList = (TagLayout) findViewById(R.id.tagLayout);
 
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
@@ -84,6 +95,18 @@ public class ImageUploadActivity extends ParentActivity {
         relativeLayout.setVisibility(INVISIBLE);
         uploadButton.setVisibility(INVISIBLE);
 
+        String[] example = {"tag1", "tag2", "tag3"};
+        // Auto suggestion for tags
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, example);
+        tagSuggestions.setAdapter(arrayAdapter);
+
+        tagSuggestions.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(" ");
+
+            }
+        });
         // Choose img button listener
         chooseImgButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -116,6 +139,8 @@ public class ImageUploadActivity extends ParentActivity {
                 }
             }
         });
+
+
     }
 
     // Function to choose img from gallery
@@ -231,8 +256,7 @@ public class ImageUploadActivity extends ParentActivity {
         //String[] tags = {postTags.getText().toString()};
         //tags.add(postTags.getText().toString());
 
-        String[] tags = postTags.getText().toString().trim().replaceAll("([ ][;])\\s+","").split(",");
-
+        tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
 
         imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
@@ -248,6 +272,8 @@ public class ImageUploadActivity extends ParentActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
+                    //TÄÄLLÄ on download token joka menee database kirjoittajaan jotenkin näin
+                    //dbWriter.addPost("Caption", "Description", downloadUri.toString());
                     Uri downloadUri = task.getResult();
                     String userID = auth.getUid();
                     dbWriter = new DatabaseWriter();
