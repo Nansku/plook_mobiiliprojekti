@@ -15,6 +15,7 @@
     <color name="brown">#706A4F</color>
     <color name="grey">#EAEAEA</color>
     <color name="red">#e62e00</color>
+    <color name="grey_btn">#8c8c8c</color>
     <color name="black_transparent">#00000000</color>
     <color name="vote_up">#FF00D415</color>
     <color name="vote_down">#FFA61008</color>

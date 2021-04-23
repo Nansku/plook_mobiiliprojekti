@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,9 @@ public class DatabaseWriter
         addToCollectionWithName("users", user, userID);
     }
 
-    public void addPost(String userID, String caption, String channel, String description, ArrayList<String> tags, String url)
+
+    public boolean addPost(String userID, String caption, String channel, String description, String[] tags, String url)
+
     {
         Map<String, Object> post = new HashMap<>();
         Timestamp timeNow = Timestamp.now();
@@ -46,7 +49,8 @@ public class DatabaseWriter
         post.put("channel", channel);
         post.put("description", description);
         post.put("score", 0);
-        post.put("tags", tags);
+        post.put("tags", Arrays.asList(tags));
+
         post.put("time", timeNow);
         post.put("url", url);
         post.put("userID", userID);
