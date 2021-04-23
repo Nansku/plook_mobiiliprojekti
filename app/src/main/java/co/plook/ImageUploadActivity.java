@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,7 +66,8 @@ public class ImageUploadActivity extends ParentActivity {
     EditText postTags;
     AutoCompleteTextView tagSuggestions;
     String[] tags;
-    TagLayout tagList;
+    TagLayout tagLayout;
+    String tag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +85,7 @@ public class ImageUploadActivity extends ParentActivity {
         postDescription = findViewById(R.id.post_description);
         postTags = findViewById(R.id.post_tags);
         tagSuggestions = (AutoCompleteTextView) findViewById(R.id.tag_list);
-        tagList = (TagLayout) findViewById(R.id.tagLayout);
+        tagLayout = (TagLayout) findViewById(R.id.tagLayout);
 
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
@@ -96,11 +100,13 @@ public class ImageUploadActivity extends ParentActivity {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, example);
         tagSuggestions.setAdapter(arrayAdapter);
 
-        tagSuggestions.setOnClickListener(new OnClickListener() {
+        // AUTOFILL
+        tagSuggestions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(" ");
-
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("TÄG KLIK");
+                TextView textView = (TextView) view;
+                addTag(textView.getText().toString());
             }
         });
         // Choose img button listener
@@ -135,6 +141,18 @@ public class ImageUploadActivity extends ParentActivity {
                 }
             }
         });
+    }
+
+    public void addTag(String string) {
+        System.out.println("TÄG FUNKTIO");
+        View child = getLayoutInflater().inflate(R.layout.layout_post_tag, tagLayout, false);
+        tagLayout.addView(child);
+        tag = string.trim().replaceAll("[^a-öA-Ö0-9,]", "");
+
+        ImageView imageView = child.findViewById(R.id.tag_delete);
+        imageView.setVisibility(VISIBLE);
+        TextView tagText = child.findViewById(R.id.tag_text);
+        tagText.setText(tag);
     }
 
     // Function to choose img from gallery

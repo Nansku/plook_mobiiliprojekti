@@ -91,15 +91,26 @@
 
             <AutoCompleteTextView
                 android:id="@+id/tag_list"
+                android:hint="autocomplete tag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/post_tags"/>
 
             <co.plook.TagLayout
                 android:id="@+id/tagLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tag_list"/>
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_below="@+id/tag_list">
+                <TextView
+                    android:text="TEKSTIÄ"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:text="TEKSTIÄ"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </co.plook.TagLayout>
 
             <Button
                 android:id="@+id/upload"
@@ -108,7 +119,7 @@
                 android:layout_marginBottom="100dp"
                 android:text="Post"
                 android:layout_marginTop="50dp"
-                android:layout_below="@+id/post_tags"
+                android:layout_below="@+id/tagLayout"
                 android:layout_centerHorizontal="true"/>
             <!--app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
