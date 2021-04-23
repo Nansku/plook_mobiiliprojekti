@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -29,14 +30,14 @@ public class ProfileEditActivity extends ParentActivity {
 
         super.onCreate(savedInstanceState);
 
-        editUsername = (EditText) findViewById(R.id.editUserName);
-        editBio = (EditText) findViewById(R.id.editBio);
-        editLocation = (EditText) findViewById(R.id.editLocation);
-        profilePic = (ImageView) findViewById(R.id.profilePic);
-
-
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile_edit, contentGroup);
+
+        editUsername = findViewById(R.id.editUserName);
+        editBio = findViewById(R.id.editBio);
+        editLocation = findViewById(R.id.editLocation);
+        profilePic =  findViewById(R.id.profilePic);
+
 
     }
 
@@ -46,12 +47,21 @@ public class ProfileEditActivity extends ParentActivity {
         {
             HashMap <String, Object> updateData = new HashMap<>();
 
-            updateData.put("name", editUsername.getText());
-            updateData.put("location", editLocation.getText());
-            updateData.put("bio", editBio.getText());
+            updateData.put("name", editUsername.getText().toString());
+            updateData.put("location", editLocation.getText().toString());
+            updateData.put("bio", editBio.getText().toString());
 
             dbWriter.updateField("users", auth.getUid(), updateData);
 
+
+
+            finish();
+
+        }
+
+        else {
+
+            Toast.makeText(this, "Käyttäjänimen pitää olla pitempi kuin 3 merkkiä", Toast.LENGTH_SHORT).show();
         }
 
 
