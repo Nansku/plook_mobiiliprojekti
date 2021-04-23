@@ -47,7 +47,6 @@ public class PostDisplayActivity extends ParentActivity
     private boolean loading = false;
     private boolean loadedAll = false;
     private QuerySnapshot postSnapshot;
-    private int lastClickedPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -85,7 +84,10 @@ public class PostDisplayActivity extends ParentActivity
     protected void onRestart()
     {
         super.onRestart();
-        updatePostData(lastClickedPosition);
+
+        // Update all posts after coming back from another activity.
+        for (int i = 0; i < allPosts.size(); i++)
+            updatePostData(i);
     }
 
     protected void makeQuery(String field, String criteria, String sorting)
@@ -308,7 +310,7 @@ public class PostDisplayActivity extends ParentActivity
                     @Override
                     public void onComplete(@NonNull Task<List<Object>> task)
                     {
-                        feedContentAdapter.notifyItemChanged(position);
+                        feedContentAdapter.notifyDataSetChanged();
                     }
                 });
             }
@@ -402,8 +404,6 @@ public class PostDisplayActivity extends ParentActivity
 
     private void openPostActivity(int position)
     {
-        lastClickedPosition = position;
-
         Post post = allPosts.get(position);
 
         Intent intent = new Intent(this, PostActivity.class);
