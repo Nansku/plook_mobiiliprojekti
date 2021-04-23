@@ -11,9 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,12 +19,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -139,8 +135,6 @@ public class ImageUploadActivity extends ParentActivity {
                 }
             }
         });
-
-
     }
 
     // Function to choose img from gallery
@@ -272,8 +266,6 @@ public class ImageUploadActivity extends ParentActivity {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    //TÄÄLLÄ on download token joka menee database kirjoittajaan jotenkin näin
-                    //dbWriter.addPost("Caption", "Description", downloadUri.toString());
                     Uri downloadUri = task.getResult();
                     String userID = auth.getUid();
                     dbWriter = new DatabaseWriter();
