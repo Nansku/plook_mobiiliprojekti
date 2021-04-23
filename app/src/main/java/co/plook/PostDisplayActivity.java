@@ -15,7 +15,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -47,6 +46,7 @@ public class PostDisplayActivity extends ParentActivity
     private boolean loading = false;
     private boolean loadedAll = false;
     private QuerySnapshot postSnapshot;
+    private int lastClickedPostPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,6 +78,15 @@ public class PostDisplayActivity extends ParentActivity
         {
             makeQuery("all", "", "time");
         }
+    }
+
+    @Override
+    protected void onRestart()
+    {
+        super.onRestart();
+
+        // Update all posts after coming back from another activity.
+        updatePostData(lastClickedPostPosition);
     }
 
     protected void makeQuery(String field, String criteria, String sorting)
@@ -184,6 +193,7 @@ public class PostDisplayActivity extends ParentActivity
 
             subTasks.add(nicknameTask);
 
+            // Wait for the other tasks to finish.
             Tasks.whenAllSuccess(subTasks).addOnCompleteListener(new OnCompleteListener<List<Object>>()
             {
                 @Override
@@ -209,19 +219,18 @@ public class PostDisplayActivity extends ParentActivity
 
         for (int i = 0; i < snapshot.size(); i++)
         {
-            DocumentSnapshot document = snapshot.getDocuments().get(i);
+            DocumentSnapshot postDocument = snapshot.getDocuments().get(i);
 
             Post post = new Post();
 
-            post.setPostID(document.getId());
-            post.setCaption(document.getString("caption"));
-            post.setDescription(document.getString("description"));
-            post.setImageUrl(document.getString("url"));
-            post.setUserID(usernamePairs.get(document.get("userID")));
+            post.setPostID(postDocument.getId());
+            post.setCaption(postDocument.getString("caption"));
+            post.setDescription(postDocument.getString("description"));
+            post.setImageUrl(postDocument.getString("url"));
+            post.setUserID(usernamePairs.get(postDocument.getString("userID")));
 
-            long score = document.getLong("score") == null ? 0 : document.getLong("score");
-            post.setScore(score);
-            post.setMyVote(myVotesPerPost.get(document.getId()));
+            post.setScore(postDocument.getLong("score"));
+            post.setMyVote(myVotesPerPost.get(postDocument.getId()));
 
             allPosts.add(post);
         }
@@ -243,6 +252,73 @@ public class PostDisplayActivity extends ParentActivity
         loadedAll = false;
     }
 
+    protected void updatePostData(int position)
+    {
+        Post post = allPosts.get(position);
+
+        List<Task<Void>> subTasks = new ArrayList<>();
+
+        // Update post with new data from the database.
+        dbReader.findDocumentByID("posts", post.getPostID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                DocumentSnapshot postDocument = task.getResult().getDocuments().get(0);
+
+                post.setPostID(postDocument.getId());
+                post.setCaption(postDocument.getString("caption"));
+                post.setDescription(postDocument.getString("description"));
+                post.setImageUrl(postDocument.getString("url"));
+                post.setScore(postDocument.getLong("score"));
+
+                // Get user's vote data for this post.
+                Task voteTask = dbReader.findDocumentByID("posts/" + post.getPostID() + "/user_actions", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task1)
+                    {
+                        if(task1.getResult().getDocuments().size() > 0)
+                        {
+                            DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                            post.setMyVote(doc.getLong("vote"));
+                        }
+                        else
+                            post.setMyVote(0L);
+                    }
+                });
+
+                subTasks.add(voteTask);
+
+                // Get the poster's username.
+                Task usernameTask = dbReader.findDocumentByID("users", postDocument.getString("userID")).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task1)
+                    {
+                        DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                        post.setUserID(doc.getString("name"));
+                    }
+                });
+
+                subTasks.add(usernameTask);
+
+                // Wait for the other tasks to finish.
+                Tasks.whenAllSuccess(subTasks).addOnCompleteListener(new OnCompleteListener<List<Object>>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<List<Object>> task)
+                    {
+                        feedContentAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+
+        // Post data has been updated, so we can just return here.
+        return;
+    }
+
     protected void initializeRecyclerView(RecyclerView recyclerView)
     {
         this.recyclerView = recyclerView;
@@ -253,7 +329,7 @@ public class PostDisplayActivity extends ParentActivity
             @Override
             public void onItemClick(int position, View view)
             {
-                openPostActivity(allPosts.get(position).getPostID());
+                openPostActivity(position);
             }
 
             @Override
@@ -325,10 +401,14 @@ public class PostDisplayActivity extends ParentActivity
         feedContentAdapter.notifyItemChanged(position);
     }
 
-    private void openPostActivity(String postID)
+    private void openPostActivity(int position)
     {
+        lastClickedPostPosition = position;
+
+        Post post = allPosts.get(position);
+
         Intent intent = new Intent(this, PostActivity.class);
-        intent.putExtra("post_id", postID);
+        intent.putExtra("post_id", post.getPostID());
 
         startActivity(intent);
     }

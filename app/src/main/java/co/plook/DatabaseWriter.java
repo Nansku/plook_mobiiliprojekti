@@ -39,8 +39,7 @@ public class DatabaseWriter
     }
 
 
-    public boolean addPost(String userID, String caption, String channel, String description, String[] tags, String url)
-
+    public void addPost(String userID, String caption, String channel, String description, String[] tags, String url)
     {
         Map<String, Object> post = new HashMap<>();
         Timestamp timeNow = Timestamp.now();
