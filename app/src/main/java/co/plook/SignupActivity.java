@@ -1,5 +1,6 @@
 package co.plook;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,12 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.internal.FirebaseInstanceIdInternal;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 
@@ -35,6 +34,7 @@ public class SignupActivity extends AppCompatActivity  {
 
     private Boolean emailAddressChecker;
     private String token;
+    private Object data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,17 +50,24 @@ public class SignupActivity extends AppCompatActivity  {
         SignUpButton = findViewById(R.id.SignUpButton);
 
         SignUpButton.setOnClickListener(new View.OnClickListener() {
+
+
             @Override
 
             public void onClick(View view) {
+
                 registerNewUser();
+
 
                 //Intent intent_one =new Intent(SignupActivity.this, MainActivity.class);
                 //startActivity(intent_one);
             }
 
+
+
         });
     }
+
 
     private void registerNewUser() {
         String username, email, confirmpassword, password;
@@ -80,6 +87,7 @@ public class SignupActivity extends AppCompatActivity  {
         } else {
             mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> signupTask) {
 
@@ -102,6 +110,7 @@ public class SignupActivity extends AppCompatActivity  {
                 });
         }
     }
+    
 
     private void SendEmailVerification()
     {

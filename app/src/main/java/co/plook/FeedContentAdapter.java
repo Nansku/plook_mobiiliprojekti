@@ -1,12 +1,16 @@
 package co.plook;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -36,10 +40,10 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private final TextView textView_score;
         private final ImageView imageView_image;
 
-        private final View view_voteUp;
-        private final View view_voteDown;
+        private final ImageView imageView_voteUp;
+        private final ImageView imageView_voteDown;
 
-        ClickListener clickListener;
+        private ClickListener clickListener;
 
         public PostViewHolder(View view, ClickListener clickListener)
         {
@@ -50,16 +54,14 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             textView_score = view.findViewById(R.id.post_score);
             imageView_image = view.findViewById(R.id.post_image);
 
-            view_voteUp = view.findViewById(R.id.post_voteUp);
-            view_voteDown = view.findViewById(R.id.post_voteDown);
+            imageView_voteUp = view.findViewById(R.id.post_voteUp);
+            imageView_voteDown = view.findViewById(R.id.post_voteDown);
 
             this.clickListener = clickListener;
 
             view.setOnClickListener(this);
-            view_voteUp.setOnClickListener(v -> clickListener.onVoteClick(getAdapterPosition(), 1));
-            view_voteDown.setOnClickListener(v -> clickListener.onVoteClick(getAdapterPosition(), -1));
-
-
+            imageView_voteUp.setOnClickListener(v -> clickListener.onVoteClick(getAdapterPosition(), 1));
+            imageView_voteDown.setOnClickListener(v -> clickListener.onVoteClick(getAdapterPosition(), -1));
         }
 
         public TextView getTextView_caption() { return textView_caption; }
@@ -69,6 +71,10 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView getTextView_score() { return textView_score; }
 
         public ImageView getImageView_image() { return imageView_image; }
+
+        public ImageView getImageView_voteUp() { return imageView_voteUp; }
+
+        public ImageView getImageView_voteDown() { return imageView_voteDown; }
 
         @Override
         public void onClick(View view)
@@ -130,6 +136,26 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.getTextView_score().setText(String.valueOf(post.getScore()));
 
         Glide.with(context).load(post.getImageUrl()).into(viewHolder.getImageView_image());
+
+        int colorGreen = ResourcesCompat.getColor(context.getResources(), R.color.vote_up, context.getTheme());
+        int colorRed = ResourcesCompat.getColor(context.getResources(), R.color.vote_down, context.getTheme());
+        int colorNeutral = ResourcesCompat.getColor(context.getResources(), R.color.vote_neutral, context.getTheme());
+
+        if (post.getMyVote() > 0)
+        {
+            viewHolder.getImageView_voteUp().setColorFilter(colorGreen, PorterDuff.Mode.MULTIPLY);
+            viewHolder.getImageView_voteDown().setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+        }
+        else if (post.getMyVote() < 0)
+        {
+            viewHolder.getImageView_voteUp().setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            viewHolder.getImageView_voteDown().setColorFilter(colorRed, PorterDuff.Mode.MULTIPLY);
+        }
+        else
+        {
+            viewHolder.getImageView_voteUp().setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            viewHolder.getImageView_voteDown().setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+        }
     }
 
     private void showLoadingView(LoadingViewHolder viewHolder, int position)

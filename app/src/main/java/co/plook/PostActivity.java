@@ -2,11 +2,13 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +41,9 @@ public class PostActivity extends ParentActivity
     private RelativeLayout lighter_layout;
     private ViewGroup viewGroup_tags;
     private TextView commentButton;
-    private TextView buttonButton;
+    private TextView textView_score;
+    private ImageView imageView_thumbUp;
+    private ImageView imageView_thumbDown;
     private TextView deletePostTextView;
     private TextView nicknameTextView;
 
@@ -51,7 +55,6 @@ public class PostActivity extends ParentActivity
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,7 +77,11 @@ public class PostActivity extends ParentActivity
         layout = findViewById(R.id.darker_layout);
         lighter_layout = findViewById(R.id.lighter_layout);
         commentButton = findViewById(R.id.comment_button);
-        buttonButton = findViewById(R.id.button_button);
+
+        // voting
+        textView_score = findViewById(R.id.post_score);
+        imageView_thumbUp = findViewById(R.id.post_voteUp);
+        imageView_thumbDown = findViewById(R.id.post_voteDown);
 
         post = new Post();
         userIDs = new ArrayList<>();
@@ -129,7 +136,6 @@ public class PostActivity extends ParentActivity
                             return;
                         }
 
-
                         dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                         {
                             @Override
@@ -139,7 +145,16 @@ public class PostActivity extends ParentActivity
                                 TextView textView_channel = findViewById(R.id.post_channel);
                                 textView_channel.setText(channelName);
 
-                                displayPostDetails(post);
+                                dbReader.findDocumentByID("posts/" + post.getPostID() + "/user_actions", auth.getUid()).addOnCompleteListener(task1 ->
+                                {
+                                    if (task1.getResult().getDocuments().size() > 0)
+                                    {
+                                        DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                                        post.setMyVote(doc.getLong("vote"));
+                                    }
+
+                                    displayPostDetails(post);
+                                });
                             }
                         });
                     }
@@ -158,6 +173,9 @@ public class PostActivity extends ParentActivity
         post.setCaption(document.getString("caption"));
         post.setDescription(document.getString("description"));
         post.setImageUrl(document.getString("url"));
+
+        long score = document.getLong("score") == null ? 0 : document.getLong("score");
+        post.setScore(score);
 
         // Add tag buttons.
         String[] tags = ((List<String>) document.get("tags")).toArray(new String[0]);
@@ -193,6 +211,8 @@ public class PostActivity extends ParentActivity
                 }
             });
         }
+
+        updateVotingVisuals();
 
         /*Glide.with(context)
                 .asBitmap()
@@ -327,6 +347,31 @@ public class PostActivity extends ParentActivity
         }
     }
 
+    private void updateVotingVisuals()
+    {
+        textView_score.setText(String.valueOf(post.getScore()));
+
+        int colorGreen = ResourcesCompat.getColor(context.getResources(), R.color.vote_up, context.getTheme());
+        int colorRed = ResourcesCompat.getColor(context.getResources(), R.color.vote_down, context.getTheme());
+        int colorNeutral = ResourcesCompat.getColor(context.getResources(), R.color.vote_neutral, context.getTheme());
+
+        if (post.getMyVote() > 0)
+        {
+            imageView_thumbUp.setColorFilter(colorGreen, PorterDuff.Mode.MULTIPLY);
+            imageView_thumbDown.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+        }
+        else if (post.getMyVote() < 0)
+        {
+            imageView_thumbUp.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            imageView_thumbDown.setColorFilter(colorRed, PorterDuff.Mode.MULTIPLY);
+        }
+        else
+        {
+            imageView_thumbUp.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            imageView_thumbDown.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+        }
+    }
+
     private void removeComments()
     {
         allComments.clear();
@@ -376,6 +421,31 @@ public class PostActivity extends ParentActivity
         intent.putExtra("channel_id", post.getChannelID());
 
         startActivity(intent);
+    }
+
+    public void onVoteUp(View v)
+    {
+        votePost(1);
+    }
+
+    public void onVoteDown(View v)
+    {
+        votePost(-1);
+    }
+
+    private void votePost(int vote)
+    {
+        if(vote == post.getMyVote())
+            vote = 0;
+
+        dbWriter.addVote(auth.getUid(), post.getPostID(), vote);
+
+        long difference = vote - post.getMyVote();
+
+        post.setScore(post.getScore() + difference);
+        post.setMyVote(vote);
+
+        updateVotingVisuals();
     }
 
     private void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)

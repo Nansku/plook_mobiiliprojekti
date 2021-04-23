@@ -190,17 +190,37 @@
             android:background="@color/forest">
 
             <TextView
-                android:id="@+id/button_button"
+                android:id="@+id/post_score"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:foreground="@drawable/card_ripple"
-                android:gravity="center"
-                android:text="Button"
-                android:textColor="@color/white"
+                android:layout_weight="0.5"
+                android:text="0"
                 android:textSize="18sp"
+                android:textColor="@color/white"
                 android:textStyle="bold"
+                android:gravity="center"
+            />
+
+            <ImageView
+                android:id="@+id/post_voteUp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:padding="8dp"
+                android:src="@drawable/ic_baseline_thumb_up_24"
+                android:foreground="@drawable/card_ripple"
+                android:onClick="onVoteUp"
+            />
+
+            <ImageView
+                android:id="@+id/post_voteDown"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:padding="8dp"
+                android:src="@drawable/ic_baseline_thumb_down_24"
+                android:foreground="@drawable/card_ripple"
+                android:onClick="onVoteDown"
             />
 
             <TextView
