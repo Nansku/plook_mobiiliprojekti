@@ -12,12 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.internal.FirebaseInstanceIdInternal;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 
@@ -30,11 +28,9 @@ public class SignupActivity extends AppCompatActivity  {
     private Button SignUpButton;
 
     private FirebaseAuth mAuth;
-    private FirebaseUser user;
     private DatabaseWriter dbWriter;
 
     private Boolean emailAddressChecker;
-    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +86,7 @@ public class SignupActivity extends AppCompatActivity  {
                             FirebaseMessaging.getInstance().getToken().addOnCompleteListener(tokenTask -> {
                                 token = tokenTask.getResult();
                                 FirebaseUser taskUser = signupTask.getResult().getUser();
-                                dbWriter.addUser(taskUser.getUid(), username, token);
+                                dbWriter.addUser(taskUser.getUid(), username);
                                 Toast.makeText(SignupActivity.this, "Olet rekisteröity", Toast.LENGTH_SHORT).show();
                             });
 
