@@ -2,24 +2,22 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.palette.graphics.Palette;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -36,13 +34,18 @@ public class PostActivity extends ParentActivity
 {
     //views
     private Context context;
+    private ScrollView scrollView;
     private ViewGroup content;
     private ImageView imageView;
     private RelativeLayout layout;
     private RelativeLayout lighter_layout;
     private ViewGroup viewGroup_tags;
     private TextView commentButton;
-    private TextView buttonButton;
+    private TextView textView_score;
+    private ImageView imageView_thumbUp;
+    private ImageView imageView_thumbDown;
+    private TextView deletePostTextView;
+    private TextView nicknameTextView;
 
     //database stuff
     private DatabaseReader dbReader;
@@ -52,8 +55,6 @@ public class PostActivity extends ParentActivity
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
-    private ActionBar toolBar;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -66,38 +67,74 @@ public class PostActivity extends ParentActivity
         dbReader = new DatabaseReader();
         dbWriter = new DatabaseWriter();
 
+        scrollView = findViewById(R.id.post_scrollView);
         content = findViewById(R.id.post_content);
         imageView = findViewById(R.id.image);
+        deletePostTextView = findViewById(R.id.delete_post);
+        nicknameTextView = findViewById(R.id.post_username);
+
+        // swatch stuff...
         layout = findViewById(R.id.darker_layout);
         lighter_layout = findViewById(R.id.lighter_layout);
-
         commentButton = findViewById(R.id.comment_button);
-        buttonButton = findViewById(R.id.button_button);
+
+        // voting
+        textView_score = findViewById(R.id.post_score);
+        imageView_thumbUp = findViewById(R.id.post_voteUp);
+        imageView_thumbDown = findViewById(R.id.post_voteDown);
 
         post = new Post();
         userIDs = new ArrayList<>();
         allComments = new ArrayList<>();
 
+        initializeSwipeRefreshLayout(findViewById(R.id.post_swipeRefresh));
+
         //postID from feed
         Bundle extras = getIntent().getExtras();
-        String postID = extras.getString("post_id");
+
+        String postID = extras.getString("post");
+        if (postID == null)
+            postID = extras.getString("post_id");
+
+
         post.setPostID(postID);
 
-        dbReader.findDocumentByID("posts", postID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        loadPostData();
+        loadComments(false);
+    }
+
+    private void refreshPost()
+    {
+        loadPostData();
+        loadComments(false);
+    }
+
+    private void loadPostData()
+    {
+        dbReader.findDocumentByID("posts", post.getPostID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
                 makePost(task.getResult());
 
+                if (post.getUserID().equals(auth.getUid()))
+                    deletePostTextView.setVisibility(View.VISIBLE);
+
                 dbReader.findDocumentByID("users", post.getUserID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
                     {
-                        String username = task.getResult().getDocuments().get(0).getString("name");
-                        TextView textView_username = findViewById(R.id.post_username);
-                        textView_username.setText(username);
+                        String nickname = task.getResult().getDocuments().get(0).getString("name");
+
+                        nicknameTextView.setText(nickname);
+
+                        if (post.getChannelID().equals(""))
+                        {
+                            loadComments(false);
+                            return;
+                        }
 
                         dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                         {
@@ -108,15 +145,22 @@ public class PostActivity extends ParentActivity
                                 TextView textView_channel = findViewById(R.id.post_channel);
                                 textView_channel.setText(channelName);
 
-                                displayPostDetails(post);
+                                dbReader.findDocumentByID("posts/" + post.getPostID() + "/user_actions", auth.getUid()).addOnCompleteListener(task1 ->
+                                {
+                                    if (task1.getResult().getDocuments().size() > 0)
+                                    {
+                                        DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                                        post.setMyVote(doc.getLong("vote"));
+                                    }
+
+                                    displayPostDetails(post);
+                                });
                             }
                         });
                     }
                 });
             }
         });
-
-        loadComments();
     }
 
     private void makePost(QuerySnapshot documentSnapshots)
@@ -129,6 +173,9 @@ public class PostActivity extends ParentActivity
         post.setCaption(document.getString("caption"));
         post.setDescription(document.getString("description"));
         post.setImageUrl(document.getString("url"));
+
+        long score = document.getLong("score") == null ? 0 : document.getLong("score");
+        post.setScore(score);
 
         // Add tag buttons.
         String[] tags = ((List<String>) document.get("tags")).toArray(new String[0]);
@@ -143,6 +190,9 @@ public class PostActivity extends ParentActivity
 
         textView_caption.setText(post.getCaption());
         textView_description.setText(post.getDescription());
+
+        // Remove tags buttons.
+        viewGroup_tags.removeAllViews();
 
         // Add tag buttons.
         for (String tag : post.getTags())
@@ -162,6 +212,8 @@ public class PostActivity extends ParentActivity
             });
         }
 
+        updateVotingVisuals();
+
         /*Glide.with(context)
                 .asBitmap()
                 .load(post.getImageUrl())
@@ -176,7 +228,7 @@ public class PostActivity extends ParentActivity
                             public void onGenerated(@Nullable Palette palette)
                             {
                                 Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
-                                setColors(swatches);
+                                //setColors(swatches);
                             }
                         });
                     }
@@ -224,8 +276,10 @@ public class PostActivity extends ParentActivity
         }
     }*/
 
-    private void loadComments()
+    private void loadComments(boolean scrollToBottom)
     {
+        removeComments();
+
         dbReader.findSubcollection("comment_sections", post.getPostID(), "comments").addOnCompleteListener(task ->
         {
             QuerySnapshot commentSnapshots = task.getResult();
@@ -254,6 +308,10 @@ public class PostActivity extends ParentActivity
                 }
 
                 addComments(usernamePairs, commentSnapshots);
+                showComments(allComments);
+
+                if(scrollToBottom)
+                    scrollView.fullScroll(View.FOCUS_DOWN);
             });
         });
     }
@@ -266,8 +324,6 @@ public class PostActivity extends ParentActivity
             Comment comment = new Comment(document.getString("userID"), displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
             allComments.add(comment);
         }
-
-        showComments(allComments);
     }
 
     private void showComments(List<Comment> comments)
@@ -291,8 +347,34 @@ public class PostActivity extends ParentActivity
         }
     }
 
+    private void updateVotingVisuals()
+    {
+        textView_score.setText(String.valueOf(post.getScore()));
+
+        int colorGreen = ResourcesCompat.getColor(context.getResources(), R.color.vote_up, context.getTheme());
+        int colorRed = ResourcesCompat.getColor(context.getResources(), R.color.vote_down, context.getTheme());
+        int colorNeutral = ResourcesCompat.getColor(context.getResources(), R.color.vote_neutral, context.getTheme());
+
+        if (post.getMyVote() > 0)
+        {
+            imageView_thumbUp.setColorFilter(colorGreen, PorterDuff.Mode.MULTIPLY);
+            imageView_thumbDown.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+        }
+        else if (post.getMyVote() < 0)
+        {
+            imageView_thumbUp.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            imageView_thumbDown.setColorFilter(colorRed, PorterDuff.Mode.MULTIPLY);
+        }
+        else
+        {
+            imageView_thumbUp.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            imageView_thumbDown.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+        }
+    }
+
     private void removeComments()
     {
+        allComments.clear();
         content.removeAllViews();
     }
 
@@ -306,11 +388,13 @@ public class PostActivity extends ParentActivity
         Comment commentToAdd = dbWriter.addComment(auth.getUid(), commentText, post.getPostID());
         commentToAdd.setUserName(auth.getCurrentUser().getDisplayName());
 
-        //hmm does 'allComments' have to be global or do we remove the parameter from 'showComment'??
-        allComments.add(commentToAdd);
+        loadComments(true);
+    }
 
-        removeComments();
-        showComments(allComments);
+    public void deletePost(View v)
+    {
+        dbWriter.deletePost(post.getPostID());
+        openFeedActivity("");
     }
 
     public void openFeedActivity(String query)
@@ -337,5 +421,39 @@ public class PostActivity extends ParentActivity
         intent.putExtra("channel_id", post.getChannelID());
 
         startActivity(intent);
+    }
+
+    public void onVoteUp(View v)
+    {
+        votePost(1);
+    }
+
+    public void onVoteDown(View v)
+    {
+        votePost(-1);
+    }
+
+    private void votePost(int vote)
+    {
+        if(vote == post.getMyVote())
+            vote = 0;
+
+        dbWriter.addVote(auth.getUid(), post.getPostID(), vote);
+
+        long difference = vote - post.getMyVote();
+
+        post.setScore(post.getScore() + difference);
+        post.setMyVote(vote);
+
+        updateVotingVisuals();
+    }
+
+    private void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)
+    {
+        swipeContainer.setOnRefreshListener(() ->
+        {
+            refreshPost();
+            swipeContainer.setRefreshing(false);
+        });
     }
 }

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -50,6 +51,7 @@ public class ImageUploadActivity extends ParentActivity {
     private DatabaseWriter dbWriter;
     private FirebaseStorage storage;
     private StorageReference storageReference;
+
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Button mCaptureBtn;
@@ -73,11 +75,12 @@ public class ImageUploadActivity extends ParentActivity {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
+
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
         // Visibility specifications
-        profilePic.setVisibility(GONE);
+        // profilePic.setVisibility(GONE);
         relativeLayout.setVisibility(INVISIBLE);
         uploadButton.setVisibility(INVISIBLE);
 
@@ -215,8 +218,7 @@ public class ImageUploadActivity extends ParentActivity {
     // Function to upload chosen picture to Firebase
     private void uploadPicture(Uri uri) {
         final String randomKey = UUID.randomUUID().toString();
-        StorageReference riversRef = storageReference.child("images/" + randomKey);
-
+        StorageReference imageRef = storageReference.child("images/" + auth.getUid() + "/" + randomKey);
 
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
@@ -224,26 +226,28 @@ public class ImageUploadActivity extends ParentActivity {
 
         String caption = postCaption.getText().toString();
         String description = postDescription.getText().toString();
-        postTags.getText().toString();
-        ArrayList<String> tags = new ArrayList<>();
-        //String[] tags = {postTags.getText().toString()};
-        tags.add(postTags.getText().toString());
 
-        Task<Uri> urlTask = riversRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+        //ArrayList<String> tags = new ArrayList<>();
+        //String[] tags = {postTags.getText().toString()};
+        //tags.add(postTags.getText().toString());
+
+        String[] tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
+
+
+        imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                 if (!task.isSuccessful()) {
                     throw task.getException();
                 }
 
-                return riversRef.getDownloadUrl();
+                return imageRef.getDownloadUrl();
+
             }
         }).addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
-                    //TÄÄLLÄ on download token joka menee database kirjoittajaan jotenkin näin
-                    //dbWriter.addPost("Caption", "Description", downloadUri.toString());
                     Uri downloadUri = task.getResult();
                     String userID = auth.getUid();
                     dbWriter = new DatabaseWriter();

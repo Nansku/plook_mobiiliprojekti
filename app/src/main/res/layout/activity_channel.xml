@@ -6,10 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ChannelActivity">
 
-    <include layout="@layout/appbar"/>
-
     <LinearLayout
-        android:id="@+id/filters"
+        android:id="@+id/channel_menu"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
@@ -43,16 +41,72 @@
             android:background="@drawable/card_ripple"
         />
 
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:gravity="center"
+            android:text="F"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:onClick="toggleFiltersMenu"
+            android:foreground="@drawable/card_ripple"
+        />
+
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/channel_recycle"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/channel_swipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/filters"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingHorizontal="5dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    />
+        app:layout_constraintTop_toBottomOf="@+id/channel_menu"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/channel_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="5dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <RadioGroup
+        android:id="@+id/channel_filters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/channel_menu"
+        android:background="#BF000000"
+        android:visibility="gone">
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="50dp"
+            android:gravity="center_vertical"
+            android:text="LATEST"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:onClick="setFilterSortingTime"
+            android:foreground="@drawable/card_ripple"
+            />
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="50dp"
+            android:gravity="center_vertical"
+            android:text="POPULAR"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:onClick="setFilterSortingVotes"
+            android:foreground="@drawable/card_ripple"
+            />
+
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
