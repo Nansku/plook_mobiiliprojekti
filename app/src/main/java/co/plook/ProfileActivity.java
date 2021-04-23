@@ -2,6 +2,7 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.constraintlayout.solver.state.State;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
@@ -17,12 +18,16 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.bumptech.glide.util.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -34,6 +39,7 @@ public class ProfileActivity extends ParentActivity
     private Toolbar toolbar;
     private TextView profileNameTextView;
     private Button followButton;
+    private Button unfollowButton;
     private Button editProfileButton;
     private GridAdapter gridAdapter;
     private GridView gridView;
@@ -66,8 +72,10 @@ public class ProfileActivity extends ParentActivity
         profileNameTextView = findViewById(R.id.usernameTextview);
 
         followButton = findViewById(R.id.followButton);
+        unfollowButton = findViewById(R.id.unfollowButton);
         editProfileButton = findViewById(R.id.editProfile);
         editProfileButton.setVisibility(View.GONE);
+        unfollowButton.setVisibility(View.GONE);
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();
 
@@ -80,6 +88,7 @@ public class ProfileActivity extends ParentActivity
 
         if (userID.equals(auth.getUid())) {
             followButton.setVisibility(View.GONE);
+            unfollowButton.setVisibility(View.GONE);
             editProfileButton.setVisibility(View.VISIBLE);
 
         } else {
@@ -91,14 +100,17 @@ public class ProfileActivity extends ParentActivity
         // HACK TO EXPAND GRIDVIEW TO BOTTOM
         ((ExpandableHeightGridView) gridView).setExpanded(true);
 
+
         // get nickname for TextView (this should come from auth.getCurrentUser())
         dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
             String nickname = (String)task.getResult().getDocuments().get(0).get("name");
             profileNameTextView.setText(nickname);
         });
 
+        Query q = dbReader.db.collection("posts").whereEqualTo("userID", userID).orderBy("time", Query.Direction.DESCENDING);
+
         // FIND PHOTOS FROM FIREBASE
-        dbReader.findDocumentsWhereEqualTo("posts", "userID", userID).addOnCompleteListener(task ->
+        dbReader.findDocuments(q).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
 
             assert snapshot != null;
@@ -114,11 +126,9 @@ public class ProfileActivity extends ParentActivity
 
             gridAdapter = new GridAdapter(this, R.layout.activity_profile_post, userPosts);
 
-
             gridView.setAdapter(gridAdapter);
 
             gridAdapter.notifyDataSetChanged();
-
 
             editProfileButton.setOnClickListener(new View.OnClickListener() {
 
@@ -145,10 +155,7 @@ public class ProfileActivity extends ParentActivity
                 String postID = userPosts.get(position).getPostID();
                 openPostActivity(postID);
             }
-
         });
-
-
     }
 
     private void checkIfFollowing()
@@ -172,8 +179,13 @@ public class ProfileActivity extends ParentActivity
 
     private void updateFollowButton()
     {
-        String buttonString = isFollowing ? "Unfollow" : "Follow";
-        followButton.setText(buttonString);
+        if (isFollowing) {
+            followButton.setVisibility(View.GONE);
+            unfollowButton.setVisibility(View.VISIBLE);
+        } else {
+            followButton.setVisibility(View.VISIBLE);
+            unfollowButton.setVisibility(View.GONE);
+        }
     }
 
     // OPEN SINGLE POST IN PostActivity
@@ -191,5 +203,6 @@ public class ProfileActivity extends ParentActivity
         isFollowing = !isFollowing;
         updateFollowButton();
     }
+
 }
 
