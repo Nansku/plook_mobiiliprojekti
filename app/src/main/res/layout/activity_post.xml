@@ -134,12 +134,11 @@
                         android:padding="10dp"
                     />
 
-                    <LinearLayout
+                    <co.plook.TagLayout
                         android:id="@+id/post_tags"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/post_description"
-                        android:orientation="horizontal"
                         android:divider="@drawable/divider_feed_content"
                         android:showDividers="middle"
                         android:paddingHorizontal="10dp"

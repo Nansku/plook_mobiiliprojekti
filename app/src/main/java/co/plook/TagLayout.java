@@ -1,60 +1,74 @@
 package co.plook;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Point;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
 import android.widget.LinearLayout;
 
 public class TagLayout extends LinearLayout {
-    private int mScreenWidth = 0;
-    private int mAvailableWidth = -1;
-    boolean expanded = false;
 
     public TagLayout(Context context) {
         super(context);
-        init(context);
     }
 
     public TagLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
     }
 
     public TagLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
     }
 
-    private void init(Context context) {
-        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-        mScreenWidth = displayMetrics.widthPixels;
-    }
-
-    public boolean isExpanded()
-    {
-        return expanded;
-    }
-
-    // TAKEN FROM EXPANDABLE GRIDVIEW
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (isExpanded()) {
-            int expandSpec = MeasureSpec.makeMeasureSpec(MEASURED_SIZE_MASK, MeasureSpec.AT_MOST);
-            super.onMeasure(widthMeasureSpec, expandSpec);
 
-            ViewGroup.LayoutParams params = getLayoutParams();
-            params.height = getMeasuredHeight();
+        int count = getChildCount();
+        int currentRowWidth = 0;
+        int currentRowHeight = 0;
+        int maxItemWidth = 0;
+        int maxWidth = 0;
+        int maxHeight = 0;
+
+        int availableWidth = getPaddingStart() - getPaddingEnd();
+
+        System.out.println("LEVEYS: " + availableWidth);
+
+        for (int i = 0; i < count; i++)
+        {
+            View child = getChildAt(i);
+
+            if(child.getVisibility() == GONE)
+                continue;
+
+            try
+            {
+                measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0);
+            }
+            catch(Exception e)
+            {
+                measureChild(child, widthMeasureSpec, heightMeasureSpec);
+            }
+
+            int childWidth = child.getMeasuredWidth() + child.getPaddingRight() + child.getPaddingLeft();
+            int childHeight = child.getMeasuredHeight() + child.getPaddingTop() + child.getPaddingBottom();
+
+            maxItemWidth = Math.max(maxItemWidth, childWidth);
+
+            if (currentRowWidth + childWidth < availableWidth)
+            {
+                currentRowWidth += childWidth;
+                maxWidth = Math.max(maxWidth, currentRowWidth);
+                currentRowHeight = Math.max(currentRowHeight, childHeight);
+            }
+            else
+            {
+                currentRowWidth = childWidth;
+                maxHeight += currentRowHeight;
+            }
         }
-        else {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
+
+        maxHeight += currentRowHeight + getPaddingTop() + getPaddingBottom();
+        setMeasuredDimension(500, 500);
     }
 
 
@@ -135,7 +149,7 @@ public class TagLayout extends LinearLayout {
         }
     }*/
 
-    /*@Override
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int count = getChildCount();
         int curWidth, curHeight, curLeft, curTop, maxHeight;
@@ -174,6 +188,7 @@ public class TagLayout extends LinearLayout {
             if (maxHeight < curHeight)
                 maxHeight = curHeight;
             curLeft += curWidth;
-        }*/
+        }
+    }
 }
 

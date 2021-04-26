@@ -16,8 +16,6 @@ import java.util.List;
 
 public class ChannelActivity extends PostDisplayActivity
 {
-    private DatabaseWriter dbWriter;
-
     private String channelID;
     private int followerCount;
     private boolean isFollowing;
@@ -32,8 +30,6 @@ public class ChannelActivity extends PostDisplayActivity
         getChannelData();
 
         getLayoutInflater().inflate(R.layout.activity_channel, contentGroup);
-
-        dbWriter = new DatabaseWriter();
 
         RecyclerView recyclerView = findViewById(R.id.channel_recycle);
         initializeRecyclerView(recyclerView);
