@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.ImageFormat;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
@@ -11,14 +12,18 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -55,12 +60,16 @@ public class ImageUploadActivity extends ParentActivity {
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Button mCaptureBtn;
-    Button uploadButton;
+    ImageButton uploadButton;
     Button chooseImgButton;
+    ImageButton cancel;
     RelativeLayout relativeLayout;
     EditText postCaption;
     EditText postDescription;
-    EditText postTags;
+    AutoCompleteTextView tagSuggestions;
+    String[] tags;
+    TagLayout tagLayout;
+    String tag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,26 +78,53 @@ public class ImageUploadActivity extends ParentActivity {
 
         profilePic = findViewById(R.id.profilePic);
         mCaptureBtn = findViewById(R.id.capture_image_btn);
-        uploadButton = (Button) findViewById(R.id.upload);
+        uploadButton = (ImageButton) findViewById(R.id.upload);
         chooseImgButton = (Button) findViewById(R.id.choose_image_btn);
         relativeLayout = (RelativeLayout) findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-
-
+        postCaption = findViewById(R.id.post_caption);
+        postDescription = findViewById(R.id.post_description);
+        //postTags = findViewById(R.id.post_tags);
+        tagSuggestions = (AutoCompleteTextView) findViewById(R.id.tag_list);
+        tagLayout = (TagLayout) findViewById(R.id.tagLayout);
+        cancel = (ImageButton) findViewById(R.id.cancel);
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
         // Visibility specifications
         // profilePic.setVisibility(GONE);
-        relativeLayout.setVisibility(INVISIBLE);
-        uploadButton.setVisibility(INVISIBLE);
+        relativeLayout.setVisibility(GONE);
+        uploadButton.setVisibility(GONE);
+
+        String[] example = {"tag1", "tag2", "tag3"};
+        // Auto suggestion for tags
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, example);
+        tagSuggestions.setAdapter(arrayAdapter);
+
+        // AUTOFILL
+        tagSuggestions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView textView = (TextView) view;
+                addTag(textView.getText().toString());
+            }
+        });
 
         // Choose img button listener
         chooseImgButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 choosePicture();
+            }
+        });
+
+        // Cancel-button listener
+        cancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
@@ -116,6 +152,18 @@ public class ImageUploadActivity extends ParentActivity {
                 }
             }
         });
+    }
+
+    public void addTag(String string) {
+
+        View child = getLayoutInflater().inflate(R.layout.layout_post_tag, tagLayout, false);
+        tagLayout.addView(child);
+        tag = string.trim().replaceAll("[^a-öA-Ö0-9,]", "");
+
+        ImageView imageView = child.findViewById(R.id.tag_delete);
+        imageView.setVisibility(VISIBLE);
+        TextView tagText = child.findViewById(R.id.tag_text);
+        tagText.setText(tag);
     }
 
     // Function to choose img from gallery
@@ -222,7 +270,7 @@ public class ImageUploadActivity extends ParentActivity {
 
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-        postTags = findViewById(R.id.post_tags);
+
 
         String caption = postCaption.getText().toString();
         String description = postDescription.getText().toString();
@@ -231,8 +279,7 @@ public class ImageUploadActivity extends ParentActivity {
         //String[] tags = {postTags.getText().toString()};
         //tags.add(postTags.getText().toString());
 
-        String[] tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
-
+        tags = tagSuggestions.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
 
         imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override

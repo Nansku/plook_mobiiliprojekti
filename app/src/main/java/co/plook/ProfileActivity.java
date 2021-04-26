@@ -85,7 +85,6 @@ public class ProfileActivity extends ParentActivity
             userID = auth.getUid();
         }
 
-
         if (userID.equals(auth.getUid())) {
             followButton.setVisibility(View.GONE);
             unfollowButton.setVisibility(View.GONE);
