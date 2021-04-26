@@ -92,8 +92,8 @@ public class ImageUploadActivity extends ParentActivity {
 
         // Visibility specifications
         // profilePic.setVisibility(GONE);
-        relativeLayout.setVisibility(INVISIBLE);
-        uploadButton.setVisibility(INVISIBLE);
+        relativeLayout.setVisibility(GONE);
+        uploadButton.setVisibility(GONE);
 
         String[] example = {"tag1", "tag2", "tag3"};
         // Auto suggestion for tags
@@ -104,7 +104,7 @@ public class ImageUploadActivity extends ParentActivity {
         tagSuggestions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("TÄG KLIK");
+
                 TextView textView = (TextView) view;
                 addTag(textView.getText().toString());
             }
@@ -144,7 +144,7 @@ public class ImageUploadActivity extends ParentActivity {
     }
 
     public void addTag(String string) {
-        System.out.println("TÄG FUNKTIO");
+
         View child = getLayoutInflater().inflate(R.layout.layout_post_tag, tagLayout, false);
         tagLayout.addView(child);
         tag = string.trim().replaceAll("[^a-öA-Ö0-9,]", "");

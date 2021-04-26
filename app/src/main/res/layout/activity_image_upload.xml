@@ -36,7 +36,6 @@
                 android:text="Camera"
                 android:layout_toStartOf="@+id/choose_image_btn"
                 android:background="@drawable/circle_button_lg"
-
                 app:backgroundTint="@color/lighter_forest2"
                 android:drawableTop="@drawable/ic_open_camera"
                 android:textSize="12dp"/>
@@ -79,49 +78,54 @@
                 android:layout_below="@+id/post_caption"
                 android:layout_centerHorizontal="true" />
 
-
-            <EditText
+            <!--<EditText
                 android:layout_marginTop="30dp"
                 android:id="@+id/post_tags"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="#tags"
                 android:layout_below="@+id/post_description"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"/>-->
 
             <AutoCompleteTextView
                 android:id="@+id/tag_list"
-                android:hint="autocomplete tag"
+                android:layout_marginTop="30dp"
+                android:hint="#autocomplete_tags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/post_tags"/>
+                android:layout_below="@+id/post_description"/>
 
             <co.plook.TagLayout
                 android:id="@+id/tagLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="100dp"
-                android:layout_below="@+id/tag_list">
-                <TextView
-                    android:text="TEKSTIÄ"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:text="TEKSTIÄ"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tag_list"
+                android:divider="@drawable/divider_feed_content"
+                android:showDividers="middle" >
             </co.plook.TagLayout>
 
             <Button
                 android:id="@+id/upload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="100dp"
+                android:layout_marginBottom="50dp"
                 android:text="Post"
                 android:layout_marginTop="50dp"
                 android:layout_below="@+id/tagLayout"
                 android:layout_centerHorizontal="true"/>
-            <!--app:layout_constraintBottom_toBottomOf="parent"
+
+            <!--<Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:text="Cancel"
+                android:layout_marginTop="50dp"
+                android:layout_below="@+id/tagLayout"
+                android:layout_toStartOf="@+id/upload"
+                android:layout_centerHorizontal="true"
+                />
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/post_tags" -->

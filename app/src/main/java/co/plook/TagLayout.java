@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 public class TagLayout extends LinearLayout {
     private int mScreenWidth = 0;
     private int mAvailableWidth = -1;
+    boolean expanded = false;
 
     public TagLayout(Context context) {
         super(context);
@@ -33,9 +34,29 @@ public class TagLayout extends LinearLayout {
 
     private void init(Context context) {
         DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-
         mScreenWidth = displayMetrics.widthPixels;
     }
+
+    public boolean isExpanded()
+    {
+        return expanded;
+    }
+
+    // TAKEN FROM EXPANDABLE GRIDVIEW
+    @Override
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (isExpanded()) {
+            int expandSpec = MeasureSpec.makeMeasureSpec(MEASURED_SIZE_MASK, MeasureSpec.AT_MOST);
+            super.onMeasure(widthMeasureSpec, expandSpec);
+
+            ViewGroup.LayoutParams params = getLayoutParams();
+            params.height = getMeasuredHeight();
+        }
+        else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+    }
+
 
     /*@Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -114,7 +135,7 @@ public class TagLayout extends LinearLayout {
         }
     }*/
 
-    @Override
+    /*@Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int count = getChildCount();
         int curWidth, curHeight, curLeft, curTop, maxHeight;
@@ -153,6 +174,6 @@ public class TagLayout extends LinearLayout {
             if (maxHeight < curHeight)
                 maxHeight = curHeight;
             curLeft += curWidth;
-        }
-    }
+        }*/
 }
+
