@@ -1,33 +1,27 @@
 package co.plook;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.constraintlayout.solver.state.State;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.widget.Toolbar;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.bumptech.glide.util.Util;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -38,6 +32,8 @@ public class ProfileActivity extends ParentActivity
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
     private TextView profileNameTextView;
+    private TextView profileBioTextView;
+    private TextView profileLocationTextView;
     private Button followButton;
     private Button unfollowButton;
     private Button editProfileButton;
@@ -45,6 +41,11 @@ public class ProfileActivity extends ParentActivity
     private GridView gridView;
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
+    private String nickname;
+    private String location;
+    private String bio;
+
+
 
     private ArrayList<Post> userPosts;
     private String userID;
@@ -70,6 +71,8 @@ public class ProfileActivity extends ParentActivity
 
         followButton = findViewById(R.id.followButton);
         profileNameTextView = findViewById(R.id.usernameTextview);
+        profileBioTextView = findViewById(R.id.bioTxt);
+        profileLocationTextView = findViewById(R.id.country);
 
         followButton = findViewById(R.id.followButton);
         unfollowButton = findViewById(R.id.unfollowButton);
@@ -101,11 +104,7 @@ public class ProfileActivity extends ParentActivity
         ((ExpandableHeightGridView) gridView).setExpanded(true);
 
 
-        // get nickname for TextView (this should come from auth.getCurrentUser())
-        dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
-            String nickname = (String)task.getResult().getDocuments().get(0).get("name");
-            profileNameTextView.setText(nickname);
-        });
+
 
         Query q = dbReader.db.collection("posts").whereEqualTo("userID", userID).orderBy("time", Query.Direction.DESCENDING);
 
@@ -135,8 +134,16 @@ public class ProfileActivity extends ParentActivity
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class );
+
+                    intent.putExtra("name", nickname);
+                    intent.putExtra("location", location);
+                    intent.putExtra("bio", bio);
+
                     startActivity(intent);
+
                 }
+
+
             });
         });
 
@@ -156,6 +163,23 @@ public class ProfileActivity extends ParentActivity
                 openPostActivity(postID);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // get nickname for TextView (this should come from auth.getCurrentUser())
+        dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
+            nickname = (String)task.getResult().getDocuments().get(0).get("name");
+            location = (String)task.getResult().getDocuments().get(0).get("location");
+            bio = (String)task.getResult().getDocuments().get(0).get("bio");
+            profileNameTextView.setText(nickname);
+            profileBioTextView.setText(bio);
+            profileLocationTextView.setText(location);
+        });
+
+        System.out.println("Onresume kutsuttu");
     }
 
     private void checkIfFollowing()
