@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -61,6 +64,10 @@ public class ImageUploadActivity extends ParentActivity {
     EditText postCaption;
     EditText postDescription;
     EditText postTags;
+    AutoCompleteTextView tagSuggestions;
+    String[] tags;
+    TagLayout tagLayout;
+    String tag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +81,34 @@ public class ImageUploadActivity extends ParentActivity {
         relativeLayout = (RelativeLayout) findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-
+        postCaption = findViewById(R.id.post_caption);
+        postDescription = findViewById(R.id.post_description);
+        postTags = findViewById(R.id.post_tags);
+        tagSuggestions = (AutoCompleteTextView) findViewById(R.id.tag_list);
+        tagLayout = (TagLayout) findViewById(R.id.tagLayout);
 
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
         // Visibility specifications
         // profilePic.setVisibility(GONE);
-        relativeLayout.setVisibility(INVISIBLE);
-        uploadButton.setVisibility(INVISIBLE);
+        relativeLayout.setVisibility(GONE);
+        uploadButton.setVisibility(GONE);
 
+        String[] example = {"tag1", "tag2", "tag3"};
+        // Auto suggestion for tags
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, example);
+        tagSuggestions.setAdapter(arrayAdapter);
+
+        // AUTOFILL
+        tagSuggestions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView textView = (TextView) view;
+                addTag(textView.getText().toString());
+            }
+        });
         // Choose img button listener
         chooseImgButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -116,6 +141,18 @@ public class ImageUploadActivity extends ParentActivity {
                 }
             }
         });
+    }
+
+    public void addTag(String string) {
+
+        View child = getLayoutInflater().inflate(R.layout.layout_post_tag, tagLayout, false);
+        tagLayout.addView(child);
+        tag = string.trim().replaceAll("[^a-öA-Ö0-9,]", "");
+
+        ImageView imageView = child.findViewById(R.id.tag_delete);
+        imageView.setVisibility(VISIBLE);
+        TextView tagText = child.findViewById(R.id.tag_text);
+        tagText.setText(tag);
     }
 
     // Function to choose img from gallery
@@ -231,8 +268,7 @@ public class ImageUploadActivity extends ParentActivity {
         //String[] tags = {postTags.getText().toString()};
         //tags.add(postTags.getText().toString());
 
-        String[] tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
-
+        tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
 
         imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
