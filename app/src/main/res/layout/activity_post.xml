@@ -26,36 +26,36 @@
 
                 <!-- Post Image Header -->
                 <RelativeLayout
-                    android:id="@+id/darker_layout"
+                    android:id="@+id/post_header_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/forest">
 
-                <TextView
-                    android:id="@+id/post_caption"
-                    android:layout_width="240dp"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:layout_marginHorizontal="40dp"
-                    android:layout_marginVertical="10dp"
-                />
-
-                <TextView
-                    android:id="@+id/delete_post"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/post_caption"
-                    android:text="Delete"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_marginVertical="10dp"
-                    android:onClick="deletePost"
-                    android:visibility="gone"
+                    <TextView
+                        android:id="@+id/post_caption"
+                        android:layout_width="240dp"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:layout_marginHorizontal="40dp"
+                        android:layout_marginVertical="10dp"
                     />
+
+                    <TextView
+                        android:id="@+id/post_delete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/post_caption"
+                        android:text="Delete"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_marginVertical="10dp"
+                        android:onClick="deletePost"
+                        android:visibility="gone"
+                        />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -110,7 +110,7 @@
 
                 <!-- Post Image Footer -->
                 <RelativeLayout
-                    android:id="@+id/lighter_layout"
+                    android:id="@+id/post_footer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/lighter_forest">
@@ -126,30 +126,31 @@
                     />
 
                     <TextView
+                        android:id="@+id/post_tags_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_above="@id/post_tags"
+                        android:layout_above="@id/post_tags_layout"
                         android:text="Tags"
                         android:textColor="@color/white"
                         android:padding="10dp"
                     />
 
-                    <LinearLayout
-                        android:id="@+id/post_tags"
+                    <co.plook.TagLayout
+                        android:id="@+id/post_tags_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="100dp"
                         android:layout_below="@id/post_description"
-                        android:orientation="horizontal"
-                        android:divider="@drawable/divider_feed_content"
-                        android:showDividers="middle"
+                        app:childSpacingX="2dp"
+                        app:childSpacingY="5dp"
                         android:paddingHorizontal="10dp"
                         android:layout_marginBottom="20dp"
                     />
 
                     <TextView
+                        android:id="@+id/post_comments_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/post_tags"
+                        android:layout_below="@id/post_tags_layout"
                         android:text="COMMENTS"
                         android:textColor="@color/white"
                         android:padding="10dp"
@@ -158,15 +159,17 @@
                 </RelativeLayout>
 
                 <LinearLayout
-                    android:id="@+id/post_content"
+                    android:id="@+id/post_comments_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                 />
 
-                <Space
+                <TextView
+                    android:id="@+id/empty_space"
                     android:layout_width="match_parent"
                     android:layout_height="65dp"
+                    android:background="@color/lighter_forest"
                 />
 
             </LinearLayout>
@@ -184,6 +187,7 @@
         android:layout_margin="10dp">
 
         <LinearLayout
+            android:id="@+id/post_controls_layout"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:orientation="horizontal"
@@ -224,7 +228,7 @@
             />
 
             <TextView
-                android:id="@+id/comment_button"
+                android:id="@+id/post_comment_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

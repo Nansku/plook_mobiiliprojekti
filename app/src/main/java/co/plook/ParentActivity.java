@@ -25,12 +25,9 @@ public class ParentActivity extends AppCompatActivity
 {
     private DrawerLayout drawerLayout;
     private Toolbar toolbar;
-    private ImageView profileImageView;
-    private TextView userNameTextView;
 
     protected NavigationView navigationView;
 
-    protected MyFirebaseMessagingService messagingService;
     protected FirebaseAuth auth;
     protected ViewGroup contentGroup;
     protected Activity currentActivity;
@@ -52,8 +49,6 @@ public class ParentActivity extends AppCompatActivity
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        profileImageView = findViewById(R.id.nav_header_profilePic);
-        userNameTextView = findViewById(R.id.nav_header_username);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close) ;
@@ -68,16 +63,15 @@ public class ParentActivity extends AppCompatActivity
             intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
-
-
-        Log.d("LOG", "Nickname: " + auth.getCurrentUser().getDisplayName() + "  profile picture url: " + auth.getCurrentUser().getPhotoUrl());
     }
 
     // this crashes... (attempt to invoke method on a null object ref)
-    protected void showUserData()
+    protected void loadNavUserData()
     {
-        // WIP: test if "getPhotoUrl" is null
-        Glide.with(this).load(auth.getCurrentUser().getPhotoUrl()).into(profileImageView);
+        TextView userNameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
+        ImageView profileImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_profilePic);
+        Glide.with(this)
+                .load(auth.getCurrentUser().getPhotoUrl()).into(profileImageView);
 
         userNameTextView.setText(auth.getCurrentUser().getDisplayName());
     }

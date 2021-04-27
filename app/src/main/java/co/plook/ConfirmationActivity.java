@@ -18,13 +18,12 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         gotoLoginButton = findViewById(R.id.button);
 
-      gotoLoginButton.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-
-              Intent loginintent =new Intent(ConfirmationActivity.this, LoginActivity.class);
-              startActivity(loginintent);
-          }
-      });
+        gotoLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent loginintent =new Intent(ConfirmationActivity.this, LoginActivity.class);
+                startActivity(loginintent);
+            }
+        });
     }
 }

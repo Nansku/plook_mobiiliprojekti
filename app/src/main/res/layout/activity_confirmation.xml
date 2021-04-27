@@ -6,21 +6,32 @@
     android:theme="@style/CustomTheme"
     tools:context=".ConfirmationActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sinulle on lähetetty vahvistamisviesti."
-        android:layout_marginTop="40sp"
-        android:layout_centerHorizontal="true"/>
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Siirry kirjautumiseen"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="40sp"
-        android:layout_centerHorizontal="true"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Tarkista sähköpostisi. Sinulle on lähetetty viesti rekisteröinnin vahvistamiseksi." />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView"
+            android:layout_centerHorizontal="true"
+            android:text="Siirry kirjautumiseen"
+            android:layout_marginTop="20dp"/>
+
+    </RelativeLayout>
+
 
 </RelativeLayout>
