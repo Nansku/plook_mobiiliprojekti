@@ -108,6 +108,18 @@
             android:onClick="saveData"
             />
 
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/updateButton"
+            android:layout_marginTop="65sp"
+            android:layout_centerHorizontal="true"
+            android:onClick="deleteUser"
+            android:text="Poista profiili"
+            android:backgroundTint="@color/dark_forest"
+            />
+
 
     </RelativeLayout>
 </RelativeLayout>
