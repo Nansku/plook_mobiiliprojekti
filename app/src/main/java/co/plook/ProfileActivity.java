@@ -2,8 +2,6 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.constraintlayout.solver.state.State;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
 
@@ -11,14 +9,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.util.Util;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -27,22 +25,19 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 public class ProfileActivity extends ParentActivity
 {
-    private Context context;
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
-    private Toolbar toolbar;
     private TextView profileNameTextView;
     private Button followButton;
     private Button unfollowButton;
     private Button editProfileButton;
     private GridAdapter gridAdapter;
     private GridView gridView;
+    private ImageView profileImageView;
+
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
 
@@ -70,12 +65,15 @@ public class ProfileActivity extends ParentActivity
 
         followButton = findViewById(R.id.followButton);
         profileNameTextView = findViewById(R.id.usernameTextview);
+        profileImageView = findViewById(R.id.profileview_picture);
 
         followButton = findViewById(R.id.followButton);
         unfollowButton = findViewById(R.id.unfollowButton);
         editProfileButton = findViewById(R.id.editProfile);
         editProfileButton.setVisibility(View.GONE);
         unfollowButton.setVisibility(View.GONE);
+
+        loadNavUserData();
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();
 
@@ -85,14 +83,28 @@ public class ProfileActivity extends ParentActivity
             userID = auth.getUid();
         }
 
-
-        if (userID.equals(auth.getUid())) {
+        // profile is owned by current user
+        if (userID.equals(auth.getUid()))
+        {
             followButton.setVisibility(View.GONE);
             unfollowButton.setVisibility(View.GONE);
             editProfileButton.setVisibility(View.VISIBLE);
-
-        } else {
+            profileNameTextView.setText(auth.getCurrentUser().getDisplayName());
+            Glide.with(this)
+                    .load(auth.getCurrentUser().getPhotoUrl()).into(profileImageView);
+        }
+        // profile is someone else's
+        else
+        {
             checkIfFollowing();
+            // get nickname and picture from db
+            dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
+                String nickname = (String)task.getResult().getDocuments().get(0).get("name");
+                String pictureUrl = (String)task.getResult().getDocuments().get(0).get("url");
+                profileNameTextView.setText(nickname);
+                Glide.with(this)
+                        .load(pictureUrl).into(profileImageView);
+            });
         }
 
         // GRIDVIEW
@@ -101,11 +113,6 @@ public class ProfileActivity extends ParentActivity
         ((ExpandableHeightGridView) gridView).setExpanded(true);
 
 
-        // get nickname for TextView (this should come from auth.getCurrentUser())
-        dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
-            String nickname = (String)task.getResult().getDocuments().get(0).get("name");
-            profileNameTextView.setText(nickname);
-        });
 
         Query q = dbReader.db.collection("posts").whereEqualTo("userID", userID).orderBy("time", Query.Direction.DESCENDING);
 
