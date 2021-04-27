@@ -8,7 +8,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +19,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -32,29 +38,47 @@ import java.util.Map;
 
 public class PostActivity extends ParentActivity
 {
-    //views
     private Context context;
+
+    // views
+    private Toolbar toolbar;
     private ScrollView scrollView;
-    private ViewGroup content;
+
+    private RelativeLayout headerLayout;
+    private RelativeLayout footerLayout;
+
     private ImageView imageView;
-    private RelativeLayout layout;
-    private RelativeLayout lighter_layout;
-    private ViewGroup viewGroup_tags;
-    private TextView commentButton;
-    private TextView textView_score;
-    private ImageView imageView_thumbUp;
-    private ImageView imageView_thumbDown;
+
+    private ViewGroup tagsViewGroup;
+    private ViewGroup commentsViewGroup;
+    private ViewGroup controlsViewGroup;
+
+    private TextView captionTextView;
     private TextView deletePostTextView;
     private TextView nicknameTextView;
+    private TextView channelTextView;
 
-    //database stuff
+    private TextView descriptionTextView;
+    private TextView tagsTextView;
+    private TextView commentsTextView;
+    private TextView postCommentTextView;
+
+    private TextView scoreTextView;
+
+    private ImageView thumbUpImageView;
+    private ImageView thumpDownImageView;
+    private TextView space;
+
+    // database stuff
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
 
-    //objects
+    // objects
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,21 +91,32 @@ public class PostActivity extends ParentActivity
         dbReader = new DatabaseReader();
         dbWriter = new DatabaseWriter();
 
+        toolbar = findViewById(R.id.toolbar);
         scrollView = findViewById(R.id.post_scrollView);
-        content = findViewById(R.id.post_content);
+        headerLayout = findViewById(R.id.post_header_layout);
+        footerLayout = findViewById(R.id.post_footer_layout);
         imageView = findViewById(R.id.image);
-        deletePostTextView = findViewById(R.id.delete_post);
-        nicknameTextView = findViewById(R.id.post_username);
 
-        // swatch stuff...
-        layout = findViewById(R.id.darker_layout);
-        lighter_layout = findViewById(R.id.lighter_layout);
-        commentButton = findViewById(R.id.comment_button);
+        tagsViewGroup = findViewById(R.id.post_tags_layout);
+        commentsViewGroup = findViewById(R.id.post_comments_layout);
+        controlsViewGroup = findViewById(R.id.post_controls_layout);
+
+        captionTextView = findViewById(R.id.post_caption);
+        deletePostTextView = findViewById(R.id.post_delete);
+        nicknameTextView = findViewById(R.id.post_username);
+        channelTextView = findViewById(R.id.post_channel);
+
+        descriptionTextView = findViewById(R.id.post_description);
+        tagsTextView = findViewById(R.id.post_tags_textView);
+        commentsTextView = findViewById(R.id.post_comments_textView);
+        postCommentTextView = findViewById(R.id.post_comment_button);
+
+        space = findViewById(R.id.empty_space);
 
         // voting
-        textView_score = findViewById(R.id.post_score);
-        imageView_thumbUp = findViewById(R.id.post_voteUp);
-        imageView_thumbDown = findViewById(R.id.post_voteDown);
+        scoreTextView = findViewById(R.id.post_score);
+        thumbUpImageView = findViewById(R.id.post_voteUp);
+        thumpDownImageView = findViewById(R.id.post_voteDown);
 
         post = new Post();
         userIDs = new ArrayList<>();
@@ -99,6 +134,7 @@ public class PostActivity extends ParentActivity
 
         post.setPostID(postID);
 
+        loadNavUserData();
         loadPostData();
         loadComments(false);
     }
@@ -184,21 +220,17 @@ public class PostActivity extends ParentActivity
 
     private void displayPostDetails(Post post)
     {
-        TextView textView_caption = findViewById(R.id.post_caption);
-        TextView textView_description = findViewById(R.id.post_description);
-        viewGroup_tags = findViewById(R.id.post_tags);
-
-        textView_caption.setText(post.getCaption());
-        textView_description.setText(post.getDescription());
+        captionTextView.setText(post.getCaption());
+        descriptionTextView.setText(post.getDescription());
 
         // Remove tags buttons.
-        viewGroup_tags.removeAllViews();
+        tagsViewGroup.removeAllViews();
 
         // Add tag buttons.
         for (String tag : post.getTags())
         {
-            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, viewGroup_tags, false);
-            viewGroup_tags.addView(child);
+            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, tagsViewGroup, false);
+            tagsViewGroup.addView(child);
 
             TextView textView = child.findViewById(R.id.tag_text);
             textView.setText(tag);
@@ -214,22 +246,19 @@ public class PostActivity extends ParentActivity
 
         updateVotingVisuals();
 
-        /*Glide.with(context)
+        Glide.with(context)
                 .asBitmap()
                 .load(post.getImageUrl())
-                .into(new CustomTarget<Bitmap>() {
+                .centerInside()
+                .into(new CustomTarget<Bitmap>(imageView.getMeasuredWidth(), imageView.getMeasuredHeight()) {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
                     {
                         imageView.setImageBitmap(resource);
-                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
-                        {
-                            @Override
-                            public void onGenerated(@Nullable Palette palette)
-                            {
-                                Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
-                                //setColors(swatches);
-                            }
+                        Palette.from(resource).generate(palette -> {
+                            List<Palette.Swatch> swatches = palette.getSwatches();
+                            if (!swatches.isEmpty())
+                                setColors(swatches);
                         });
                     }
 
@@ -238,43 +267,87 @@ public class PostActivity extends ParentActivity
                     {
 
                     }
-                });*/
+                });
 
-        // Add image.
+        /*// Add image.
         Glide.with(context)
                 .load(post.getImageUrl())
-                .into(imageView);
+                .into(imageView);*/
     }
 
-    /*public void setColors(Palette.Swatch[] swatch)
+    public void setColors(List<Palette.Swatch> swatches)
     {
-        layout.setBackgroundColor(swatch[0].getRgb());
-        lighter_layout.setBackgroundColor(swatch[1].getRgb());
+        int mainColor = swatches.get(0).getRgb();
+        if (Color.luminance(mainColor) > 0.4)
+            invertTextColor("main");
 
-        commentButton.setBackgroundColor(swatch[0].getRgb());
-        buttonButton.setBackgroundColor(swatch[0].getRgb());
+        int buttonColor = swatches.get(1).getRgb();
+        if (Color.luminance(buttonColor) > 0.4)
+            invertTextColor("content");
 
-        ColorDrawable colorDrawable = new ColorDrawable(swatch[0].getRgb());
-        this.getWindow().setStatusBarColor(swatch[0].getRgb());
+        System.out.println("Luminance: " + Color.luminance(buttonColor));
 
-        //content.setBackgroundColor(swatch[1].getTitleTextColor());
-        //viewGroup_tags.setBackgroundColor(swatch[0].getRgb());
+        // all the views we need to set the colors on:
+        // header_layout + (post_caption, post_delete_button, post_username, post_channel)
+        // footer_layout + (post_description, post_tags_textView, post_tags_linearLayout, post_comments_textView, post_comments_layout, empty_space)
+        // post_controls_layout
 
-        for (int i = 0; i < content.getChildCount(); i++)
+        this.getWindow().setStatusBarColor(mainColor);
+        toolbar.setBackgroundColor(mainColor);
+
+        headerLayout.setBackgroundColor(mainColor);
+        footerLayout.setBackgroundColor(mainColor);
+        space.setBackgroundColor(mainColor);
+        commentsViewGroup.setBackgroundColor(mainColor);
+        controlsViewGroup.setBackgroundColor(buttonColor);
+
+        ViewGroup navigationLayout = findViewById(R.id.nav_header_parent_layout);
+        navigationLayout.setBackgroundColor(mainColor);
+
+        ImageView circleCrop = findViewById(R.id.circle_crop);
+        circleCrop.getDrawable().setTint(mainColor);
+
+        // set comments' and tags' body color
+        for (int i = 0; i < commentsViewGroup.getChildCount(); i++)
+            ((ViewGroup) commentsViewGroup.getChildAt(i)).setBackgroundColor(buttonColor);
+        for (int i = 0; i < tagsViewGroup.getChildCount(); i++)
+            ((ViewGroup) tagsViewGroup.getChildAt(i)).getChildAt(0).setBackgroundColor(buttonColor);
+    }
+
+    private void invertTextColor(String mode)
+    {
+        switch(mode)
         {
-            ViewGroup child = (ViewGroup)content.getChildAt(i);
-            child.setBackgroundColor(swatch[0].getRgb());
-            for (int j = 0; j < child.getChildCount(); j++)
-            {
-                ((TextView)child.getChildAt(j)).setTextColor(swatch[0].getTitleTextColor());
-            }
-        }
+            case "main":
+                captionTextView.setTextColor(Color.BLACK);
+                nicknameTextView.setTextColor(Color.BLACK);
+                channelTextView.setTextColor(Color.BLACK);
+                descriptionTextView.setTextColor(Color.BLACK);
+                tagsTextView.setTextColor(Color.BLACK);
+                commentsTextView.setTextColor(Color.BLACK);
+                break;
 
-        for (int i = 0; i < viewGroup_tags.getChildCount(); i++)
-        {
-            ((ViewGroup)viewGroup_tags.getChildAt(i)).getChildAt(0).setBackgroundColor(swatch[0].getRgb());
+            case "content":
+                // set comment textView colors
+                for (int i = 0; i < commentsViewGroup.getChildCount(); i++)
+                {
+                    ViewGroup childGroup = (ViewGroup) commentsViewGroup.getChildAt(i);
+                    for (int j = 0; j < childGroup.getChildCount(); j++)
+                        ((TextView)childGroup.getChildAt(j)).setTextColor(Color.BLACK);
+                }
+
+                for (int i = 0; i < tagsViewGroup.getChildCount(); i++)
+                {
+                    ViewGroup childGroup = (ViewGroup) tagsViewGroup.getChildAt(i);
+                    TextView tagText = childGroup.findViewById(R.id.tag_text);
+                    tagText.setTextColor(Color.BLACK);
+                }
+
+                scoreTextView.setTextColor(Color.BLACK);
+                postCommentTextView.setTextColor(Color.BLACK);
+                break;
         }
-    }*/
+    }
 
     private void loadComments(boolean scrollToBottom)
     {
@@ -294,7 +367,7 @@ public class PostActivity extends ParentActivity
 
             dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
             {
-                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); //  @Iikka what even is this??
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult();
                 Map<String, String> usernamePairs = new HashMap<>();
 
                 for (int i = 0; i < querySnapshots.size(); i++)
@@ -333,8 +406,8 @@ public class PostActivity extends ParentActivity
         for (Comment comment : comments)
         {
             //create a view for comment
-            View child = getLayoutInflater().inflate(R.layout.layout_comment, content, false);
-            content.addView(child);
+            View child = getLayoutInflater().inflate(R.layout.layout_comment, commentsViewGroup, false);
+            commentsViewGroup.addView(child);
             //get textViews
             //ADD TEXTVIEWS FOR REPLIEDTOID AND TIMESTAMP
             TextView textView_username = child.findViewById(R.id.comment_username);
@@ -349,7 +422,7 @@ public class PostActivity extends ParentActivity
 
     private void updateVotingVisuals()
     {
-        textView_score.setText(String.valueOf(post.getScore()));
+        scoreTextView.setText(String.valueOf(post.getScore()));
 
         int colorGreen = ResourcesCompat.getColor(context.getResources(), R.color.vote_up, context.getTheme());
         int colorRed = ResourcesCompat.getColor(context.getResources(), R.color.vote_down, context.getTheme());
@@ -357,25 +430,25 @@ public class PostActivity extends ParentActivity
 
         if (post.getMyVote() > 0)
         {
-            imageView_thumbUp.setColorFilter(colorGreen, PorterDuff.Mode.MULTIPLY);
-            imageView_thumbDown.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            thumbUpImageView.setColorFilter(colorGreen, PorterDuff.Mode.MULTIPLY);
+            thumpDownImageView.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
         }
         else if (post.getMyVote() < 0)
         {
-            imageView_thumbUp.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
-            imageView_thumbDown.setColorFilter(colorRed, PorterDuff.Mode.MULTIPLY);
+            thumbUpImageView.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            thumpDownImageView.setColorFilter(colorRed, PorterDuff.Mode.MULTIPLY);
         }
         else
         {
-            imageView_thumbUp.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
-            imageView_thumbDown.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            thumbUpImageView.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            thumpDownImageView.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
         }
     }
 
     private void removeComments()
     {
         allComments.clear();
-        content.removeAllViews();
+        commentsViewGroup.removeAllViews();
     }
 
     public void writeComment(View v)

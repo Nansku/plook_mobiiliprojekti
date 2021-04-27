@@ -1,6 +1,5 @@
 package co.plook;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,9 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 
@@ -34,7 +34,6 @@ public class SignupActivity extends AppCompatActivity  {
 
     private Boolean emailAddressChecker;
     private String token;
-    private Object data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,24 +49,17 @@ public class SignupActivity extends AppCompatActivity  {
         SignUpButton = findViewById(R.id.SignUpButton);
 
         SignUpButton.setOnClickListener(new View.OnClickListener() {
-
-
             @Override
 
             public void onClick(View view) {
-
                 registerNewUser();
-
 
                 //Intent intent_one =new Intent(SignupActivity.this, MainActivity.class);
                 //startActivity(intent_one);
             }
 
-
-
         });
     }
-
 
     private void registerNewUser() {
         String username, email, confirmpassword, password;
@@ -87,7 +79,6 @@ public class SignupActivity extends AppCompatActivity  {
         } else {
             mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> signupTask) {
 
@@ -96,21 +87,21 @@ public class SignupActivity extends AppCompatActivity  {
                             SendEmailVerification();
 
                             FirebaseMessaging.getInstance().getToken().addOnCompleteListener(tokenTask -> {
-                                token = tokenTask.getResult();
                                 FirebaseUser taskUser = signupTask.getResult().getUser();
-                                dbWriter.addUser(taskUser.getUid(), username, token);
+                                dbWriter.addUser(taskUser.getUid(), username);
+                                UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
+                                mAuth.getCurrentUser().updateProfile(changeRequest);
                                 Toast.makeText(SignupActivity.this, "Olet rekisteröity", Toast.LENGTH_SHORT).show();
                             });
 
                         } else {
                             String message = signupTask.getException().getMessage();
-                            Toast.makeText(SignupActivity.this, "Virhe kirjautumisessa " + message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignupActivity.this, "Virhe rekisteröinnissä" + message, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
         }
     }
-    
 
     private void SendEmailVerification()
     {

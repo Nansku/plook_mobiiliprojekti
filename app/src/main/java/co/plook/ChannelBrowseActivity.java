@@ -32,6 +32,7 @@ public class ChannelBrowseActivity extends ParentActivity
         dbReader = new DatabaseReader();
 
         loadChannels();
+        loadNavUserData();
     }
 
     @Override

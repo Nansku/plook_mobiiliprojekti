@@ -20,7 +20,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import android.widget.TextView;
@@ -33,8 +32,6 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -42,9 +39,6 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-
-import java.security.AccessController;
-import java.util.ArrayList;
 
 import java.util.UUID;
 
@@ -270,7 +264,7 @@ public class ImageUploadActivity extends ParentActivity {
 
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-
+        postTags = findViewById(R.id.post_tags_layout);
 
         String caption = postCaption.getText().toString();
         String description = postDescription.getText().toString();
