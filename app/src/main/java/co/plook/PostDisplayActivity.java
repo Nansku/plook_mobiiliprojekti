@@ -264,54 +264,57 @@ public class PostDisplayActivity extends ParentActivity
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
-                DocumentSnapshot postDocument = task.getResult().getDocuments().get(0);
-
-                post.setPostID(postDocument.getId());
-                post.setCaption(postDocument.getString("caption"));
-                post.setDescription(postDocument.getString("description"));
-                post.setImageUrl(postDocument.getString("url"));
-                post.setScore(postDocument.getLong("score"));
-
-                // Get user's vote data for this post.
-                Task voteTask = dbReader.findDocumentByID("posts/" + post.getPostID() + "/user_actions", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                if(task.getResult().getDocuments() != null && task.getResult().getDocuments().size() > 0)
                 {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task1)
+                    DocumentSnapshot postDocument = task.getResult().getDocuments().get(0);
+
+                    post.setPostID(postDocument.getId());
+                    post.setCaption(postDocument.getString("caption"));
+                    post.setDescription(postDocument.getString("description"));
+                    post.setImageUrl(postDocument.getString("url"));
+                    post.setScore(postDocument.getLong("score"));
+
+                    // Get user's vote data for this post.
+                    Task voteTask = dbReader.findDocumentByID("posts/" + post.getPostID() + "/user_actions", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                     {
-                        if(task1.getResult().getDocuments().size() > 0)
-                        {
-                            DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
-                            post.setMyVote(doc.getLong("vote"));
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task1) {
+                            if (task1.getResult().getDocuments().size() > 0) {
+                                DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                                post.setMyVote(doc.getLong("vote"));
+                            } else
+                                post.setMyVote(0L);
                         }
-                        else
-                            post.setMyVote(0L);
-                    }
-                });
+                    });
 
-                subTasks.add(voteTask);
+                    subTasks.add(voteTask);
 
-                // Get the poster's username.
-                Task usernameTask = dbReader.findDocumentByID("users", postDocument.getString("userID")).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task1)
+                    // Get the poster's username.
+                    Task usernameTask = dbReader.findDocumentByID("users", postDocument.getString("userID")).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                     {
-                        DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
-                        post.setUserID(doc.getString("name"));
-                    }
-                });
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task1) {
+                            DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                            post.setUserID(doc.getString("name"));
+                        }
+                    });
 
-                subTasks.add(usernameTask);
+                    subTasks.add(usernameTask);
 
-                // Wait for the other tasks to finish.
-                Tasks.whenAllSuccess(subTasks).addOnCompleteListener(new OnCompleteListener<List<Object>>()
-                {
-                    @Override
-                    public void onComplete(@NonNull Task<List<Object>> task)
+                    // Wait for the other tasks to finish.
+                    Tasks.whenAllSuccess(subTasks).addOnCompleteListener(new OnCompleteListener<List<Object>>()
                     {
-                        feedContentAdapter.notifyDataSetChanged();
-                    }
-                });
+                        @Override
+                        public void onComplete(@NonNull Task<List<Object>> task) {
+                            feedContentAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+                else
+                {
+                    allPosts.remove(position);
+                    feedContentAdapter.notifyItemRemoved(position);
+                }
             }
         });
 
