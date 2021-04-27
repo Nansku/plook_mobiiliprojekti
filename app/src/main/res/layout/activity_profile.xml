@@ -19,7 +19,7 @@
             android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true">
 
-            <ImageView android:id="@+id/profilePic"
+            <ImageView android:id="@+id/profileview_picture"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/user_icon"

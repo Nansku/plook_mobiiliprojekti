@@ -40,6 +40,7 @@ public class ChannelActivity extends PostDisplayActivity
         filtersLayout = findViewById(R.id.channel_filters);
 
         loadPosts();
+        loadNavUserData();
     }
 
     private void getChannelData()

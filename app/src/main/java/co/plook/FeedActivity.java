@@ -34,6 +34,7 @@ public class FeedActivity extends PostDisplayActivity
 
         filtersLayout = findViewById(R.id.feed_filters);
 
+        loadNavUserData();
         loadPosts();
     }
 

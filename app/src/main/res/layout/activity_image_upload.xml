@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ImageUploadActivity">
-
-    <LinearLayout
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp">
+        android:orientation="vertical" >
 
         <ImageView
             android:id="@+id/profilePic"
@@ -24,9 +24,11 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <RelativeLayout
+            android:id="@+id/buttons"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_below="@+id/profilePic">
 
             <Button
                 android:layout_marginTop="30dp"
@@ -58,8 +60,10 @@
             android:id="@+id/textFields"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp" >
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="100dp"
+            android:layout_below="@+id/buttons">
 
             <EditText
                 android:layout_marginTop="30dp"
@@ -67,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Image caption"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
 
             <EditText
                 android:layout_marginTop="30dp"
@@ -99,37 +103,68 @@
                 android:id="@+id/tagLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tag_list"
-                android:divider="@drawable/divider_feed_content"
-                android:showDividers="middle" >
+                android:layout_below="@+id/tag_list" >
             </co.plook.TagLayout>
 
-            <Button
+            <!--<Button
                 android:id="@+id/upload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="100dp"
                 android:text="Post"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="20dp"
                 android:layout_below="@+id/tagLayout"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+/>
 
-            <!--<Button
-                android:id="@+id/cancel"
+            <Button
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="50dp"
                 android:text="Cancel"
                 android:layout_marginTop="50dp"
                 android:layout_below="@+id/tagLayout"
-                android:layout_toStartOf="@+id/upload"
+                android:layout_marginLeft="20dp"
+                android:backgroundTint="@color/grey_btn"
                 android:layout_centerHorizontal="true"
-                />
+                android:layout_alignParentStart="true"/>
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/post_tags" -->
         </RelativeLayout>
-    </LinearLayout>
+
+    </RelativeLayout>
 </ScrollView>
+
+    <RelativeLayout
+    android:id="@+id/footer"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/lighter_forest"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/ic_back"
+        android:contentDescription="cancel" />
+
+        <ImageButton
+            android:id="@+id/upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_check_bigger"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:contentDescription="post"/>
+</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.ImageFormat;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
@@ -16,9 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import android.widget.TextView;
@@ -31,8 +32,6 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -40,9 +39,6 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-
-import java.security.AccessController;
-import java.util.ArrayList;
 
 import java.util.UUID;
 
@@ -58,12 +54,12 @@ public class ImageUploadActivity extends ParentActivity {
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Button mCaptureBtn;
-    Button uploadButton;
+    ImageButton uploadButton;
     Button chooseImgButton;
+    ImageButton cancel;
     RelativeLayout relativeLayout;
     EditText postCaption;
     EditText postDescription;
-    EditText postTags;
     AutoCompleteTextView tagSuggestions;
     String[] tags;
     TagLayout tagLayout;
@@ -76,17 +72,17 @@ public class ImageUploadActivity extends ParentActivity {
 
         profilePic = findViewById(R.id.profilePic);
         mCaptureBtn = findViewById(R.id.capture_image_btn);
-        uploadButton = (Button) findViewById(R.id.upload);
+        uploadButton = (ImageButton) findViewById(R.id.upload);
         chooseImgButton = (Button) findViewById(R.id.choose_image_btn);
         relativeLayout = (RelativeLayout) findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-        postTags = findViewById(R.id.post_tags);
+        //postTags = findViewById(R.id.post_tags);
         tagSuggestions = (AutoCompleteTextView) findViewById(R.id.tag_list);
         tagLayout = (TagLayout) findViewById(R.id.tagLayout);
-
+        cancel = (ImageButton) findViewById(R.id.cancel);
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
@@ -109,11 +105,20 @@ public class ImageUploadActivity extends ParentActivity {
                 addTag(textView.getText().toString());
             }
         });
+
         // Choose img button listener
         chooseImgButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 choosePicture();
+            }
+        });
+
+        // Cancel-button listener
+        cancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
@@ -259,7 +264,7 @@ public class ImageUploadActivity extends ParentActivity {
 
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-        postTags = findViewById(R.id.post_tags);
+        postTags = findViewById(R.id.post_tags_layout);
 
         String caption = postCaption.getText().toString();
         String description = postDescription.getText().toString();
@@ -268,7 +273,7 @@ public class ImageUploadActivity extends ParentActivity {
         //String[] tags = {postTags.getText().toString()};
         //tags.add(postTags.getText().toString());
 
-        tags = postTags.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
+        tags = tagSuggestions.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
 
         imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
