@@ -40,18 +40,14 @@
             android:foreground="@drawable/card_ripple"
         />
 
-        <TextView
+        <ImageView
+            android:id="@+id/imageView"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.25"
-            android:gravity="center"
-            android:text="F"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12sp"
+            android:layout_weight="1"
             android:onClick="toggleFiltersMenu"
-            android:foreground="@drawable/card_ripple"
-        />
+            app:srcCompat="@drawable/ic_baseline_swap_vert_24" />
 
     </LinearLayout>
 

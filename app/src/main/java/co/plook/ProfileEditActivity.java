@@ -3,6 +3,7 @@ package co.plook;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ public class ProfileEditActivity extends ParentActivity {
     private EditText editBio;
     private EditText editLocation;
     private ImageView profilePic;
+    private Button deleteButton;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -43,6 +45,20 @@ public class ProfileEditActivity extends ParentActivity {
         editBio = findViewById(R.id.editBio);
         editLocation = findViewById(R.id.editLocation);
         profilePic =  findViewById(R.id.profilePic);
+        deleteButton = findViewById(R.id.deleteButton);
+
+        deleteButton.setOnClickListener(new View.OnClickListener(){
+
+            public void onClick(View v){
+
+                ReauthenticateDialog fragmentDialog = new ReauthenticateDialog();
+                fragmentDialog.show(getSupportFragmentManager(), "ReauthenticateDialog");
+
+            }
+
+
+        });
+
 
         Bundle extras = getIntent().getExtras();
 
@@ -88,7 +104,18 @@ public class ProfileEditActivity extends ParentActivity {
         }
 
 
-    }
-}
+
+
+
+
+
+        }
+
+
+
+        }
+
+
+
 
 
