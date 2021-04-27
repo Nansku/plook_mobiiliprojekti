@@ -1,9 +1,7 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
@@ -239,7 +237,7 @@ public class PostActivity extends ParentActivity
             {
                 @Override
                 public void onClick(View v) {
-                    openFeedActivity("tags/" + tag + "/time");
+                    openTagActivity("tags/" + tag + "/time");
                 }
             });
         }
@@ -468,6 +466,14 @@ public class PostActivity extends ParentActivity
     {
         dbWriter.deletePost(post.getPostID());
         openFeedActivity("");
+    }
+
+    public void openTagActivity(String query)
+    {
+        Intent intent = new Intent(context, TagActivity.class);
+        intent.putExtra("query", query);
+
+        startActivity(intent);
     }
 
     public void openFeedActivity(String query)
