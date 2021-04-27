@@ -7,6 +7,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
 import java.util.HashMap;
 
 public class ProfileEditActivity extends ParentActivity {
@@ -38,21 +44,38 @@ public class ProfileEditActivity extends ParentActivity {
         editLocation = findViewById(R.id.editLocation);
         profilePic =  findViewById(R.id.profilePic);
 
+        Bundle extras = getIntent().getExtras();
 
+        editLocation.setText(extras.getString("location"));
+        editBio.setText(extras.getString("bio"));
+        editUsername.setText(auth.getCurrentUser().getDisplayName());
     }
 
     public void saveData(View view){
 
-        if (editUsername.getText().toString().length()>3)
+        String updatedUsername = editUsername.getText().toString();
+
+        if (updatedUsername.length()>3)
         {
             HashMap <String, Object> updateData = new HashMap<>();
 
-            updateData.put("name", editUsername.getText().toString());
+            updateData.put("name", updatedUsername);
             updateData.put("location", editLocation.getText().toString());
             updateData.put("bio", editBio.getText().toString());
 
             dbWriter.updateField("users", auth.getUid(), updateData);
+            UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(updatedUsername)
+                    .build();
 
+            auth.getCurrentUser().updateProfile(changeRequest)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                            System.out.println("User updated");
+                        }
+                    });
 
 
             finish();
@@ -67,4 +90,5 @@ public class ProfileEditActivity extends ParentActivity {
 
     }
 }
+
 

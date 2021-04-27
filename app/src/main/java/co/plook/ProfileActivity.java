@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -17,9 +16,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -31,6 +33,8 @@ import java.util.List;
 public class ProfileActivity extends ParentActivity
 {
     private TextView profileNameTextView;
+    private TextView profileBioTextView;
+    private TextView profileLocationTextView;
     private Button followButton;
     private Button unfollowButton;
     private Button editProfileButton;
@@ -40,6 +44,11 @@ public class ProfileActivity extends ParentActivity
 
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
+    private String nickname;
+    private String location;
+    private String bio;
+
+
 
     private ArrayList<Post> userPosts;
     private String userID;
@@ -66,6 +75,8 @@ public class ProfileActivity extends ParentActivity
         followButton = findViewById(R.id.followButton);
         profileNameTextView = findViewById(R.id.usernameTextview);
         profileImageView = findViewById(R.id.profileview_picture);
+        profileBioTextView = findViewById(R.id.bioTxt);
+        profileLocationTextView = findViewById(R.id.country);
 
         followButton = findViewById(R.id.followButton);
         unfollowButton = findViewById(R.id.unfollowButton);
@@ -113,7 +124,6 @@ public class ProfileActivity extends ParentActivity
         ((ExpandableHeightGridView) gridView).setExpanded(true);
 
 
-
         Query q = dbReader.db.collection("posts").whereEqualTo("userID", userID).orderBy("time", Query.Direction.DESCENDING);
 
         // FIND PHOTOS FROM FIREBASE
@@ -142,8 +152,16 @@ public class ProfileActivity extends ParentActivity
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(ProfileActivity.this, ProfileEditActivity.class );
+
+                    intent.putExtra("name", nickname);
+                    intent.putExtra("location", location);
+                    intent.putExtra("bio", bio);
+
                     startActivity(intent);
+
                 }
+
+
             });
         });
 
@@ -163,6 +181,23 @@ public class ProfileActivity extends ParentActivity
                 openPostActivity(postID);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // get nickname for TextView (this should come from auth.getCurrentUser())
+        dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
+            nickname = (String)task.getResult().getDocuments().get(0).get("name");
+            location = (String)task.getResult().getDocuments().get(0).get("location");
+            bio = (String)task.getResult().getDocuments().get(0).get("bio");
+            profileNameTextView.setText(nickname);
+            profileBioTextView.setText(bio);
+            profileLocationTextView.setText(location);
+        });
+
+        System.out.println("Onresume kutsuttu");
     }
 
     private void checkIfFollowing()
