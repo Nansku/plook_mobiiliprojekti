@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/comment_section_bg"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="2dp"
@@ -14,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:text="Username"
-        android:textColor="@color/forest"
+        android:textColor="@color/white"
     />
 
     <TextView
@@ -24,7 +25,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginHorizontal="50dp"
         android:text="Timestamp"
-        android:textColor="@color/forest"
+        android:textColor="@color/white"
         />
 
     <TextView
@@ -34,7 +35,7 @@
         android:layout_below="@id/comment_username"
         android:layout_marginHorizontal="40dp"
         android:text="Text..."
-        android:textColor="@color/forest"
+        android:textColor="@color/white"
     />
 
 </RelativeLayout>

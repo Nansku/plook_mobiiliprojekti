@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/CustomTheme">
+
+    <RelativeLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
+
 
     <FrameLayout android:id="@+id/frame"
         android:layout_marginHorizontal="50dp"
@@ -24,82 +30,96 @@
             android:contentDescription="@string/circle_crop" />
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/usernameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/frame"
-        android:layout_marginTop="10dp">
-        <EditText
-            android:id="@+id/editUsername"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Käyttäjän nimi"
-            android:textAlignment="center"
-            android:textSize="@dimen/username"/>
-    </LinearLayout>
+         <TextView
+             android:id="@+id/userName"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Käyttäjänimi:"
+             android:layout_below="@id/frame"
+             tools:ignore="NotSibling"
+             android:layout_marginLeft="10sp"
+             android:layout_marginRight="10sp"/>
 
-    <RelativeLayout
-        android:orientation="vertical"
-        android:id="@+id/bio"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/usernameLayout"
-        android:background="@drawable/bio">
+         <EditText
+             android:id="@+id/editUserName"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:ems="10"
+             android:inputType="textPersonName"
+             android:hint="Kirjoita uusi käyttäjänimi"
+             android:layout_below="@id/userName"
+             android:layout_marginTop="10sp"
+             android:layout_marginLeft="10sp"
+             android:layout_marginRight="10sp" />
+
+
+        <TextView
+            android:id="@+id/textBio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bio:"
+            android:layout_below="@id/editUserName"
+            android:layout_marginTop="10sp"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"/>
 
         <EditText
             android:id="@+id/editBio"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:text="BIO"
-            android:background="@drawable/bio"
-            android:textAlignment="center" />
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editBio"
-            android:orientation="horizontal">
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Kuvaa itseäsi"
+            android:layout_below="@id/textBio"
+            android:layout_marginTop="10sp"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"
+            android:padding="30sp"/>
+        <TextView
+            android:id="@+id/textLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Maa"
+            android:layout_below="@id/editBio"
+            android:layout_marginTop="20sp"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"/>
 
-            <EditText
-                android:id="@+id/editCountry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginBottom="5dp"
-                android:text="MAA"
-                android:layout_alignParentStart="true"
-                android:gravity="start" />
+        <EditText
+            android:id="@+id/editLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Missä olet?"
+            android:layout_below="@id/textLocation"
+            android:layout_marginTop="10sp"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"/>
+
+        <Button
+            android:id="@+id/updateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tallenna profiili"
+            android:layout_below="@id/editLocation"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30sp"
+            android:onClick="saveData"
+            />
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/updateButton"
+            android:layout_marginTop="65sp"
+            android:layout_centerHorizontal="true"
+            android:onClick="deleteUser"
+            android:text="Poista profiili"
+            android:backgroundTint="@color/dark_forest"
+            />
 
 
-            <Button
-                android:id="@+id/editProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_alignParentEnd="true"
-                android:text="@string/save"
-                />
-        </RelativeLayout>
     </RelativeLayout>
-
-    <GridView
-        android:id="@+id/postGrid"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/bio"
-        android:background="@drawable/bio"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:numColumns="3">
-    </GridView>
-
-
 </RelativeLayout>
-
