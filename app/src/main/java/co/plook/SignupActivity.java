@@ -12,12 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.internal.FirebaseInstanceIdInternal;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 
@@ -90,12 +89,14 @@ public class SignupActivity extends AppCompatActivity  {
                             FirebaseMessaging.getInstance().getToken().addOnCompleteListener(tokenTask -> {
                                 FirebaseUser taskUser = signupTask.getResult().getUser();
                                 dbWriter.addUser(taskUser.getUid(), username);
+                                UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
+                                mAuth.getCurrentUser().updateProfile(changeRequest);
                                 Toast.makeText(SignupActivity.this, "Olet rekisteröity", Toast.LENGTH_SHORT).show();
                             });
 
                         } else {
                             String message = signupTask.getException().getMessage();
-                            Toast.makeText(SignupActivity.this, "Virhe kirjautumisessa " + message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignupActivity.this, "Virhe rekisteröinnissä" + message, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
