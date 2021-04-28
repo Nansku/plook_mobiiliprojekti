@@ -4,45 +4,24 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.UserProfileChangeRequest;
-
 import java.util.HashMap;
-
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
-
-import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class ProfileEditActivity extends ParentActivity {
@@ -55,17 +34,12 @@ public class ProfileEditActivity extends ParentActivity {
     private EditText editLocation;
     private ImageView profilePic;
     private Button deleteButton;
-  
-     ////// UUTTA
-    private ImageView profilePic;
+
     private Uri imageUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
     Button saveAllButton;
-    ////// UUTTA
 
-   
-  
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -86,30 +60,13 @@ public class ProfileEditActivity extends ParentActivity {
         editLocation = findViewById(R.id.editLocation);
         profilePic =  findViewById(R.id.profilePic);
         deleteButton = findViewById(R.id.deleteButton);
-        deleteButton.setOnClickListener(new View.OnClickListener(){
+
           
         /// UUTTA
         saveAllButton = (Button) findViewById(R.id.editProfile);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         /// UUTTA
-          
-        // FIND PHOTOS FROM FIREBASE
-        dbReader.findDocumentsWhereEqualTo("posts", "userID", auth.getUid()).addOnCompleteListener(task ->
-        {   QuerySnapshot snapshot = task.getResult();
-            public void onClick(View v){
-
-                ReauthenticateDialog fragmentDialog = new ReauthenticateDialog();
-                fragmentDialog.show(getSupportFragmentManager(), "ReauthenticateDialog");
-            }
-        });
-        profilePic.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-              choosePicture();
-          }
-        });
-
 
 
         Bundle extras = getIntent().getExtras();
@@ -125,28 +82,26 @@ public class ProfileEditActivity extends ParentActivity {
 
         if (updatedUsername.length()>3)
         {
-          
-            //Tee tähän kohti checkaus onko kuva oikia
-            uploadPicture(imageUri);
-          
             HashMap <String, Object> updateData = new HashMap<>();
             updateData.put("name", updatedUsername);
             updateData.put("location", editLocation.getText().toString());
             updateData.put("bio", editBio.getText().toString());
           
             dbWriter.updateField("users", auth.getUid(), updateData);
-            UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(updatedUsername)
-                    .build();
+            UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder().setDisplayName(updatedUsername);
+            if (imageUri != null){
+                builder.setPhotoUri(imageUri);
+                uploadPicture(imageUri);
+            }
 
-            auth.getCurrentUser().updateProfile(changeRequest)
+            auth.getCurrentUser().updateProfile(builder.build())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+                            finish();
                             System.out.println("User updated");
                         }
                     });
-            finish();
 
         }
 
@@ -155,11 +110,10 @@ public class ProfileEditActivity extends ParentActivity {
             Toast.makeText(this, "Käyttäjänimen pitää olla pitempi kuin 3 merkkiä", Toast.LENGTH_SHORT).show();
         }
 
-  
-       
     }
 
-    private void choosePicture(View v) {
+
+    public void choosePicture(View v) {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -198,11 +152,6 @@ public class ProfileEditActivity extends ParentActivity {
                 Exception error = result.getError();
             }
         }
-
-        
-
-
-
     }
 
     private void uploadPicture(Uri uri) {
@@ -231,14 +180,8 @@ public class ProfileEditActivity extends ParentActivity {
 
                     UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setPhotoUri(downloadUri).build();
                     auth.getCurrentUser().updateProfile(changeRequest);
-
-
                 }
             }
         });
     }
-
-
 }
-
-
