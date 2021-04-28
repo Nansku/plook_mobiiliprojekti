@@ -21,6 +21,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/user_icon"
+            android:onClick="choosePicture"
             android:contentDescription="@string/profile_picture" />
 
         <ImageView android:id="@+id/circle_crop"
@@ -106,6 +107,18 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30sp"
             android:onClick="saveData"
+            />
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/updateButton"
+            android:layout_marginTop="65sp"
+            android:layout_centerHorizontal="true"
+            android:onClick="deleteUser"
+            android:text="Poista profiili"
+            android:backgroundTint="@color/dark_forest"
             />
 
 
