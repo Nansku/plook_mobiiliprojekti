@@ -79,7 +79,7 @@ public class ImageUploadActivity extends ParentActivity {
         storageReference = storage.getReference();
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-        //postTags = findViewById(R.id.post_tags);
+        tagLayout = findViewById(R.id.post_tags_layout);
         tagSuggestions = (AutoCompleteTextView) findViewById(R.id.tag_list);
         tagLayout = (TagLayout) findViewById(R.id.tagLayout);
         cancel = (ImageButton) findViewById(R.id.cancel);
@@ -264,7 +264,7 @@ public class ImageUploadActivity extends ParentActivity {
 
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-        postTags = findViewById(R.id.post_tags_layout);
+        tagLayout = findViewById(R.id.post_tags_layout);
 
         String caption = postCaption.getText().toString();
         String description = postDescription.getText().toString();
