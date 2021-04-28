@@ -15,8 +15,10 @@
 
         <ImageView
             android:id="@+id/profilePic"
-            android:layout_width="wrap_content"
-            android:layout_height="450dp"
+            android:layout_marginHorizontal="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             android:src="@drawable/start_plooking"
             android:contentDescription="@string/picture_for_post"
             android:layout_marginTop="30dp"
@@ -147,14 +149,27 @@
     app:layout_constraintBottom_toBottomOf="parent"
     android:orientation="horizontal">
 
-    <ImageButton
-        android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="20dp"
-        android:background="@drawable/ic_back"
-        android:contentDescription="cancel" />
+        <ImageButton
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/ic_back"
+            android:contentDescription="cancel" />
+
+        <Button
+            android:id="@+id/chooseChannel"
+            android:text="CHOOSE CHANNEL"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:backgroundTint="@color/lighter_forest2"
+            android:background="@drawable/circle_button_sm"
+            />
 
         <ImageButton
             android:id="@+id/upload"
