@@ -135,14 +135,13 @@
                         android:padding="10dp"
                     />
 
-                    <LinearLayout
+                    <co.plook.TagLayout
                         android:id="@+id/post_tags_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="100dp"
                         android:layout_below="@id/post_description"
-                        android:orientation="horizontal"
-                        android:divider="@drawable/divider_feed_content"
-                        android:showDividers="middle"
+                        app:childSpacingX="5dp"
+                        app:childSpacingY="5dp"
                         android:paddingHorizontal="10dp"
                         android:layout_marginBottom="20dp"
                     />

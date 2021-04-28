@@ -40,6 +40,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 
+import java.io.BufferedReader;
 import java.util.UUID;
 
 import static android.view.View.*;
@@ -54,6 +55,7 @@ public class ImageUploadActivity extends ParentActivity {
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Button mCaptureBtn;
+    Button chooseChannel;
     ImageButton uploadButton;
     Button chooseImgButton;
     ImageButton cancel;
@@ -64,12 +66,16 @@ public class ImageUploadActivity extends ParentActivity {
     String[] tags;
     TagLayout tagLayout;
     String tag;
+    String channelID;
+    ImageUploadActivity imageUploadActivity;
+    private ChooseChannelDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_upload);
 
+        imageUploadActivity = this;
         profilePic = findViewById(R.id.profilePic);
         mCaptureBtn = findViewById(R.id.capture_image_btn);
         uploadButton = (ImageButton) findViewById(R.id.upload);
@@ -79,10 +85,11 @@ public class ImageUploadActivity extends ParentActivity {
         storageReference = storage.getReference();
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-        //postTags = findViewById(R.id.post_tags);
+        tagLayout = findViewById(R.id.post_tags_layout);
         tagSuggestions = (AutoCompleteTextView) findViewById(R.id.tag_list);
         tagLayout = (TagLayout) findViewById(R.id.tagLayout);
         cancel = (ImageButton) findViewById(R.id.cancel);
+        chooseChannel = (Button) findViewById(R.id.chooseChannel);
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
@@ -90,6 +97,7 @@ public class ImageUploadActivity extends ParentActivity {
         // profilePic.setVisibility(GONE);
         relativeLayout.setVisibility(GONE);
         uploadButton.setVisibility(GONE);
+        chooseChannel.setVisibility(GONE);
 
         String[] example = {"tag1", "tag2", "tag3"};
         // Auto suggestion for tags
@@ -119,6 +127,28 @@ public class ImageUploadActivity extends ParentActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        chooseChannel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog = new ChooseChannelDialog();
+                Bundle userInfo = new Bundle();
+                userInfo.putString("userID", auth.getUid());
+                dialog.setArguments(userInfo);
+                dialog.show(getSupportFragmentManager(), "ChooseChannelDialog" );
+
+                dialog.setOnChannelClickedListener(new ChooseChannelDialog.ClickListener() {
+                    @Override
+                    public void onChannelClicked(String clickedChannelID, String clickedChannelName) {
+                        channelID = clickedChannelID;
+
+                        chooseChannel.setText(clickedChannelName);
+
+                        dialog.dismiss();
+                    }
+                });
             }
         });
 
@@ -232,6 +262,7 @@ public class ImageUploadActivity extends ParentActivity {
                 uploadButton.setVisibility(View.VISIBLE);
                 relativeLayout.setVisibility(View.VISIBLE);
                 profilePic.setVisibility(View.VISIBLE);
+                chooseChannel.setVisibility(View.VISIBLE);
             }
 
             // Jos tulee error
@@ -264,7 +295,9 @@ public class ImageUploadActivity extends ParentActivity {
 
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-        postTags = findViewById(R.id.post_tags_layout);
+        tagLayout = findViewById(R.id.post_tags_layout);
+        tagSuggestions = findViewById(R.id.tag_list);
+
 
         String caption = postCaption.getText().toString();
         String description = postDescription.getText().toString();
@@ -292,7 +325,7 @@ public class ImageUploadActivity extends ParentActivity {
                     Uri downloadUri = task.getResult();
                     String userID = auth.getUid();
                     dbWriter = new DatabaseWriter();
-                    dbWriter.addPost(userID, caption,"OIgwEfHvG29j6UIMvy7N", description, tags, downloadUri.toString());
+                    dbWriter.addPost(userID, caption, channelID, description, tags, downloadUri.toString());
 
                     Intent intent = new Intent(ImageUploadActivity.this, FeedActivity.class);
                     startActivity(intent);
