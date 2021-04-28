@@ -12,6 +12,7 @@ public class TagLayout extends LinearLayout {
 
     private int mChildSpacingX;
     private int mChildSpacingY;
+    private OnItemClickListener onItemClickListener;
 
     public TagLayout(Context context) {
         super(context);
@@ -117,6 +118,7 @@ public class TagLayout extends LinearLayout {
         curLeft = childLeft;
         curTop = childTop;
 
+
         for (int i = 0; i < count; i++)
         {
             View child = getChildAt(i);
@@ -143,7 +145,32 @@ public class TagLayout extends LinearLayout {
                 maxHeight = curHeight + mChildSpacingY;
 
             curLeft += curWidth + mChildSpacingX;
+
         }
+    }
+
+    @Override
+    public void addView(View child)
+    {
+        super.addView(child);
+
+        child.findViewById(R.id.tag_delete).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                onItemClickListener.onItemClicked(indexOfChild(child));
+            }
+        });
+    }
+
+    public interface OnItemClickListener
+    {
+        void onItemClicked(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener)
+    {
+        this.onItemClickListener = onItemClickListener;
     }
 }
 
