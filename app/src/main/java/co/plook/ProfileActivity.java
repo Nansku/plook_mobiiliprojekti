@@ -94,29 +94,7 @@ public class ProfileActivity extends ParentActivity
             userID = auth.getUid();
         }
 
-        // profile is owned by current user
-        if (userID.equals(auth.getUid()))
-        {
-            followButton.setVisibility(View.GONE);
-            unfollowButton.setVisibility(View.GONE);
-            editProfileButton.setVisibility(View.VISIBLE);
-            profileNameTextView.setText(auth.getCurrentUser().getDisplayName());
-            Glide.with(this)
-                    .load(auth.getCurrentUser().getPhotoUrl()).into(profileImageView);
-        }
-        // profile is someone else's
-        else
-        {
-            checkIfFollowing();
-            // get nickname and picture from db
-            dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
-                String nickname = (String)task.getResult().getDocuments().get(0).get("name");
-                String pictureUrl = (String)task.getResult().getDocuments().get(0).get("url");
-                profileNameTextView.setText(nickname);
-                Glide.with(this)
-                        .load(pictureUrl).into(profileImageView);
-            });
-        }
+
 
         // GRIDVIEW
         gridView = (ExpandableHeightGridView) findViewById(R.id.postGrid);
@@ -198,6 +176,32 @@ public class ProfileActivity extends ParentActivity
         });
 
         System.out.println("Onresume kutsuttu");
+
+        // profile is owned by current user
+
+        if (userID.equals(auth.getUid()))
+        {
+            System.out.println("Tämä on sinun profiili");
+            followButton.setVisibility(View.GONE);
+            unfollowButton.setVisibility(View.GONE);
+            editProfileButton.setVisibility(View.VISIBLE);
+            profileNameTextView.setText(auth.getCurrentUser().getDisplayName());
+            Glide.with(this)
+                    .load(auth.getCurrentUser().getPhotoUrl()).into(profileImageView);
+        }
+        // profile is someone else's
+        else
+        {
+            checkIfFollowing();
+            // get nickname and picture from db
+            dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {
+                String nickname = (String)task.getResult().getDocuments().get(0).get("name");
+                String pictureUrl = (String)task.getResult().getDocuments().get(0).get("url");
+                profileNameTextView.setText(nickname);
+                Glide.with(this)
+                        .load(pictureUrl).into(profileImageView);
+            });
+        }
     }
 
     private void checkIfFollowing()
