@@ -1,7 +1,10 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
@@ -17,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -46,6 +48,10 @@ public class PostActivity extends ParentActivity
     private RelativeLayout footerLayout;
 
     private ImageView imageView;
+    private ViewGroup viewGroup_tags;
+    private TextView textView_score;
+    private ImageView imageView_thumbUp;
+    private ImageView imageView_thumbDown;
 
     private ViewGroup tagsViewGroup;
     private ViewGroup commentsViewGroup;
@@ -76,7 +82,7 @@ public class PostActivity extends ParentActivity
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
 
-
+    private List<Palette.Swatch> swatches;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -129,7 +135,6 @@ public class PostActivity extends ParentActivity
         if (postID == null)
             postID = extras.getString("post_id");
 
-
         post.setPostID(postID);
 
         loadNavUserData();
@@ -139,6 +144,8 @@ public class PostActivity extends ParentActivity
 
     private void refreshPost()
     {
+        //swatches.clear();
+
         loadPostData();
         loadComments(false);
     }
@@ -155,6 +162,7 @@ public class PostActivity extends ParentActivity
                 if (post.getUserID().equals(auth.getUid()))
                     deletePostTextView.setVisibility(View.VISIBLE);
 
+                // Get username
                 dbReader.findDocumentByID("users", post.getUserID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
                     @Override
@@ -170,6 +178,7 @@ public class PostActivity extends ParentActivity
                             return;
                         }
 
+                        // Get channel's name
                         dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                         {
                             @Override
@@ -199,21 +208,28 @@ public class PostActivity extends ParentActivity
 
     private void makePost(QuerySnapshot documentSnapshots)
     {
-        DocumentSnapshot document = documentSnapshots.getDocuments().get(0);
+        try
+        {
+            DocumentSnapshot document = documentSnapshots.getDocuments().get(0);
 
-        post.setPostID(document.getId());
-        post.setUserID(document.getString("userID"));
-        post.setChannelID(document.getString("channel"));
-        post.setCaption(document.getString("caption"));
-        post.setDescription(document.getString("description"));
-        post.setImageUrl(document.getString("url"));
+            post.setPostID(document.getId());
+            post.setUserID(document.getString("userID"));
+            post.setChannelID(document.getString("channel"));
+            post.setCaption(document.getString("caption"));
+            post.setDescription(document.getString("description"));
+            post.setImageUrl(document.getString("url"));
 
-        long score = document.getLong("score") == null ? 0 : document.getLong("score");
-        post.setScore(score);
+            long score = document.getLong("score") == null ? 0 : document.getLong("score");
+            post.setScore(score);
 
-        // Add tag buttons.
-        String[] tags = ((List<String>) document.get("tags")).toArray(new String[0]);
-        post.setTags(tags);
+            // Add tag buttons.
+            String[] tags = ((List<String>) document.get("tags")).toArray(new String[0]);
+            post.setTags(tags);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void displayPostDetails(Post post)
@@ -244,28 +260,33 @@ public class PostActivity extends ParentActivity
 
         updateVotingVisuals();
 
-        Glide.with(context)
-                .asBitmap()
-                .load(post.getImageUrl())
-                .centerInside()
-                .into(new CustomTarget<Bitmap>(imageView.getMeasuredWidth(), imageView.getMeasuredHeight()) {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
-                    {
-                        imageView.setImageBitmap(resource);
-                        Palette.from(resource).generate(palette -> {
-                            List<Palette.Swatch> swatches = palette.getSwatches();
-                            if (!swatches.isEmpty())
-                                setColors(swatches);
-                        });
-                    }
+        if(swatches == null)
+        {
+            Glide.with(context)
+                    .asBitmap()
+                    .load(post.getImageUrl())
+                    .centerInside()
+                    .into(new CustomTarget<Bitmap>(imageView.getMeasuredWidth(), imageView.getMeasuredHeight()) {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            imageView.setImageBitmap(resource);
+                            Palette.from(resource).generate(palette ->
+                            {
+                                swatches = palette.getSwatches();
 
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder)
-                    {
+                                if (!swatches.isEmpty())
+                                    setColors();
+                            });
+                        }
 
-                    }
-                });
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                        }
+                    });
+        }
+        else if (!swatches.isEmpty())
+            setColors();
 
         /*// Add image.
         Glide.with(context)
@@ -273,7 +294,7 @@ public class PostActivity extends ParentActivity
                 .into(imageView);*/
     }
 
-    public void setColors(List<Palette.Swatch> swatches)
+    public void setColors()
     {
         int mainColor = swatches.get(0).getRgb();
         if (Color.luminance(mainColor) > 0.4)
@@ -416,6 +437,9 @@ public class PostActivity extends ParentActivity
             textView_commentText.setText(comment.getText());
             textView_timestamp.setText(comment.getTimeDifference());
         }
+
+        if (swatches != null && !swatches.isEmpty())
+            setColors();
     }
 
     private void updateVotingVisuals()
@@ -465,7 +489,7 @@ public class PostActivity extends ParentActivity
     public void deletePost(View v)
     {
         dbWriter.deletePost(post.getPostID());
-        openFeedActivity("");
+        finish();
     }
 
     public void openTagActivity(String query)

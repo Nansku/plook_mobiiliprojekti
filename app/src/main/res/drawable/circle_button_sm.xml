@@ -7,7 +7,7 @@
     android:width="50dp"/>
 
     <solid
-        android:color="@color/lighter_forest" />
+        android:color="@color/lighter_forest2" />
 
     <padding
         android:bottom="4dp"
