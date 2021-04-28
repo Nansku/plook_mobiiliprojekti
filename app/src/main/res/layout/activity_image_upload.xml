@@ -1,63 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ImageUploadActivity">
-
-    <LinearLayout
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/profilePic"
+            android:layout_width="wrap_content"
+            android:layout_height="450dp"
+            android:src="@drawable/start_plooking"
+            android:contentDescription="@string/picture_for_post"
+            android:layout_marginTop="30dp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintVertical_bias="0.0" />
 
         <RelativeLayout
+            android:id="@+id/buttons"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_below="@+id/profilePic">
 
-            <ImageView
-                android:id="@+id/profilePic"
-
-                android:layout_width="wrap_content"
-                android:layout_height="450dp"
-                android:contentDescription="TODO"
+            <Button
                 android:layout_marginTop="30dp"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintVertical_bias="0.0"
-                android:layout_centerHorizontal="true"/>
-            <!--app:layout_constraintBottom_toTopOf="@+id/capture_image_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_baseline_image_24"-->
-
-            <Button
-                android:layout_marginTop="20dp"
                 android:id="@+id/capture_image_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Capture Image"
-                android:layout_below="@+id/profilePic"
-                android:layout_centerHorizontal="true"/>
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:text="Camera"
+                android:layout_toStartOf="@+id/choose_image_btn"
+                android:background="@drawable/circle_button_lg"
+                app:backgroundTint="@color/lighter_forest2"
+                android:drawableTop="@drawable/ic_open_camera"
+                android:textSize="12dp"/>
 
             <Button
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="20dp"
                 android:id="@+id/choose_image_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Choose From Gallery"
-                android:layout_below="@+id/capture_image_btn"
-                android:layout_centerHorizontal="true"/>
+                android:layout_width="100dp"
+                android:layout_height="80dp"
+                android:text="@string/gallery"
+                android:background="@drawable/circle_button_lg"
+                app:backgroundTint="@color/lighter_forest2"
+                android:drawableTop="@drawable/ic_open_gallery"
+                android:layout_alignParentEnd="true"
+                android:textSize="12sp"/>
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/textFields"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp" >
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="100dp"
+            android:layout_below="@+id/buttons">
 
             <EditText
                 android:layout_marginTop="30dp"
@@ -65,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Image caption"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true" />
 
             <EditText
                 android:layout_marginTop="30dp"
@@ -75,36 +81,90 @@
                 android:hint="Image description"
                 android:layout_below="@+id/post_caption"
                 android:layout_centerHorizontal="true" />
-            <!--app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/post_caption"
-            app:layout_constraintEnd_toEndOf="parent"-->
 
-            <EditText
+            <!--<EditText
                 android:layout_marginTop="30dp"
                 android:id="@+id/post_tags"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="#tags"
                 android:layout_below="@+id/post_description"
-                android:layout_centerHorizontal="true"/>
-            <!--app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/post_description"
-            app:layout_constraintEnd_toEndOf="parent"-->
+                android:layout_centerHorizontal="true"/>-->
 
-            <Button
+            <AutoCompleteTextView
+                android:id="@+id/tag_list"
+                android:layout_marginTop="30dp"
+                android:hint="#autocomplete_tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/post_description"/>
+
+            <co.plook.TagLayout
+                android:id="@+id/tagLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tag_list" >
+            </co.plook.TagLayout>
+
+            <!--<Button
                 android:id="@+id/upload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="100dp"
                 android:text="Post"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="20dp"
+                android:layout_below="@+id/tagLayout"
+                android:layout_centerHorizontal="true"
+/>
+
+            <Button
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:text="Cancel"
                 android:layout_marginTop="50dp"
-                android:layout_below="@+id/post_tags"
-                android:layout_centerHorizontal="true"/>
-            <!--app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_below="@+id/tagLayout"
+                android:layout_marginLeft="20dp"
+                android:backgroundTint="@color/grey_btn"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentStart="true"/>
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/post_tags" -->
         </RelativeLayout>
-    </LinearLayout>
+
+    </RelativeLayout>
 </ScrollView>
+
+    <RelativeLayout
+    android:id="@+id/footer"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/lighter_forest"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/ic_back"
+        android:contentDescription="cancel" />
+
+        <ImageButton
+            android:id="@+id/upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_check_bigger"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:contentDescription="post"/>
+</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

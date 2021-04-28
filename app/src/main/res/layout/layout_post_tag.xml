@@ -8,10 +8,10 @@
     android:clickable="true"
     android:foreground="@drawable/card_ripple">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingHorizontal="20dp"
+        android:paddingHorizontal="10dp"
         android:paddingVertical="5dp"
         android:background="@color/forest">
 
@@ -22,8 +22,19 @@
             android:text=""
             android:textColor="@color/white"
             android:textStyle="bold"
+            android:gravity="center_vertical"
+
         />
 
-    </RelativeLayout>
+        <ImageView
+            android:id="@+id/tag_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_thumb_up_24"
+            android:visibility="gone"
+            android:layout_marginStart="5dp"
+        />
+
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>

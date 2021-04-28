@@ -2,19 +2,23 @@ package co.plook;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.palette.graphics.Palette;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -34,26 +38,51 @@ import java.util.Map;
 
 public class PostActivity extends ParentActivity
 {
-    //views
     private Context context;
-    private ViewGroup content;
-    private ImageView imageView;
-    private RelativeLayout layout;
-    private RelativeLayout lighter_layout;
-    private ViewGroup viewGroup_tags;
-    private TextView commentButton;
-    private TextView buttonButton;
 
-    //database stuff
+    // views
+    private Toolbar toolbar;
+    private ScrollView scrollView;
+
+    private RelativeLayout headerLayout;
+    private RelativeLayout footerLayout;
+
+    private ImageView imageView;
+    private ViewGroup viewGroup_tags;
+    private TextView textView_score;
+    private ImageView imageView_thumbUp;
+    private ImageView imageView_thumbDown;
+
+    private ViewGroup tagsViewGroup;
+    private ViewGroup commentsViewGroup;
+    private ViewGroup controlsViewGroup;
+
+    private TextView captionTextView;
+    private TextView deletePostTextView;
+    private TextView nicknameTextView;
+    private TextView channelTextView;
+
+    private TextView descriptionTextView;
+    private TextView tagsTextView;
+    private TextView commentsTextView;
+    private TextView postCommentTextView;
+
+    private TextView scoreTextView;
+
+    private ImageView thumbUpImageView;
+    private ImageView thumpDownImageView;
+    private TextView space;
+
+    // database stuff
     private DatabaseReader dbReader;
     private DatabaseWriter dbWriter;
 
-    //objects
+    // objects
     private Post post;
     private ArrayList<String> userIDs;
     private ArrayList<Comment> allComments;
-    private ActionBar toolBar;
 
+    private List<Palette.Swatch> swatches;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -66,39 +95,90 @@ public class PostActivity extends ParentActivity
         dbReader = new DatabaseReader();
         dbWriter = new DatabaseWriter();
 
-        content = findViewById(R.id.post_content);
+        toolbar = findViewById(R.id.toolbar);
+        scrollView = findViewById(R.id.post_scrollView);
+        headerLayout = findViewById(R.id.post_header_layout);
+        footerLayout = findViewById(R.id.post_footer_layout);
         imageView = findViewById(R.id.image);
-        layout = findViewById(R.id.darker_layout);
-        lighter_layout = findViewById(R.id.lighter_layout);
 
-        commentButton = findViewById(R.id.comment_button);
-        buttonButton = findViewById(R.id.button_button);
+        tagsViewGroup = findViewById(R.id.post_tags_layout);
+        commentsViewGroup = findViewById(R.id.post_comments_layout);
+        controlsViewGroup = findViewById(R.id.post_controls_layout);
+
+        captionTextView = findViewById(R.id.post_caption);
+        deletePostTextView = findViewById(R.id.post_delete);
+        nicknameTextView = findViewById(R.id.post_username);
+        channelTextView = findViewById(R.id.post_channel);
+
+        descriptionTextView = findViewById(R.id.post_description);
+        tagsTextView = findViewById(R.id.post_tags_textView);
+        commentsTextView = findViewById(R.id.post_comments_textView);
+        postCommentTextView = findViewById(R.id.post_comment_button);
+
+        space = findViewById(R.id.empty_space);
+
+        // voting
+        scoreTextView = findViewById(R.id.post_score);
+        thumbUpImageView = findViewById(R.id.post_voteUp);
+        thumpDownImageView = findViewById(R.id.post_voteDown);
 
         post = new Post();
         userIDs = new ArrayList<>();
         allComments = new ArrayList<>();
 
+        initializeSwipeRefreshLayout(findViewById(R.id.post_swipeRefresh));
+
         //postID from feed
         Bundle extras = getIntent().getExtras();
-        String postID = extras.getString("post_id");
+
+        String postID = extras.getString("post");
+        if (postID == null)
+            postID = extras.getString("post_id");
+
         post.setPostID(postID);
 
-        dbReader.findDocumentByID("posts", postID).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        loadNavUserData();
+        loadPostData();
+        loadComments(false);
+    }
+
+    private void refreshPost()
+    {
+        //swatches.clear();
+
+        loadPostData();
+        loadComments(false);
+    }
+
+    private void loadPostData()
+    {
+        dbReader.findDocumentByID("posts", post.getPostID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
                 makePost(task.getResult());
 
+                if (post.getUserID().equals(auth.getUid()))
+                    deletePostTextView.setVisibility(View.VISIBLE);
+
+                // Get username
                 dbReader.findDocumentByID("users", post.getUserID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task)
                     {
-                        String username = task.getResult().getDocuments().get(0).getString("name");
-                        TextView textView_username = findViewById(R.id.post_username);
-                        textView_username.setText(username);
+                        String nickname = task.getResult().getDocuments().get(0).getString("name");
 
+                        nicknameTextView.setText(nickname);
+
+                        if (post.getChannelID().equals(""))
+                        {
+                            loadComments(false);
+                            return;
+                        }
+
+                        // Get channel's name
                         dbReader.findDocumentByID("channels", post.getChannelID()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                         {
                             @Override
@@ -108,47 +188,63 @@ public class PostActivity extends ParentActivity
                                 TextView textView_channel = findViewById(R.id.post_channel);
                                 textView_channel.setText(channelName);
 
-                                displayPostDetails(post);
+                                dbReader.findDocumentByID("posts/" + post.getPostID() + "/user_actions", auth.getUid()).addOnCompleteListener(task1 ->
+                                {
+                                    if (task1.getResult().getDocuments().size() > 0)
+                                    {
+                                        DocumentSnapshot doc = task1.getResult().getDocuments().get(0);
+                                        post.setMyVote(doc.getLong("vote"));
+                                    }
+
+                                    displayPostDetails(post);
+                                });
                             }
                         });
                     }
                 });
             }
         });
-
-        loadComments();
     }
 
     private void makePost(QuerySnapshot documentSnapshots)
     {
-        DocumentSnapshot document = documentSnapshots.getDocuments().get(0);
+        try
+        {
+            DocumentSnapshot document = documentSnapshots.getDocuments().get(0);
 
-        post.setPostID(document.getId());
-        post.setUserID(document.getString("userID"));
-        post.setChannelID(document.getString("channel"));
-        post.setCaption(document.getString("caption"));
-        post.setDescription(document.getString("description"));
-        post.setImageUrl(document.getString("url"));
+            post.setPostID(document.getId());
+            post.setUserID(document.getString("userID"));
+            post.setChannelID(document.getString("channel"));
+            post.setCaption(document.getString("caption"));
+            post.setDescription(document.getString("description"));
+            post.setImageUrl(document.getString("url"));
 
-        // Add tag buttons.
-        String[] tags = ((List<String>) document.get("tags")).toArray(new String[0]);
-        post.setTags(tags);
+            long score = document.getLong("score") == null ? 0 : document.getLong("score");
+            post.setScore(score);
+
+            // Add tag buttons.
+            String[] tags = ((List<String>) document.get("tags")).toArray(new String[0]);
+            post.setTags(tags);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void displayPostDetails(Post post)
     {
-        TextView textView_caption = findViewById(R.id.post_caption);
-        TextView textView_description = findViewById(R.id.post_description);
-        viewGroup_tags = findViewById(R.id.post_tags);
+        captionTextView.setText(post.getCaption());
+        descriptionTextView.setText(post.getDescription());
 
-        textView_caption.setText(post.getCaption());
-        textView_description.setText(post.getDescription());
+        // Remove tags buttons.
+        tagsViewGroup.removeAllViews();
 
         // Add tag buttons.
         for (String tag : post.getTags())
         {
-            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, viewGroup_tags, false);
-            viewGroup_tags.addView(child);
+            View child = getLayoutInflater().inflate(R.layout.layout_post_tag, tagsViewGroup, false);
+            tagsViewGroup.addView(child);
 
             TextView textView = child.findViewById(R.id.tag_text);
             textView.setText(tag);
@@ -157,36 +253,40 @@ public class PostActivity extends ParentActivity
             {
                 @Override
                 public void onClick(View v) {
-                    openFeedActivity("tags/" + tag + "/time");
+                    openTagActivity("tags/" + tag + "/time");
                 }
             });
         }
 
-        Glide.with(context)
-                .asBitmap()
-                .load(post.getImageUrl())
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition)
-                    {
-                        imageView.setImageBitmap(resource);
-                        Palette.from(resource).generate(new Palette.PaletteAsyncListener()
-                        {
-                            @Override
-                            public void onGenerated(@Nullable Palette palette)
+        updateVotingVisuals();
+
+        if(swatches == null)
+        {
+            Glide.with(context)
+                    .asBitmap()
+                    .load(post.getImageUrl())
+                    .centerInside()
+                    .into(new CustomTarget<Bitmap>(imageView.getMeasuredWidth(), imageView.getMeasuredHeight()) {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            imageView.setImageBitmap(resource);
+                            Palette.from(resource).generate(palette ->
                             {
-                                Palette.Swatch[] swatches = {palette.getDarkVibrantSwatch(), palette.getLightVibrantSwatch()};
-                                setColors(swatches);
-                            }
-                        });
-                    }
+                                swatches = palette.getSwatches();
 
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder)
-                    {
+                                if (!swatches.isEmpty())
+                                    setColors();
+                            });
+                        }
 
-                    }
-                });
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                        }
+                    });
+        }
+        else if (!swatches.isEmpty())
+            setColors();
 
         /*// Add image.
         Glide.with(context)
@@ -194,38 +294,84 @@ public class PostActivity extends ParentActivity
                 .into(imageView);*/
     }
 
-    public void setColors(Palette.Swatch[] swatch)
+    public void setColors()
     {
-        layout.setBackgroundColor(swatch[0].getRgb());
-        lighter_layout.setBackgroundColor(swatch[1].getRgb());
+        int mainColor = swatches.get(0).getRgb();
+        if (Color.luminance(mainColor) > 0.4)
+            invertTextColor("main");
 
-        commentButton.setBackgroundColor(swatch[0].getRgb());
-        buttonButton.setBackgroundColor(swatch[0].getRgb());
+        int buttonColor = swatches.get(1).getRgb();
+        if (Color.luminance(buttonColor) > 0.4)
+            invertTextColor("content");
 
-        ColorDrawable colorDrawable = new ColorDrawable(swatch[0].getRgb());
-        this.getWindow().setStatusBarColor(swatch[0].getRgb());
+        System.out.println("Luminance: " + Color.luminance(buttonColor));
 
-        //content.setBackgroundColor(swatch[1].getTitleTextColor());
-        //viewGroup_tags.setBackgroundColor(swatch[0].getRgb());
+        // all the views we need to set the colors on:
+        // header_layout + (post_caption, post_delete_button, post_username, post_channel)
+        // footer_layout + (post_description, post_tags_textView, post_tags_linearLayout, post_comments_textView, post_comments_layout, empty_space)
+        // post_controls_layout
 
-        for (int i = 0; i < content.getChildCount(); i++)
+        this.getWindow().setStatusBarColor(mainColor);
+        toolbar.setBackgroundColor(mainColor);
+
+        headerLayout.setBackgroundColor(mainColor);
+        footerLayout.setBackgroundColor(mainColor);
+        space.setBackgroundColor(mainColor);
+        commentsViewGroup.setBackgroundColor(mainColor);
+        controlsViewGroup.setBackgroundColor(buttonColor);
+
+        ViewGroup navigationLayout = findViewById(R.id.nav_header_parent_layout);
+        navigationLayout.setBackgroundColor(mainColor);
+
+        ImageView circleCrop = findViewById(R.id.circle_crop);
+        circleCrop.getDrawable().setTint(mainColor);
+
+        // set comments' and tags' body color
+        for (int i = 0; i < commentsViewGroup.getChildCount(); i++)
+            ((ViewGroup) commentsViewGroup.getChildAt(i)).setBackgroundColor(buttonColor);
+        for (int i = 0; i < tagsViewGroup.getChildCount(); i++)
+            ((ViewGroup) tagsViewGroup.getChildAt(i)).getChildAt(0).setBackgroundColor(buttonColor);
+    }
+
+    private void invertTextColor(String mode)
+    {
+        switch(mode)
         {
-            ViewGroup child = (ViewGroup)content.getChildAt(i);
-            child.setBackgroundColor(swatch[0].getRgb());
-            for (int j = 0; j < child.getChildCount(); j++)
-            {
-                ((TextView)child.getChildAt(j)).setTextColor(swatch[0].getTitleTextColor());
-            }
-        }
+            case "main":
+                captionTextView.setTextColor(Color.BLACK);
+                nicknameTextView.setTextColor(Color.BLACK);
+                channelTextView.setTextColor(Color.BLACK);
+                descriptionTextView.setTextColor(Color.BLACK);
+                tagsTextView.setTextColor(Color.BLACK);
+                commentsTextView.setTextColor(Color.BLACK);
+                break;
 
-        for (int i = 0; i < viewGroup_tags.getChildCount(); i++)
-        {
-            ((ViewGroup)viewGroup_tags.getChildAt(i)).getChildAt(0).setBackgroundColor(swatch[0].getRgb());
+            case "content":
+                // set comment textView colors
+                for (int i = 0; i < commentsViewGroup.getChildCount(); i++)
+                {
+                    ViewGroup childGroup = (ViewGroup) commentsViewGroup.getChildAt(i);
+                    for (int j = 0; j < childGroup.getChildCount(); j++)
+                        ((TextView)childGroup.getChildAt(j)).setTextColor(Color.BLACK);
+                }
+
+                for (int i = 0; i < tagsViewGroup.getChildCount(); i++)
+                {
+                    ViewGroup childGroup = (ViewGroup) tagsViewGroup.getChildAt(i);
+                    TextView tagText = childGroup.findViewById(R.id.tag_text);
+                    tagText.setTextColor(Color.BLACK);
+                }
+
+                scoreTextView.setTextColor(Color.BLACK);
+                postCommentTextView.setTextColor(Color.BLACK);
+                break;
         }
     }
 
-    private void loadComments()
+    private void loadComments(boolean scrollToBottom)
     {
+        removeComments();
+
         dbReader.findSubcollection("comment_sections", post.getPostID(), "comments").addOnCompleteListener(task ->
         {
             QuerySnapshot commentSnapshots = task.getResult();
@@ -240,7 +386,7 @@ public class PostActivity extends ParentActivity
 
             dbReader.requestNicknames(userIDs).addOnCompleteListener(task1 ->
             {
-                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult(); //  @Iikka what even is this??
+                List<QuerySnapshot> querySnapshots = (List<QuerySnapshot>) (List<?>) task1.getResult();
                 Map<String, String> usernamePairs = new HashMap<>();
 
                 for (int i = 0; i < querySnapshots.size(); i++)
@@ -254,6 +400,10 @@ public class PostActivity extends ParentActivity
                 }
 
                 addComments(usernamePairs, commentSnapshots);
+                showComments(allComments);
+
+                if(scrollToBottom)
+                    scrollView.fullScroll(View.FOCUS_DOWN);
             });
         });
     }
@@ -266,8 +416,6 @@ public class PostActivity extends ParentActivity
             Comment comment = new Comment(document.getString("userID"), displayName, document.getString("text"), document.getString("repliedToID"), (Timestamp) document.get("time"));
             allComments.add(comment);
         }
-
-        showComments(allComments);
     }
 
     private void showComments(List<Comment> comments)
@@ -277,8 +425,8 @@ public class PostActivity extends ParentActivity
         for (Comment comment : comments)
         {
             //create a view for comment
-            View child = getLayoutInflater().inflate(R.layout.layout_comment, content, false);
-            content.addView(child);
+            View child = getLayoutInflater().inflate(R.layout.layout_comment, commentsViewGroup, false);
+            commentsViewGroup.addView(child);
             //get textViews
             //ADD TEXTVIEWS FOR REPLIEDTOID AND TIMESTAMP
             TextView textView_username = child.findViewById(R.id.comment_username);
@@ -289,11 +437,40 @@ public class PostActivity extends ParentActivity
             textView_commentText.setText(comment.getText());
             textView_timestamp.setText(comment.getTimeDifference());
         }
+
+        if (swatches != null && !swatches.isEmpty())
+            setColors();
+    }
+
+    private void updateVotingVisuals()
+    {
+        scoreTextView.setText(String.valueOf(post.getScore()));
+
+        int colorGreen = ResourcesCompat.getColor(context.getResources(), R.color.vote_up, context.getTheme());
+        int colorRed = ResourcesCompat.getColor(context.getResources(), R.color.vote_down, context.getTheme());
+        int colorNeutral = ResourcesCompat.getColor(context.getResources(), R.color.vote_neutral, context.getTheme());
+
+        if (post.getMyVote() > 0)
+        {
+            thumbUpImageView.setColorFilter(colorGreen, PorterDuff.Mode.MULTIPLY);
+            thumpDownImageView.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+        }
+        else if (post.getMyVote() < 0)
+        {
+            thumbUpImageView.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            thumpDownImageView.setColorFilter(colorRed, PorterDuff.Mode.MULTIPLY);
+        }
+        else
+        {
+            thumbUpImageView.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+            thumpDownImageView.setColorFilter(colorNeutral, PorterDuff.Mode.MULTIPLY);
+        }
     }
 
     private void removeComments()
     {
-        content.removeAllViews();
+        allComments.clear();
+        commentsViewGroup.removeAllViews();
     }
 
     public void writeComment(View v)
@@ -306,11 +483,21 @@ public class PostActivity extends ParentActivity
         Comment commentToAdd = dbWriter.addComment(auth.getUid(), commentText, post.getPostID());
         commentToAdd.setUserName(auth.getCurrentUser().getDisplayName());
 
-        //hmm does 'allComments' have to be global or do we remove the parameter from 'showComment'??
-        allComments.add(commentToAdd);
+        loadComments(true);
+    }
 
-        removeComments();
-        showComments(allComments);
+    public void deletePost(View v)
+    {
+        dbWriter.deletePost(post.getPostID());
+        finish();
+    }
+
+    public void openTagActivity(String query)
+    {
+        Intent intent = new Intent(context, TagActivity.class);
+        intent.putExtra("query", query);
+
+        startActivity(intent);
     }
 
     public void openFeedActivity(String query)
@@ -337,5 +524,39 @@ public class PostActivity extends ParentActivity
         intent.putExtra("channel_id", post.getChannelID());
 
         startActivity(intent);
+    }
+
+    public void onVoteUp(View v)
+    {
+        votePost(1);
+    }
+
+    public void onVoteDown(View v)
+    {
+        votePost(-1);
+    }
+
+    private void votePost(int vote)
+    {
+        if(vote == post.getMyVote())
+            vote = 0;
+
+        dbWriter.addVote(auth.getUid(), post.getPostID(), vote);
+
+        long difference = vote - post.getMyVote();
+
+        post.setScore(post.getScore() + difference);
+        post.setMyVote(vote);
+
+        updateVotingVisuals();
+    }
+
+    private void initializeSwipeRefreshLayout(SwipeRefreshLayout swipeContainer)
+    {
+        swipeContainer.setOnRefreshListener(() ->
+        {
+            refreshPost();
+            swipeContainer.setRefreshing(false);
+        });
     }
 }

@@ -28,6 +28,7 @@ public class GridAdapter extends ArrayAdapter<Post> {
         super(context, textViewResourceId, objects);
         userPosts = objects;
         this.context = context ;
+
     }
 
     @Override

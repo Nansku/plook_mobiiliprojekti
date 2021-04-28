@@ -20,15 +20,12 @@ public class DatabaseReader
 {
     public FirebaseFirestore db;
 
-    //private String userID;
-
 
     public DatabaseReader()
     {
         db = FirebaseFirestore.getInstance();
     }
 
-    //WIP logic that determines what the type of queried field is
 
     public Task<QuerySnapshot> findDocuments(Query q)
     {
@@ -80,32 +77,16 @@ public class DatabaseReader
         return q.get().addOnCompleteListener(task -> { });
     }
 
-    //siirrä database luokkaan ja muuta parametriksi ArrayList<String>
     public Task<List<Object>> requestNicknames(ArrayList<String> userIDs)
     {
         Task[] tasks = new Task[userIDs.size()];
 
         for (int i = 0; i < userIDs.size(); i++)
         {
-            Task<QuerySnapshot> userNameTask = findDocumentByID("users", userIDs.get(i))
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
-                    {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task)
-                        {
-
-                        }
-                    });
+            Task<QuerySnapshot> userNameTask = findDocumentByID("users", userIDs.get(i));
             tasks[i] = userNameTask;
         }
 
-        return Tasks.whenAllSuccess(tasks).addOnSuccessListener(new OnSuccessListener<List<Object>>()
-        {
-            @Override
-            public void onSuccess(List<Object> objects)
-            {
-
-            }
-        });
+        return Tasks.whenAllSuccess(tasks);
     }
 }

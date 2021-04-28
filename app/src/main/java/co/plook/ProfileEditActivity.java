@@ -4,6 +4,21 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
+import java.util.HashMap;
+
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,88 +45,121 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class ProfileEditActivity extends ParentActivity
-{
-    ////// UUTTA
+public class ProfileEditActivity extends ParentActivity {
+
+    private DatabaseReader dbReader;
+    private DatabaseWriter dbWriter;
+
+    private EditText editUsername;
+    private EditText editBio;
+    private EditText editLocation;
+    private ImageView profilePic;
+    private Button deleteButton;
+  
+     ////// UUTTA
     private ImageView profilePic;
     private Uri imageUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-    private DatabaseWriter dbWriter;
     Button saveAllButton;
     ////// UUTTA
 
-    private DatabaseReader dbReader;
-    private ArrayList<Post> userPosts;
-
+   
+  
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-
+    protected void onCreate(Bundle savedInstanceState) {
         // INTENT FROM PROFILE ACTIVITY
         getIntent();
 
-
-        userPosts = new ArrayList<Post>();
         dbReader = new DatabaseReader();
+        dbWriter = new DatabaseWriter();
 
         super.onCreate(savedInstanceState);
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile_edit, contentGroup);
 
 
+        editUsername = findViewById(R.id.editUserName);
+        editBio = findViewById(R.id.editBio);
+        editLocation = findViewById(R.id.editLocation);
+        profilePic =  findViewById(R.id.profilePic);
+        deleteButton = findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener(){
+          
         /// UUTTA
-        profilePic = findViewById(R.id.profilePic);
-
         saveAllButton = (Button) findViewById(R.id.editProfile);
-
-        System.out.println("KRISU ON KIVA: "+ profilePic);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         /// UUTTA
-
-
-
+          
         // FIND PHOTOS FROM FIREBASE
         dbReader.findDocumentsWhereEqualTo("posts", "userID", auth.getUid()).addOnCompleteListener(task ->
         {   QuerySnapshot snapshot = task.getResult();
+            public void onClick(View v){
 
-            assert snapshot != null;
-            System.out.println(snapshot.getDocuments().toString());
-            for (QueryDocumentSnapshot document : snapshot)
-            {   Post post = new Post();
-                post.setPostID(document.getId());
-                post.setCaption(document.getString("caption"));
-                post.setDescription(document.getString("description"));
-                post.setImageUrl(document.getString("url"));
-
-                userPosts.add(post);
+                ReauthenticateDialog fragmentDialog = new ReauthenticateDialog();
+                fragmentDialog.show(getSupportFragmentManager(), "ReauthenticateDialog");
             }
-
-
         });
-
-
-
-
         profilePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                choosePicture();
-            }
+          @Override
+          public void onClick(View v) {
+              choosePicture();
+          }
         });
 
-        saveAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {uploadPicture(imageUri);
-            }
-        });
 
+
+        Bundle extras = getIntent().getExtras();
+
+        editLocation.setText(extras.getString("location"));
+        editBio.setText(extras.getString("bio"));
+        editUsername.setText(auth.getCurrentUser().getDisplayName());
     }
 
-    private void choosePicture() {
+    public void saveData(View view){
+      
+        String updatedUsername = editUsername.getText().toString();
+
+        if (updatedUsername.length()>3)
+        {
+          
+            //Tee tähän kohti checkaus onko kuva oikia
+            uploadPicture(imageUri);
+          
+            HashMap <String, Object> updateData = new HashMap<>();
+            updateData.put("name", updatedUsername);
+            updateData.put("location", editLocation.getText().toString());
+            updateData.put("bio", editBio.getText().toString());
+          
+            dbWriter.updateField("users", auth.getUid(), updateData);
+            UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(updatedUsername)
+                    .build();
+
+            auth.getCurrentUser().updateProfile(changeRequest)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            System.out.println("User updated");
+                        }
+                    });
+            finish();
+
+        }
+
+        else {
+
+            Toast.makeText(this, "Käyttäjänimen pitää olla pitempi kuin 3 merkkiä", Toast.LENGTH_SHORT).show();
+        }
+
+  
+       
+    }
+
+    private void choosePicture(View v) {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -150,6 +198,8 @@ public class ProfileEditActivity extends ParentActivity
                 Exception error = result.getError();
             }
         }
+
+        
 
 
 
@@ -190,4 +240,5 @@ public class ProfileEditActivity extends ParentActivity
 
 
 }
+
 
