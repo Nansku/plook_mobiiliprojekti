@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static android.view.View.*;
@@ -52,19 +54,21 @@ public class ImageUploadActivity extends ParentActivity {
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Button mCaptureBtn;
     Button chooseChannel;
-    ImageButton uploadButton;
     Button chooseImgButton;
+    ImageButton uploadButton;
     ImageButton cancel;
     RelativeLayout relativeLayout;
     EditText postCaption;
     EditText postDescription;
     AutoCompleteTextView tagSuggestions;
-    String[] tags;
     TagLayout tagLayout;
     String tag;
     String channelID = "";
     ImageUploadActivity imageUploadActivity;
     private ChooseChannelDialog dialog;
+    ArrayList<String> tagsList = new ArrayList<>();
+    // For checking that a target channel has been chosen
+    int channelChosen = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +83,13 @@ public class ImageUploadActivity extends ParentActivity {
         relativeLayout = findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        tagSuggestions =  findViewById(R.id.tagSuggestions);
+        tagLayout = findViewById(R.id.tagLayout);
+        cancel =  findViewById(R.id.cancel);
+        chooseChannel = findViewById(R.id.chooseChannel);
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
-        tagLayout = findViewById(R.id.post_tags_layout);
-        tagSuggestions = findViewById(R.id.tag_list);
-        tagLayout = findViewById(R.id.tagLayout);
-        cancel = findViewById(R.id.cancel);
-        chooseChannel = findViewById(R.id.chooseChannel);
+
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
@@ -142,6 +146,9 @@ public class ImageUploadActivity extends ParentActivity {
 
                         chooseChannel.setText(clickedChannelName);
 
+                        // Add to variable to know a channel has been chosen
+                        channelChosen++;
+
                         dialog.dismiss();
                     }
                 });
@@ -179,11 +186,22 @@ public class ImageUploadActivity extends ParentActivity {
         View child = getLayoutInflater().inflate(R.layout.layout_post_tag, tagLayout, false);
         tagLayout.addView(child);
         tag = string.trim().replaceAll("[^a-öA-Ö0-9,]", "");
-
         ImageView imageView = child.findViewById(R.id.tag_delete);
         imageView.setVisibility(VISIBLE);
+
         TextView tagText = child.findViewById(R.id.tag_text);
         tagText.setText(tag);
+        tagLayout.setOnItemClickListener(new TagLayout.OnItemClickListener() {
+            @Override
+            public void onItemClicked(int position) {
+                tagsList.remove(position);
+                tagLayout.removeViewAt(position);
+            }
+        });
+
+        tagsList.add(tag);
+        tagSuggestions.setText("");
+
     }
 
     // Function to choose img from gallery
@@ -225,7 +243,6 @@ public class ImageUploadActivity extends ParentActivity {
             }
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -279,30 +296,30 @@ public class ImageUploadActivity extends ParentActivity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadPicture(imageUri);
+                String caption = postCaption.getText().toString();
+                String description = postDescription.getText().toString();
+
+                if (TextUtils.isEmpty(caption)) {
+
+                    postCaption.setError("Caption cannot be empty.");
+                }
+
+                // Check if channel has been chosen (will be greater than 0)
+                else if (channelChosen == 0) {
+                    Toast.makeText(ImageUploadActivity.this, "Choose a channel",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    // When criteria filled, upload picture to server
+                    uploadPicture(imageUri, caption, description);
+                }
             }
         });
     }
 
     // Function to upload chosen picture to Firebase
-    private void uploadPicture(Uri uri) {
+    private void uploadPicture(Uri uri, String caption, String description) {
         final String randomKey = UUID.randomUUID().toString();
         StorageReference imageRef = storageReference.child("images/" + auth.getUid() + "/" + randomKey);
-
-        postCaption = findViewById(R.id.post_caption);
-        postDescription = findViewById(R.id.post_description);
-        tagLayout = findViewById(R.id.post_tags_layout);
-        tagSuggestions = findViewById(R.id.tag_list);
-
-
-        String caption = postCaption.getText().toString();
-        String description = postDescription.getText().toString();
-
-        //ArrayList<String> tags = new ArrayList<>();
-        //String[] tags = {postTags.getText().toString()};
-        //tags.add(postTags.getText().toString());
-
-        tags = tagSuggestions.getText().toString().trim().replaceAll("[^a-öA-Ö0-9,]", "").split(",");
 
         imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
@@ -321,7 +338,9 @@ public class ImageUploadActivity extends ParentActivity {
                     Uri downloadUri = task.getResult();
                     String userID = auth.getUid();
                     dbWriter = new DatabaseWriter();
-                    dbWriter.addPost(userID, caption, channelID, description, tags, downloadUri.toString());
+                    assert downloadUri != null;
+
+                    dbWriter.addPost(userID, caption, channelID, description, tagsList.toArray(new String[0]), downloadUri.toString());
 
                     Intent intent = new Intent(ImageUploadActivity.this, FeedActivity.class);
                     startActivity(intent);
