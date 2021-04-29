@@ -134,6 +134,10 @@ public class ParentActivity extends AppCompatActivity
 
     public void openSettings(MenuItem item)
     {
+        // no need to check if current activity is "settingsActivity" because there's no drawer in settings
         drawerLayout.closeDrawer(GravityCompat.START);
+
+        intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }
