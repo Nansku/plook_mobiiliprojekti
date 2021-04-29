@@ -52,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delete"
+            android:background="@drawable/button"
             />
 
         <Button
@@ -59,8 +60,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Peruuta"
-            android:backgroundTint="@color/mint"
             android:layout_marginLeft="20sp"
+            android:background="@drawable/buttonmint"
             />
 
         </LinearLayout>
