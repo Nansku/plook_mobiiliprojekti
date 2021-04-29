@@ -322,6 +322,7 @@ public class PostActivity extends ParentActivity
         space.setBackgroundColor(mainColor);
         commentsViewGroup.setBackgroundColor(mainColor);
         controlsViewGroup.setBackgroundColor(buttonColor);
+        findViewById(R.id.post_comment_window).setBackgroundColor(buttonColor);
 
         ViewGroup navigationLayout = findViewById(R.id.nav_header_parent_layout);
         navigationLayout.setBackgroundColor(mainColor);
@@ -367,6 +368,19 @@ public class PostActivity extends ParentActivity
 
                 scoreTextView.setTextColor(Color.BLACK);
                 postCommentTextView.setTextColor(Color.BLACK);
+
+                TextView commentTitle = findViewById(R.id.post_comment_title);
+                commentTitle.setTextColor(Color.BLACK);
+
+                EditText commentEditText = findViewById(R.id.post_comment_editText);
+                commentEditText.setTextColor(Color.BLACK);
+
+                ImageView closeCommentImage = findViewById(R.id.post_comment_close);
+                closeCommentImage.setColorFilter(Color.BLACK);
+
+                ImageView sendCommentImage = findViewById(R.id.post_comment_send);
+                sendCommentImage.setColorFilter(Color.BLACK);
+
                 break;
         }
     }
