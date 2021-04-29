@@ -13,61 +13,43 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
-        <activity android:name=".TagActivity"></activity>
-        <activity android:name=".ChannelActivity" />
-        <activity
-            android:name=".FeedActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ChannelBrowseActivity"
-            android:exported="true" />
-        <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
-        <activity
-            android:name=".ImageUploadActivity"
-            android:exported="true" />
-        <activity android:name=".PostActivity">
-            <intent-filter>
-                <action android:name="OPEN_POSTACTIVITY" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ProfileActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="OPEN_PROFILEACTIVITY" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true" />
-        <activity
-            android:name=".SignupActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ConfirmationActivity"
-            android:exported="true" />
-        <activity
-            android:name=".PostDisplayActivity"
-            android:exported="true" />
-        <activity
-            android:name=".WelcomeActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ProfileEditActivity"
-            android:exported="true" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".PostActivity">
+            <intent-filter>
+                <action android:name="OPEN_POSTACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ProfileActivity">
+            <intent-filter>
+                <action android:name="OPEN_PROFILEACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".TagActivity" />
+        <activity android:name=".ChannelActivity" />
+        <activity android:name=".FeedActivity" android:exported="true" />
+        <activity android:name=".ChannelBrowseActivity" android:exported="true" />
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" android:theme="@style/Base.Theme.AppCompat" />
+        <activity android:name=".ImageUploadActivity" android:exported="true" />
+        <activity android:name=".LoginActivity" android:exported="true" />
+        <activity android:name=".SignupActivity" android:exported="true" />
+        <activity android:name=".ConfirmationActivity" android:exported="true" />
+        <activity android:name=".PostDisplayActivity" android:exported="true" />
+        <activity android:name=".WelcomeActivity" android:exported="true" />
+        <activity android:name=".ProfileEditActivity" android:exported="true" />
+        <activity android:name=".SettingsActivity"/>
 
         <service
             android:name=".MyFirebaseMessagingService"
