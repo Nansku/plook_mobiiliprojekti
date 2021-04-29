@@ -86,6 +86,10 @@ public class PostActivity extends ParentActivity
     private ArrayList<Comment> allComments;
 
     private List<Palette.Swatch> swatches;
+    private ImageView closeCommentImage;
+    private EditText commentEditText;
+    private TextView commentTitle;
+    private RelativeLayout commentWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -124,6 +128,12 @@ public class PostActivity extends ParentActivity
         scoreTextView = findViewById(R.id.post_score);
         thumbUpImageView = findViewById(R.id.post_voteUp);
         thumpDownImageView = findViewById(R.id.post_voteDown);
+
+        // commenting
+        commentWindow = findViewById(R.id.post_comment_window);
+        commentTitle = findViewById(R.id.post_comment_title);
+        commentEditText = findViewById(R.id.post_comment_editText);
+        closeCommentImage = findViewById(R.id.post_comment_close);
 
         post = new Post();
         userIDs = new ArrayList<>();
@@ -322,7 +332,7 @@ public class PostActivity extends ParentActivity
         space.setBackgroundColor(mainColor);
         commentsViewGroup.setBackgroundColor(mainColor);
         controlsViewGroup.setBackgroundColor(buttonColor);
-        findViewById(R.id.post_comment_window).setBackgroundColor(buttonColor);
+        commentWindow.setBackgroundColor(buttonColor);
 
         ViewGroup navigationLayout = findViewById(R.id.nav_header_parent_layout);
         navigationLayout.setBackgroundColor(mainColor);
@@ -369,13 +379,8 @@ public class PostActivity extends ParentActivity
                 scoreTextView.setTextColor(Color.BLACK);
                 postCommentTextView.setTextColor(Color.BLACK);
 
-                TextView commentTitle = findViewById(R.id.post_comment_title);
                 commentTitle.setTextColor(Color.BLACK);
-
-                EditText commentEditText = findViewById(R.id.post_comment_editText);
                 commentEditText.setTextColor(Color.BLACK);
-
-                ImageView closeCommentImage = findViewById(R.id.post_comment_close);
                 closeCommentImage.setColorFilter(Color.BLACK);
 
                 ImageView sendCommentImage = findViewById(R.id.post_comment_send);
@@ -507,27 +512,24 @@ public class PostActivity extends ParentActivity
 
     public void openCommentWindow(View v)
     {
-        findViewById(R.id.post_comment_window).setVisibility(View.VISIBLE);
-        findViewById(R.id.post_controls).setVisibility(View.GONE);
+        commentWindow.setVisibility(View.VISIBLE);
+        controlsViewGroup.setVisibility(View.GONE);
 
-        EditText editText_comment = findViewById(R.id.post_comment_editText);
-        editText_comment.setShowSoftInputOnFocus(true);
-        editText_comment.requestFocus();
+        commentEditText.setShowSoftInputOnFocus(true);
+        commentEditText.requestFocus();
     }
 
     public void closeCommentWindow(View v)
     {
-        findViewById(R.id.post_comment_window).setVisibility(View.GONE);
-        findViewById(R.id.post_controls).setVisibility(View.VISIBLE);
+        commentWindow.setVisibility(View.GONE);
+        controlsViewGroup.setVisibility(View.VISIBLE);
 
-        EditText editText_comment = findViewById(R.id.post_comment_editText);
-        editText_comment.setText("");
+        commentEditText.setText("");
     }
 
     public void sendComment(View v)
     {
-        EditText editText_comment = findViewById(R.id.post_comment_editText);
-        String commentText = editText_comment.getText().toString();
+        String commentText = commentEditText.getText().toString();
 
         commentText = commentText.trim();
 
