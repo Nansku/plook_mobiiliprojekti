@@ -107,6 +107,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30sp"
             android:onClick="saveData"
+            android:background="@drawable/button"
             />
 
         <Button
@@ -118,7 +119,8 @@
             android:layout_centerHorizontal="true"
             android:onClick="deleteUser"
             android:text="Poista profiili"
-            android:backgroundTint="@color/mint"
+            android:background="@drawable/buttonmint"
+
             />
 
 
