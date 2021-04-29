@@ -74,6 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="Image caption"
+                    android:inputType="textCapSentences"
                     android:layout_centerHorizontal="true" />
 
                 <EditText
@@ -82,6 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="Image description"
+                    android:inputType="textCapSentences"
                     android:layout_below="@+id/post_caption"
                     android:layout_centerHorizontal="true" />
 
@@ -101,7 +103,6 @@
                     android:layout_below="@+id/tagSuggestions"
                     app:childSpacingX="5dp"
                     app:childSpacingY="5dp"/>
-
             </RelativeLayout>
 
         </RelativeLayout>

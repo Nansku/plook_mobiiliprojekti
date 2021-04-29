@@ -16,4 +16,5 @@
     <string name="default_notification_channel_id">Channel ID</string>
     <string name="picture_for_post">picture for post</string>
     <string name="gallery">Gallery</string>
+    <string name="olen_kotoisin">Olen kotoisin:</string>
 </resources>
