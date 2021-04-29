@@ -4,12 +4,11 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.ImageFormat;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,7 +39,6 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -70,6 +68,8 @@ public class ImageUploadActivity extends ParentActivity {
     ImageUploadActivity imageUploadActivity;
     private ChooseChannelDialog dialog;
     ArrayList<String> tagsList = new ArrayList<>();
+    // For checking that a target channel has been chosen
+    int channelChosen = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,12 +84,13 @@ public class ImageUploadActivity extends ParentActivity {
         relativeLayout = findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-        postCaption = findViewById(R.id.post_caption);
-        postDescription = findViewById(R.id.post_description);
         tagSuggestions =  findViewById(R.id.tagSuggestions);
         tagLayout = findViewById(R.id.tagLayout);
         cancel =  findViewById(R.id.cancel);
         chooseChannel = findViewById(R.id.chooseChannel);
+        postCaption = findViewById(R.id.post_caption);
+        postDescription = findViewById(R.id.post_description);
+
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
@@ -146,6 +147,9 @@ public class ImageUploadActivity extends ParentActivity {
 
                         chooseChannel.setText(clickedChannelName);
 
+                        // Add to variable to know a channel has been chosen
+                        channelChosen++;
+
                         dialog.dismiss();
                     }
                 });
@@ -196,9 +200,9 @@ public class ImageUploadActivity extends ParentActivity {
             }
         });
 
+        tagsList.add(tag);
         tagSuggestions.setText("");
 
-        tagsList.add(tag);
     }
 
     // Function to choose img from gallery
@@ -240,7 +244,6 @@ public class ImageUploadActivity extends ParentActivity {
             }
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -294,23 +297,30 @@ public class ImageUploadActivity extends ParentActivity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadPicture(imageUri);
+                String caption = postCaption.getText().toString();
+                String description = postDescription.getText().toString();
+
+                if (TextUtils.isEmpty(caption)) {
+
+                    postCaption.setError("Caption cannot be empty.");
+                }
+
+                // Check if channel has been chosen (will be greater than 0)
+                else if (channelChosen == 0) {
+                    Toast.makeText(ImageUploadActivity.this, "Choose a channel",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    // When criteria filled, upload picture to server
+                    uploadPicture(imageUri, caption, description);
+                }
             }
         });
     }
 
     // Function to upload chosen picture to Firebase
-    private void uploadPicture(Uri uri) {
+    private void uploadPicture(Uri uri, String caption, String description) {
         final String randomKey = UUID.randomUUID().toString();
         StorageReference imageRef = storageReference.child("images/" + auth.getUid() + "/" + randomKey);
-
-        postCaption = findViewById(R.id.post_caption);
-        postDescription = findViewById(R.id.post_description);
-        tagLayout = findViewById(R.id.post_tags_layout);
-        tagSuggestions = findViewById(R.id.tagSuggestions);
-
-        String caption = postCaption.getText().toString();
-        String description = postDescription.getText().toString();
 
         imageRef.putFile(uri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
