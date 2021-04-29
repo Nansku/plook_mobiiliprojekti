@@ -21,19 +21,23 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences preferences;
     Handler handler;
 
+    Handler handler;
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         service = new MyFirebaseMessagingService();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        auth = FirebaseAuth.getInstance();
 
-        // splash screen handler
+
         handler = new Handler();
         handler.postDelayed(() -> {
+
             preferences = this.getSharedPreferences("token", Context.MODE_PRIVATE);
             String token = preferences.getString("token", "");
+
+            auth = FirebaseAuth.getInstance();
 
             if (auth.getCurrentUser() != null)
             {
@@ -52,7 +56,9 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
             finish();
+
         },1000);
+
     }
 
     public void updateToken(String token)
