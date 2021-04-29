@@ -13,6 +13,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
+
+
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".TagActivity" />
         <activity android:name=".ChannelActivity" />
         <activity
@@ -27,47 +37,38 @@
         <activity
             android:name=".ImageUploadActivity"
             android:exported="true" />
+
         <activity android:name=".PostActivity">
             <intent-filter>
                 <action android:name="OPEN_POSTACTIVITY" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".ProfileActivity"
-            android:exported="true">
+            android:name=".ProfileActivity">
             <intent-filter>
                 <action android:name="OPEN_PROFILEACTIVITY" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true" />
-        <activity
-            android:name=".SignupActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ConfirmationActivity"
-            android:exported="true" />
-        <activity
-            android:name=".PostDisplayActivity"
-            android:exported="true" />
-        <activity
-            android:name=".WelcomeActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ProfileEditActivity"
-            android:exported="true" />
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".SettingsActivity"/>
+        <activity android:name=".TagActivity" />
+        <activity android:name=".ChannelActivity" />
+        <activity android:name=".FeedActivity" />
+        <activity android:name=".ChannelBrowseActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".SignupActivity" />
+        <activity android:name=".ConfirmationActivity" />
+        <activity android:name=".PostDisplayActivity" />
+        <activity android:name=".WelcomeActivity" />
+        <activity android:name=".ProfileEditActivity" />
+        <activity android:name=".ImageUploadActivity" />
+
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
 
         <service
             android:name=".MyFirebaseMessagingService"
