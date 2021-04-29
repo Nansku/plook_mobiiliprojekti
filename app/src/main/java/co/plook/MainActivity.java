@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,35 +19,45 @@ public class MainActivity extends AppCompatActivity
     MyFirebaseMessagingService service;
     SharedPreferences preferences;
 
+    Handler handler;
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         service = new MyFirebaseMessagingService();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_splash_screen);
 
-        preferences = this.getSharedPreferences("token", Context.MODE_PRIVATE);
-        String token = preferences.getString("token", "");
+        handler = new Handler();
+        handler.postDelayed(() -> {
 
-        auth = FirebaseAuth.getInstance();
+            preferences = this.getSharedPreferences("token", Context.MODE_PRIVATE);
+            String token = preferences.getString("token", "");
 
-        if (auth.getCurrentUser() != null)
-        {
-            // user is signed in
-            intent = new Intent(this, FeedActivity.class);
+            auth = FirebaseAuth.getInstance();
 
-            // if token is not blank, we have a new token!
-            if (!token.equals(""))
-                updateToken(token);
-        }
-        else
-        {
-            // if user is NOT signed in
-            intent = new Intent(this, WelcomeActivity.class);
-        }
-        startActivity(intent);
+            if (auth.getCurrentUser() != null)
+            {
+                // user is signed in
+                intent = new Intent(this, FeedActivity.class);
 
-        finish();
+                // if token is not blank, we have a new token!
+                if (!token.equals(""))
+                    updateToken(token);
+            }
+            else
+            {
+                // if user is NOT signed in
+                intent = new Intent(this, WelcomeActivity.class);
+            }
+            startActivity(intent);
+
+            finish();
+
+        }, 2000);
+
+
+
     }
 
     public void updateToken(String token)
