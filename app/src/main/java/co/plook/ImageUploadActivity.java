@@ -304,10 +304,7 @@ public class ImageUploadActivity extends ParentActivity {
 
                     postCaption.setError("Caption cannot be empty.");
                 }
-                else if (TextUtils.isEmpty(description)) {
 
-                    postDescription.setError("Description cannot be empty.");
-                }
                 // Check if channel has been chosen (will be greater than 0)
                 else if (channelChosen == 0) {
                     Toast.makeText(ImageUploadActivity.this, "Choose a channel",Toast.LENGTH_LONG).show();
