@@ -7,6 +7,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.palette.graphics.Palette;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,6 +17,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -437,6 +440,15 @@ public class PostActivity extends ParentActivity
             textView_username.setText(comment.getUserName());
             textView_commentText.setText(comment.getText());
             textView_timestamp.setText(comment.getTimeDifference());
+
+            textView_username.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    openProfileActivity(comment.getUserID());
+                }
+            });
         }
 
         if (swatches != null && !swatches.isEmpty())
@@ -474,36 +486,70 @@ public class PostActivity extends ParentActivity
         commentsViewGroup.removeAllViews();
     }
 
-    public void writeComment(View v)
-    {
-        //get text and userID(s) from the view and pass them into a Comment object
-        //for now lets use a ph (placeholder) comment
-        Timestamp timeNow = Timestamp.now();
-        String commentText = "Kello on: " + timeNow.toDate().toString();
-
-        Comment commentToAdd = dbWriter.addComment(auth.getUid(), commentText, post.getPostID());
-        commentToAdd.setUserName(auth.getCurrentUser().getDisplayName());
-
-        loadComments(true);
-    }
-
     public void deletePost(View v)
     {
         dbWriter.deletePost(post.getPostID());
         finish();
     }
 
-    public void openTagActivity(String query)
+    public void openCommentWindow(View v)
     {
-        Intent intent = new Intent(context, TagActivity.class);
-        intent.putExtra("query", query);
+        findViewById(R.id.post_comment_window).setVisibility(View.VISIBLE);
+        findViewById(R.id.post_controls).setVisibility(View.GONE);
 
-        startActivity(intent);
+        EditText editText_comment = findViewById(R.id.post_comment_editText);
+        editText_comment.setShowSoftInputOnFocus(true);
+        editText_comment.requestFocus();
+    }
+
+    public void closeCommentWindow(View v)
+    {
+        findViewById(R.id.post_comment_window).setVisibility(View.GONE);
+        findViewById(R.id.post_controls).setVisibility(View.VISIBLE);
+
+        EditText editText_comment = findViewById(R.id.post_comment_editText);
+        editText_comment.setText("");
+    }
+
+    public void sendComment(View v)
+    {
+        EditText editText_comment = findViewById(R.id.post_comment_editText);
+        String commentText = editText_comment.getText().toString();
+
+        commentText = commentText.trim();
+
+        if(!commentText.equals(""))
+        {
+            Comment commentToAdd = dbWriter.addComment(auth.getUid(), commentText, post.getPostID());
+            commentToAdd.setUserName(auth.getCurrentUser().getDisplayName());
+        }
+
+        closeCommentWindow(null);
+
+        loadComments(true);
     }
 
     public void openFeedActivity(String query)
     {
         Intent intent = new Intent(context, FeedActivity.class);
+        intent.putExtra("query", query);
+
+        startActivity(intent);
+    }
+
+    public void openChannelActivity(View v)
+    {
+        Intent intent = new Intent(this, ChannelActivity.class);
+
+        intent.putExtra("query", "channel/" + post.getChannelID() + "/time");
+        intent.putExtra("channel_id", post.getChannelID());
+
+        startActivity(intent);
+    }
+
+    public void openTagActivity(String query)
+    {
+        Intent intent = new Intent(context, TagActivity.class);
         intent.putExtra("query", query);
 
         startActivity(intent);
@@ -517,12 +563,10 @@ public class PostActivity extends ParentActivity
         startActivity(intent);
     }
 
-    public void openChannelActivity(View v)
+    public void openProfileActivity(String userID)
     {
-        Intent intent = new Intent(this, ChannelActivity.class);
-
-        intent.putExtra("query", "channel/" + post.getChannelID() + "/time");
-        intent.putExtra("channel_id", post.getChannelID());
+        Intent intent = new Intent(context, ProfileActivity.class);
+        intent.putExtra("user_id", userID);
 
         startActivity(intent);
     }
