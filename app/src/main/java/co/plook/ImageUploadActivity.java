@@ -68,6 +68,7 @@ public class ImageUploadActivity extends ParentActivity {
     ImageUploadActivity imageUploadActivity;
     private ChooseChannelDialog dialog;
     ArrayList<String> tagsList = new ArrayList<>();
+    // For checking that a target channel has been chosen
     int channelChosen = 0;
 
     @Override
@@ -146,7 +147,9 @@ public class ImageUploadActivity extends ParentActivity {
 
                         chooseChannel.setText(clickedChannelName);
 
+                        // Add to variable to know a channel has been chosen
                         channelChosen++;
+
                         dialog.dismiss();
                     }
                 });
@@ -200,7 +203,6 @@ public class ImageUploadActivity extends ParentActivity {
         tagsList.add(tag);
         tagSuggestions.setText("");
 
-
     }
 
     // Function to choose img from gallery
@@ -242,7 +244,6 @@ public class ImageUploadActivity extends ParentActivity {
             }
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -307,11 +308,12 @@ public class ImageUploadActivity extends ParentActivity {
 
                     postDescription.setError("Description cannot be empty.");
                 }
+                // Check if channel has been chosen (will be greater than 0)
                 else if (channelChosen == 0) {
                     Toast.makeText(ImageUploadActivity.this, "Choose a channel",Toast.LENGTH_LONG).show();
                 }
                 else {
-
+                    // When criteria filled, upload picture to server
                     uploadPicture(imageUri, caption, description);
                 }
             }
