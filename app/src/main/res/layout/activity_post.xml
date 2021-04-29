@@ -138,7 +138,7 @@
                     <co.plook.TagLayout
                         android:id="@+id/post_tags_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="wrap_content"
                         android:layout_below="@id/post_description"
                         app:childSpacingX="5dp"
                         app:childSpacingY="5dp"
