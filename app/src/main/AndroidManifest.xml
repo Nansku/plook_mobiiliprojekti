@@ -37,7 +37,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SplashScreenActivity"/>
         <activity android:name=".TagActivity" />
         <activity android:name=".ChannelActivity" />
         <activity android:name=".FeedActivity" />
