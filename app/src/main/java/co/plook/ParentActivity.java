@@ -65,11 +65,10 @@ public class ParentActivity extends AppCompatActivity
         }
     }
 
-    // this crashes... (attempt to invoke method on a null object ref)
     protected void loadNavUserData()
     {
-        TextView userNameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
-        ImageView profileImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_profilePic);
+        TextView userNameTextView = navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
+        ImageView profileImageView = navigationView.getHeaderView(0).findViewById(R.id.nav_header_profilePic);
         Glide.with(this)
                 .load(auth.getCurrentUser().getPhotoUrl()).into(profileImageView);
 
