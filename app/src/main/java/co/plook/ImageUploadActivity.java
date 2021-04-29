@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.ImageFormat;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,8 +37,6 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-
-import java.io.BufferedReader;
 import java.util.UUID;
 
 import static android.view.View.*;
@@ -66,7 +62,7 @@ public class ImageUploadActivity extends ParentActivity {
     String[] tags;
     TagLayout tagLayout;
     String tag;
-    String channelID;
+    String channelID = "";
     ImageUploadActivity imageUploadActivity;
     private ChooseChannelDialog dialog;
 
@@ -78,18 +74,18 @@ public class ImageUploadActivity extends ParentActivity {
         imageUploadActivity = this;
         profilePic = findViewById(R.id.profilePic);
         mCaptureBtn = findViewById(R.id.capture_image_btn);
-        uploadButton = (ImageButton) findViewById(R.id.upload);
-        chooseImgButton = (Button) findViewById(R.id.choose_image_btn);
-        relativeLayout = (RelativeLayout) findViewById(R.id.textFields);
+        uploadButton = findViewById(R.id.upload);
+        chooseImgButton = findViewById(R.id.choose_image_btn);
+        relativeLayout = findViewById(R.id.textFields);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         postCaption = findViewById(R.id.post_caption);
         postDescription = findViewById(R.id.post_description);
         tagLayout = findViewById(R.id.post_tags_layout);
-        tagSuggestions = (AutoCompleteTextView) findViewById(R.id.tag_list);
-        tagLayout = (TagLayout) findViewById(R.id.tagLayout);
-        cancel = (ImageButton) findViewById(R.id.cancel);
-        chooseChannel = (Button) findViewById(R.id.chooseChannel);
+        tagSuggestions = findViewById(R.id.tag_list);
+        tagLayout = findViewById(R.id.tagLayout);
+        cancel = findViewById(R.id.cancel);
+        chooseChannel = findViewById(R.id.chooseChannel);
         // navigation inflater
         getLayoutInflater().inflate(R.layout.activity_image_upload, contentGroup);
 
