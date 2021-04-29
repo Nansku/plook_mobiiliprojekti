@@ -41,7 +41,6 @@ public class ProfileEditActivity extends ParentActivity {
     private Uri imageUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-    Button saveAllButton;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -57,12 +56,16 @@ public class ProfileEditActivity extends ParentActivity {
 
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile_edit, contentGroup);
+        loadNavUserData();
 
         editUsername = findViewById(R.id.editUserName);
         editBio = findViewById(R.id.editBio);
         editLocation = findViewById(R.id.editLocation);
         profilePic =  findViewById(R.id.profilePic);
         deleteButton = findViewById(R.id.deleteButton);
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
         deleteButton.setOnClickListener(new View.OnClickListener(){
 
@@ -75,7 +78,6 @@ public class ProfileEditActivity extends ParentActivity {
 
 
         });
-
 
         Bundle extras = getIntent().getExtras();
 
@@ -184,7 +186,7 @@ public class ProfileEditActivity extends ParentActivity {
                     dbWriter = new DatabaseWriter();
                     HashMap<String, Object> updatedUser = new HashMap<>();
                     updatedUser.put("url",downloadUri.toString());
-                    dbWriter.updateField("users", auth.getUid(), updatedUser);
+                    dbWriter.updateField("users", userID, updatedUser);
 
                     UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setPhotoUri(downloadUri).build();
                     auth.getCurrentUser().updateProfile(changeRequest);
