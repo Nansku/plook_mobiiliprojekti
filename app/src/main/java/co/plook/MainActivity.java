@@ -9,6 +9,7 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity
     Intent intent;
     MyFirebaseMessagingService service;
     SharedPreferences preferences;
+    Handler handler;
 
     Handler handler;
 
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity
         service = new MyFirebaseMessagingService();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+
 
         handler = new Handler();
         handler.postDelayed(() -> {
@@ -54,9 +57,7 @@ public class MainActivity extends AppCompatActivity
 
             finish();
 
-        }, 2000);
-
-
+        },1000);
 
     }
 
