@@ -131,7 +131,8 @@ public class PostActivity extends ParentActivity
 
         initializeSwipeRefreshLayout(findViewById(R.id.post_swipeRefresh));
 
-        //postID from feed
+        // prioritize the postID ("post") from notifications
+        // if it's empty -> get postID from feedActivity ("post_id")
         Bundle extras = getIntent().getExtras();
 
         String postID = extras.getString("post");
