@@ -53,7 +53,7 @@ public class ProfileEditActivity extends ParentActivity {
         super.onCreate(savedInstanceState);
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile_edit, contentGroup);
-
+        loadNavUserData();
 
         editUsername = findViewById(R.id.editUserName);
         editBio = findViewById(R.id.editBio);
@@ -61,12 +61,9 @@ public class ProfileEditActivity extends ParentActivity {
         profilePic =  findViewById(R.id.profilePic);
         deleteButton = findViewById(R.id.deleteButton);
 
-          
-        /// UUTTA
-        saveAllButton = (Button) findViewById(R.id.editProfile);
+        saveAllButton = findViewById(R.id.editProfile);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-        /// UUTTA
 
 
         Bundle extras = getIntent().getExtras();
@@ -176,7 +173,7 @@ public class ProfileEditActivity extends ParentActivity {
                     dbWriter = new DatabaseWriter();
                     HashMap<String, Object> updatedUser = new HashMap<>();
                     updatedUser.put("url",downloadUri.toString());
-                    dbWriter.updateField("users", auth.getUid(), updatedUser);
+                    dbWriter.updateField("users", userID, updatedUser);
 
                     UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setPhotoUri(downloadUri).build();
                     auth.getCurrentUser().updateProfile(changeRequest);
