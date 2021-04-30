@@ -21,7 +21,7 @@
             android:layout_width="260dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Tarkista sähköpostisi. Sinulle on lähetetty viesti rekisteröinnin vahvistamiseksi." />
+            android:text="Check your email. We have sent a confirmation message." />
 
         <Button
             android:id="@+id/button"
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/textView"
             android:layout_centerHorizontal="true"
-            android:text="Siirry kirjautumiseen"
+            android:text="To log in"
             android:layout_marginTop="20dp"/>
 
     </RelativeLayout>
