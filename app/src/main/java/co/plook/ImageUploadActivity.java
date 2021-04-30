@@ -31,6 +31,8 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -39,6 +41,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static android.view.View.*;
@@ -49,6 +52,7 @@ public class ImageUploadActivity extends ParentActivity {
     private DatabaseWriter dbWriter;
     private FirebaseStorage storage;
     private StorageReference storageReference;
+    private FirebaseFirestore db;
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -99,9 +103,18 @@ public class ImageUploadActivity extends ParentActivity {
         uploadButton.setVisibility(GONE);
         chooseChannel.setVisibility(GONE);
 
-        String[] example = {"tag1", "tag2", "tag3"};
         // Auto suggestion for tags
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, example);
+        ArrayList<String> dbTagList = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
+
+        db.collection("tags").get().addOnCompleteListener(task -> {
+            List<DocumentSnapshot> docs = task.getResult().getDocuments();
+            for (DocumentSnapshot doc : docs) {
+                dbTagList.add(doc.getId());
+            }
+        });
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, dbTagList);
         tagSuggestions.setAdapter(arrayAdapter);
 
         // AUTOFILL
@@ -342,8 +355,7 @@ public class ImageUploadActivity extends ParentActivity {
 
                     dbWriter.addPost(userID, caption, channelID, description, tagsList.toArray(new String[0]), downloadUri.toString());
 
-                    Intent intent = new Intent(ImageUploadActivity.this, FeedActivity.class);
-                    startActivity(intent);
+                    finish();
                 }
             }
         });
