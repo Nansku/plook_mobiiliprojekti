@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/CustomTheme"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="80dp"
+        android:paddingTop="30dp">
+
+        <TextView
+            android:id="@+id/textView_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings"
+            android:textSize="28sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="50dp">
+
+            <TextView
+                android:id="@+id/textView_notif_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notif_settings"
+                android:textSize="18sp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_comment_notif"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Comments"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="right"
+                android:layout_marginBottom="2dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/grey"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_follow_notif"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Follows"
+                android:layout_gravity="right"/>
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_marginTop="200dp"
+            android:layout_gravity="center_horizontal"
+            android:onClick="saveSettings"/>
+
+    </LinearLayout>
+
+</ScrollView>
