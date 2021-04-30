@@ -30,6 +30,7 @@
             android:layout_below="@id/textView"
             android:layout_centerHorizontal="true"
             android:text="To log in"
+            android:background="@drawable/button"
             android:layout_marginTop="20dp"/>
 
     </RelativeLayout>
