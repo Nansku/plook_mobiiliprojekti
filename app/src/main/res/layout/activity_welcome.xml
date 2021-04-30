@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:theme="@style/CustomTheme">
+    android:theme="@style/CustomTheme"
+    >
 
     <ImageView
         android:id="@+id/background"

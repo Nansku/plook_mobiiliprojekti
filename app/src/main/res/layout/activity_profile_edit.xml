@@ -5,9 +5,13 @@
     android:layout_height="match_parent"
     android:theme="@style/CustomTheme">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <RelativeLayout
          android:layout_width="match_parent"
-         android:layout_height="match_parent">
+         android:layout_height="wrap_content">
 
 
     <FrameLayout android:id="@+id/frame"
@@ -116,13 +120,17 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/updateButton"
             android:layout_marginTop="65dp"
+            android:layout_marginBottom="30dp"
             android:layout_centerHorizontal="true"
             android:onClick="deleteUser"
             android:text="Poista profiili"
-            android:background="@drawable/buttonmint"
+            android:background="@drawable/button"
 
             />
 
 
     </RelativeLayout>
+
+    </ScrollView>
+
 </RelativeLayout>

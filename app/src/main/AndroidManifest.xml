@@ -37,6 +37,7 @@
             </intent-filter>
         </activity>
 
+
         <activity android:name=".TagActivity" />
         <activity android:name=".ChannelActivity" />
         <activity android:name=".FeedActivity" android:exported="true" />
