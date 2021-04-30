@@ -21,9 +21,6 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences preferences;
     Handler handler;
 
-    Handler handler;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         service = new MyFirebaseMessagingService();
