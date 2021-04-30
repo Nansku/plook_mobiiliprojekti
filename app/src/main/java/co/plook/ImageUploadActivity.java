@@ -293,7 +293,7 @@ public class ImageUploadActivity extends ParentActivity {
 
             // Jos tulee error
             else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
+                Toast.makeText(this, result.getError().getMessage(), Toast.LENGTH_SHORT);
             }
         }
 
