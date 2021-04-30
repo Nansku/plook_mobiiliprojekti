@@ -18,4 +18,33 @@
     <string name="gallery">Gallery</string>
     <string name="notif_settings"><u>Notification settings</u></string>
     <string name="settings"><b>Settings</b></string>
+
+    <string name="feed_filter_all">ALL</string>
+    <string name="feed_filter_following">FOLLOWING</string>
+    <string name="feed_filter_latest">LATEST</string>
+    <string name="feed_filter_popular">POPULAR</string>
+
+    <string name="feed_channel_follower">FOLLOWER</string>
+    <string name="feed_channel_followers">FOLLOWERS</string>
+
+    <string name="feed_tag_postsTaggedWith">Posts tagged with</string>
+
+    <string name="channelBrowser_following">Following</string>
+    <string name="channelBrowser_all">All Channels</string>
+
+    <string name="post_delete">Delete</string>
+    <string name="post_tags">Tags</string>
+    <string name="post_comments">Comments</string>
+    <string name="post_comment">Comment</string>
+    <string name="post_writeAComment">Write a comment</string>
+
+    <string name="comment_lessThanMinuteAgo">Less than a minute ago</string>
+    <string name="comment_minute">minute ago</string>
+    <string name="comment_minutes">minutes ago</string>
+    <string name="comment_hour">hour ago</string>
+    <string name="comment_hours">hours ago</string>
+    <string name="comment_day">days ago</string>
+    <string name="comment_days">days ago</string>
+    <string name="comment_year">year ago</string>
+    <string name="comment_years">years ago</string>
 </resources>
