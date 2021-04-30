@@ -1,5 +1,6 @@
 package co.plook;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -37,8 +38,8 @@ public class ReauthenticateDialog extends DialogFragment {
 
         buttonCancel.setOnClickListener(new View.OnClickListener(){
 
-            public void onClick(View v){
-
+            public void onClick(View v)
+            {
                 getDialog().dismiss();
             }
         });
@@ -46,46 +47,41 @@ public class ReauthenticateDialog extends DialogFragment {
         buttonConfirmDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 AuthCredential credential = EmailAuthProvider
-                        .getCredential(editTextEmailAddress.getText().toString(), editTextPassword.getText().toString());
+                    .getCredential(editTextEmailAddress.getText().toString(), editTextPassword.getText().toString());
 
                 user.reauthenticate(credential)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-
-                                user.delete()
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()){
-
-                                                    SendUserToWelcomeActivity();
-
-
-                                                }
-                                            }
-
-                                            private void SendUserToWelcomeActivity() {
-
-                                                Intent mainIntent =new Intent (view.getContext(), WelcomeActivity.class);
-                                                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                startActivity(mainIntent);
-
-                                            }
-                                        });
-
-                            }
-                        });
-
-
-
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            user.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()){
+                                            SendUserToWelcomeActivity();
+                                        }
+                                    }
+                                });
+                        }
+                    });
             }
         });
-
         return view;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+    }
+
+    private void SendUserToWelcomeActivity() {
+
+        Intent mainIntent =new Intent (this.getContext(), WelcomeActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainIntent);
+
     }
 }
