@@ -18,25 +18,9 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".TagActivity" />
-        <activity android:name=".ChannelActivity" />
-        <activity
-            android:name=".FeedActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ChannelBrowseActivity"
-            android:exported="true" />
-        <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
-        <activity
-            android:name=".ImageUploadActivity"
-            android:exported="true" />
 
         <activity android:name=".PostActivity">
             <intent-filter>
@@ -53,16 +37,20 @@
             </intent-filter>
         </activity>
 
+
+        <activity android:name=".TagActivity" />
+        <activity android:name=".ChannelActivity" />
+        <activity android:name=".FeedActivity" android:exported="true" />
+        <activity android:name=".ChannelBrowseActivity" android:exported="true" />
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" android:theme="@style/Base.Theme.AppCompat" />
+        <activity android:name=".ImageUploadActivity" android:exported="true" />
+        <activity android:name=".LoginActivity" android:exported="true" />
+        <activity android:name=".SignupActivity" android:exported="true" />
+        <activity android:name=".ConfirmationActivity" android:exported="true" />
+        <activity android:name=".PostDisplayActivity" android:exported="true" />
+        <activity android:name=".WelcomeActivity" android:exported="true" />
+        <activity android:name=".ProfileEditActivity" android:exported="true" />
         <activity android:name=".SettingsActivity"/>
-
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".SignupActivity" />
-        <activity android:name=".ConfirmationActivity" />
-        <activity android:name=".PostDisplayActivity" />
-        <activity android:name=".WelcomeActivity" />
-        <activity android:name=".ProfileEditActivity" />
-
-
 
         <service
             android:name=".MyFirebaseMessagingService"
