@@ -199,8 +199,11 @@ public class PostDisplayActivity extends ParentActivity
                 @Override
                 public void onComplete(@NonNull Task<List<Object>> task)
                 {
-                    allPosts.remove(allPosts.size() - 1);
-                    feedContentAdapter.notifyItemRemoved(allPosts.size());
+                    if(allPosts.size() > 0 && allPosts.get(allPosts.size() - 1) == null)
+                    {
+                        allPosts.remove(allPosts.size() - 1);
+                        feedContentAdapter.notifyItemRemoved(allPosts.size());
+                    }
 
                     loading = false;
 

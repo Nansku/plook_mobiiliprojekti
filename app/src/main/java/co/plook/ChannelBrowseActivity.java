@@ -1,6 +1,7 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,8 @@ public class ChannelBrowseActivity extends ParentActivity
 
     private List<String> followed_channels;
 
+    private boolean loading;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -33,6 +36,16 @@ public class ChannelBrowseActivity extends ParentActivity
 
         loadChannels();
         loadNavUserData();
+
+        SwipeRefreshLayout swipeContainer = findViewById(R.id.channelBrowser_swipeRefresh);
+        swipeContainer.setOnRefreshListener(() ->
+        {
+            if(!loading)
+            {
+                refreshChannels();
+                swipeContainer.setRefreshing(false);
+            }
+        });
     }
 
     @Override
@@ -40,12 +53,19 @@ public class ChannelBrowseActivity extends ParentActivity
     {
         super.onRestart();
 
+        refreshChannels();
+    }
+
+    private void refreshChannels()
+    {
         deleteChannels();
         loadChannels();
     }
 
     private void loadChannels()
     {
+        loading = true;
+
         // Get followed channels
         dbReader.findDocumentByID("user_contacts", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
@@ -67,6 +87,8 @@ public class ChannelBrowseActivity extends ParentActivity
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 populateChannelsList(document, content);
+
+                                loading = false;
                             }
                         }
                     });
@@ -92,7 +114,7 @@ public class ChannelBrowseActivity extends ParentActivity
         });
     }
 
-    void deleteChannels()
+    private void deleteChannels()
     {
         ViewGroup followedContent = findViewById(R.id.personal_channels_followed);
         followedContent.removeAllViews();
@@ -116,7 +138,9 @@ public class ChannelBrowseActivity extends ParentActivity
         List<String> followerIDs = (List<String>) channelData.get("followers");
         int followerCount = followerIDs == null ? 0 : followerIDs.size();
         TextView textView_channelFollowers = child.findViewById(R.id.channel_follower_count);
-        textView_channelFollowers.setText(followerCount + " FOLLOWERS");
+        String followerCountString = followerCount + " " +  (followerCount == 1 ? getResources().getString(R.string.feed_channel_follower) : getResources().getString(R.string.feed_channel_followers));
+
+        textView_channelFollowers.setText(followerCountString);
 
         onButtonClicked(child, channelData.getId());
     }

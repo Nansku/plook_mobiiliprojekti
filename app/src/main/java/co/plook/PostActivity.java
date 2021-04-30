@@ -458,7 +458,7 @@ public class PostActivity extends ParentActivity
             //set texts
             textView_username.setText(comment.getUserName());
             textView_commentText.setText(comment.getText());
-            textView_timestamp.setText(comment.getTimeDifference());
+            textView_timestamp.setText(comment.getTimeDifference(this));
 
             textView_username.setOnClickListener(new View.OnClickListener()
             {
