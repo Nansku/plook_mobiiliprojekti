@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -84,6 +85,8 @@ public class ProfileEditActivity extends ParentActivity {
         editLocation.setText(extras.getString("location"));
         editBio.setText(extras.getString("bio"));
         editUsername.setText(auth.getCurrentUser().getDisplayName());
+        Glide.with(this)
+                .load(auth.getCurrentUser().getPhotoUrl()).into(profilePic);
     }
 
     public void saveData(View view){
