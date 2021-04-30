@@ -137,6 +137,7 @@
             android:layout_marginTop="0dp"
             android:layout_marginEnd="0dp"
             android:text="Change profile picture:"
+            android:onClick="choosePicture"
             android:layout_centerHorizontal="true"/>
 
 
