@@ -9,7 +9,6 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 
@@ -21,7 +20,6 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences preferences;
     Handler handler;
 
-    Handler handler;
 
 
     @Override
