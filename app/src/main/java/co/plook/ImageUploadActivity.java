@@ -39,7 +39,6 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -65,7 +64,7 @@ public class ImageUploadActivity extends ParentActivity {
     AutoCompleteTextView tagSuggestions;
     TagLayout tagLayout;
     String tag;
-    String channelID;
+    String channelID = "";
     ImageUploadActivity imageUploadActivity;
     private ChooseChannelDialog dialog;
     ArrayList<String> tagsList = new ArrayList<>();

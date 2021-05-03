@@ -27,7 +27,9 @@ public class TagActivity extends PostDisplayActivity
         filtersLayout = findViewById(R.id.tag_filters);
 
         TextView textView_tagName = findViewById(R.id.tag_name);
-        textView_tagName.setText("Posts tagged with " + querySettings[1]);
+        String taggedWithString = getResources().getString(R.string.feed_tag_postsTaggedWith) + " " + querySettings[1];
+
+        textView_tagName.setText(taggedWithString);
 
         loadPosts();
     }

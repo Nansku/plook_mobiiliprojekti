@@ -1,11 +1,7 @@
 package co.plook;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.widget.Toolbar;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -16,10 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Query;
@@ -84,7 +76,6 @@ public class ProfileActivity extends ParentActivity
         editProfileButton.setVisibility(View.GONE);
         unfollowButton.setVisibility(View.GONE);
 
-        loadNavUserData();
         // Get userID. If none was passed, use the current user's ID instead.
         Bundle extras = getIntent().getExtras();
 
@@ -164,6 +155,7 @@ public class ProfileActivity extends ParentActivity
     @Override
     protected void onResume() {
         super.onResume();
+        loadNavUserData();
 
         // get nickname for TextView (this should come from auth.getCurrentUser())
         dbReader.findDocumentByID("users", userID).addOnCompleteListener(task -> {

@@ -4,24 +4,28 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import java.util.HashMap;
-import android.util.Log;
-import androidx.annotation.Nullable;
-import com.google.android.gms.tasks.Continuation;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
+import java.util.HashMap;
 import java.util.UUID;
 
 public class ProfileEditActivity extends ParentActivity {
@@ -38,7 +42,6 @@ public class ProfileEditActivity extends ParentActivity {
     private Uri imageUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-    Button saveAllButton;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -51,9 +54,10 @@ public class ProfileEditActivity extends ParentActivity {
         dbWriter = new DatabaseWriter();
 
         super.onCreate(savedInstanceState);
+
         // INFLATER FOR NAV
         getLayoutInflater().inflate(R.layout.activity_profile_edit, contentGroup);
-
+        loadNavUserData();
 
         editUsername = findViewById(R.id.editUserName);
         editBio = findViewById(R.id.editBio);
@@ -61,19 +65,28 @@ public class ProfileEditActivity extends ParentActivity {
         profilePic =  findViewById(R.id.profilePic);
         deleteButton = findViewById(R.id.deleteButton);
 
-          
-        /// UUTTA
-        saveAllButton = (Button) findViewById(R.id.editProfile);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-        /// UUTTA
 
+        deleteButton.setOnClickListener(new View.OnClickListener(){
+
+            public void onClick(View v){
+
+                ReauthenticateDialog fragmentDialog = new ReauthenticateDialog();
+                fragmentDialog.show(getSupportFragmentManager(), "ReauthenticateDialog");
+
+            }
+
+
+        });
 
         Bundle extras = getIntent().getExtras();
 
         editLocation.setText(extras.getString("location"));
         editBio.setText(extras.getString("bio"));
         editUsername.setText(auth.getCurrentUser().getDisplayName());
+        Glide.with(this)
+                .load(auth.getCurrentUser().getPhotoUrl()).into(profilePic);
     }
 
     public void saveData(View view){
@@ -176,7 +189,7 @@ public class ProfileEditActivity extends ParentActivity {
                     dbWriter = new DatabaseWriter();
                     HashMap<String, Object> updatedUser = new HashMap<>();
                     updatedUser.put("url",downloadUri.toString());
-                    dbWriter.updateField("users", auth.getUid(), updatedUser);
+                    dbWriter.updateField("users", userID, updatedUser);
 
                     UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setPhotoUri(downloadUri).build();
                     auth.getCurrentUser().updateProfile(changeRequest);

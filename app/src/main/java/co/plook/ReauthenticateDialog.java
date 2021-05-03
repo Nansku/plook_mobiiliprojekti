@@ -1,6 +1,5 @@
 package co.plook;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,44 +47,43 @@ public class ReauthenticateDialog extends DialogFragment {
             public void onClick(View v) {
 
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String emailAddress = editTextEmailAddress.getText().toString();
+                String password = editTextPassword.getText().toString();
 
-                AuthCredential credential = EmailAuthProvider
-                        .getCredential(editTextEmailAddress.getText().toString(), editTextPassword.getText().toString());
+                if (!emailAddress.equals("") && !password.equals("")) {
 
-                user.reauthenticate(credential)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
 
-                                user.delete()
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    AuthCredential credential = EmailAuthProvider
+                            .getCredential(emailAddress, password);
+
+                    user.reauthenticate(credential)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                    if (task.isSuccessful()) {
+                                        ConfirmationDialog fragmentDialog = new ConfirmationDialog();
+                                        fragmentDialog.show(getParentFragmentManager(), "ConfirmationDialog");
+
+                                        fragmentDialog.setOnDismissListener(new ConfirmationDialog.OnDismissListener() {
                                             @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()){
+                                            public void onDismiss() {
 
-                                                    SendUserToWelcomeActivity();
-
-
-                                                }
-                                            }
-
-                                            private void SendUserToWelcomeActivity() {
-
-                                                Intent mainIntent =new Intent (view.getContext(), WelcomeActivity.class);
-                                                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                startActivity(mainIntent);
-
+                                                getDialog().dismiss();
                                             }
                                         });
-
-                            }
-                        });
+                                    }
 
 
+                                }
+                            });
 
+
+                }
             }
         });
 
         return view;
     }
+
 }

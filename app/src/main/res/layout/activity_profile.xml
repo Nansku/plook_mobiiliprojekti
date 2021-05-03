@@ -41,7 +41,7 @@
                 android:id="@+id/usernameTextview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Käyttäjänimi"
+                android:hint="Username"
                 android:textAlignment="center"
                 android:textSize="@dimen/username"
                 android:textStyle="bold"/>
@@ -159,4 +159,3 @@
         </co.plook.ExpandableHeightGridView>
     </RelativeLayout>
 </ScrollView>
-

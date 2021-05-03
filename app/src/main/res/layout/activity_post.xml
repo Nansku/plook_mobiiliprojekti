@@ -48,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/post_caption"
-                        android:text="Delete"
+                        android:text="@string/post_delete"
                         android:textColor="@color/white"
                         android:textStyle="bold"
                         android:textSize="16sp"
@@ -130,7 +130,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_above="@id/post_tags_layout"
-                        android:text="Tags"
+                        android:text="@string/post_tags"
                         android:textColor="@color/white"
                         android:padding="10dp"
                     />
@@ -151,7 +151,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/post_tags_layout"
-                        android:text="COMMENTS"
+                        android:text="@string/post_comments"
                         android:textColor="@color/white"
                         android:padding="10dp"
                     />
@@ -168,7 +168,7 @@
                 <TextView
                     android:id="@+id/empty_space"
                     android:layout_width="match_parent"
-                    android:layout_height="65dp"
+                    android:layout_height="165dp"
                     android:background="@color/lighter_forest"
                 />
 
@@ -180,11 +180,13 @@
 
     <!-- Controls -->
     <androidx.cardview.widget.CardView
+        android:id="@+id/post_controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:cardCornerRadius="10dp"
-        android:layout_margin="10dp">
+        android:layout_margin="10dp"
+        android:visibility="visible">
 
         <LinearLayout
             android:id="@+id/post_controls_layout"
@@ -198,7 +200,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:text="0"
+                android:text=""
                 android:textSize="18sp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
@@ -232,17 +234,83 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Comment"
+                android:text="@string/post_comment"
                 android:textSize="18sp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:foreground="@drawable/card_ripple"
-                android:onClick="writeComment"
+                android:onClick="openCommentWindow"
             />
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
+
+    <!-- Comment Window -->
+    <RelativeLayout
+        android:id="@+id/post_comment_window"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical"
+        android:background="@color/forest"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:paddingHorizontal="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/post_comment_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="2dp"
+            android:text="@string/post_writeAComment"
+            android:textColor="@color/white"
+        />
+
+        <ImageView
+            android:id="@+id/post_comment_close"
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/post_comment_title"
+            android:src="@drawable/ic_close"
+            android:foreground="@drawable/card_ripple"
+            android:onClick="closeCommentWindow"
+        />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/post_comment_title"
+            android:layout_marginHorizontal="10dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/post_comment_editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.95"
+                android:layout_marginHorizontal="0dp"
+                android:textColor="@color/white"
+                android:inputType="textCapSentences"
+            />
+
+            <ImageView
+                android:id="@+id/post_comment_send"
+                android:layout_width="16dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.05"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_baseline_send_24"
+                android:foreground="@drawable/card_ripple"
+                android:onClick="sendComment"
+            />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
