@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                     }
-                }).setNegativeButton("Ei", new DialogInterface.OnClickListener() {
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
