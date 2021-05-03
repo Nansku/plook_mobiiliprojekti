@@ -40,12 +40,9 @@ public class ProfileActivity extends ParentActivity
     private String location;
     private String bio;
 
-
-
     private ArrayList<Post> userPosts;
     private String userID;
     private boolean isFollowing = false;
-
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -85,13 +82,10 @@ public class ProfileActivity extends ParentActivity
             userID = auth.getUid();
         }
 
-
-
         // GRIDVIEW
         gridView = (ExpandableHeightGridView) findViewById(R.id.postGrid);
         // HACK TO EXPAND GRIDVIEW TO BOTTOM
         ((ExpandableHeightGridView) gridView).setExpanded(true);
-
 
         Query q = dbReader.db.collection("posts").whereEqualTo("userID", userID).orderBy("time", Query.Direction.DESCENDING);
 
@@ -127,10 +121,7 @@ public class ProfileActivity extends ParentActivity
                     intent.putExtra("bio", bio);
 
                     startActivity(intent);
-
                 }
-
-
             });
         });
 
@@ -241,6 +232,5 @@ public class ProfileActivity extends ParentActivity
         isFollowing = !isFollowing;
         updateFollowButton();
     }
-
 }
 

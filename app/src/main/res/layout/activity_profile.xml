@@ -44,7 +44,8 @@
                 android:hint="Username"
                 android:textAlignment="center"
                 android:textSize="@dimen/username"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
         <RelativeLayout
@@ -64,10 +65,10 @@
                 android:id="@+id/bioTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="BIO"
                 android:background="@drawable/bio"
                 android:textAlignment="textStart"
-                android:textSize="@dimen/bio" />
+                android:textSize="@dimen/bio"
+                android:textColor="@color/black"/>
 
             <LinearLayout
                 android:layout_marginTop="10dp"
@@ -89,7 +90,7 @@
                         android:layout_alignParentStart="true"
                         android:layout_marginStart="1dp"
                         android:gravity="bottom"
-                        android:text="@string/olen_kotoisin"
+                        android:text="@string/im_from"
                         android:textSize="@dimen/fieldCaption" />
 
                     <TextView
@@ -101,7 +102,8 @@
                         android:gravity="bottom"
                         android:text="MAA"
                         android:layout_below="@+id/countryTag"
-                        android:textSize="@dimen/country" />
+                        android:textSize="@dimen/country"
+                        android:textColor="@color/black"/>
                 </RelativeLayout>
 
                 <RelativeLayout
