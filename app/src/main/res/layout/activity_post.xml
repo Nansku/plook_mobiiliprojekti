@@ -48,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/post_caption"
-                        android:text="Delete"
+                        android:text="@string/post_delete"
                         android:textColor="@color/white"
                         android:textStyle="bold"
                         android:textSize="16sp"
@@ -125,21 +125,40 @@
                         android:layout_marginBottom="40dp"
                     />
 
-                    <TextView
-                        android:id="@+id/post_tags_textView"
+                    <LinearLayout
+                        android:id="@+id/post_info_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_above="@id/post_tags_layout"
-                        android:text="Tags"
-                        android:textColor="@color/white"
-                        android:padding="10dp"
-                    />
+                        android:layout_below="@id/post_description"
+                        android:orientation="horizontal"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/post_tags_textView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/post_tags"
+                            android:textColor="@color/white"
+                        />
+
+                        <TextView
+                            android:id="@+id/post_timestamp_textview"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text=""
+                            android:textColor="@color/white"
+                            android:gravity="end"
+                        />
+
+                    </LinearLayout>
 
                     <co.plook.TagLayout
                         android:id="@+id/post_tags_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/post_description"
+                        android:layout_below="@id/post_info_layout"
                         app:childSpacingX="5dp"
                         app:childSpacingY="5dp"
                         android:paddingHorizontal="10dp"
@@ -150,13 +169,13 @@
                         android:id="@+id/post_comments_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/post_tags_layout"
-                        android:text="COMMENTS"
-                        android:textColor="@color/white"
                         android:padding="10dp"
+                        android:layout_below="@id/post_tags_layout"
+                        android:text="@string/post_comments"
+                        android:textColor="@color/white"
                     />
 
-                </RelativeLayout>
+            </RelativeLayout>
 
                 <LinearLayout
                     android:id="@+id/post_comments_layout"
@@ -168,7 +187,7 @@
                 <TextView
                     android:id="@+id/empty_space"
                     android:layout_width="match_parent"
-                    android:layout_height="65dp"
+                    android:layout_height="165dp"
                     android:background="@color/lighter_forest"
                 />
 
@@ -200,7 +219,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:text="0"
+                android:text=""
                 android:textSize="18sp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
@@ -234,7 +253,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Comment"
+                android:text="@string/post_comment"
                 android:textSize="18sp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
@@ -247,6 +266,7 @@
 
     </androidx.cardview.widget.CardView>
 
+    <!-- Comment Window -->
     <RelativeLayout
         android:id="@+id/post_comment_window"
         android:layout_width="match_parent"
@@ -263,8 +283,9 @@
             android:id="@+id/post_comment_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="Write a comment"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="2dp"
+            android:text="@string/post_writeAComment"
             android:textColor="@color/white"
         />
 
@@ -293,7 +314,7 @@
                 android:layout_weight="0.95"
                 android:layout_marginHorizontal="0dp"
                 android:textColor="@color/white"
-                android:inputType="textCapSentences"
+                android:inputType="textCapSentences|textMultiLine"
             />
 
             <ImageView

@@ -67,6 +67,7 @@ public class PostActivity extends ParentActivity
 
     private TextView descriptionTextView;
     private TextView tagsTextView;
+    private TextView timestampTextView;
     private TextView commentsTextView;
     private TextView postCommentTextView;
 
@@ -119,6 +120,7 @@ public class PostActivity extends ParentActivity
 
         descriptionTextView = findViewById(R.id.post_description);
         tagsTextView = findViewById(R.id.post_tags_textView);
+        timestampTextView = findViewById(R.id.post_timestamp_textview);
         commentsTextView = findViewById(R.id.post_comments_textView);
         postCommentTextView = findViewById(R.id.post_comment_button);
 
@@ -232,6 +234,7 @@ public class PostActivity extends ParentActivity
             post.setCaption(document.getString("caption"));
             post.setDescription(document.getString("description"));
             post.setImageUrl(document.getString("url"));
+            post.setTime(document.getTimestamp("time"));
 
             long score = document.getLong("score") == null ? 0 : document.getLong("score");
             post.setScore(score);
@@ -250,6 +253,9 @@ public class PostActivity extends ParentActivity
     {
         captionTextView.setText(post.getCaption());
         descriptionTextView.setText(post.getDescription());
+
+        String postedTimeString = getResources().getString(R.string.post_posted) + " " + post.getTimeDifference(this);
+        timestampTextView.setText(postedTimeString);
 
         // Remove tags buttons.
         tagsViewGroup.removeAllViews();
@@ -358,6 +364,7 @@ public class PostActivity extends ParentActivity
                 channelTextView.setTextColor(Color.BLACK);
                 descriptionTextView.setTextColor(Color.BLACK);
                 tagsTextView.setTextColor(Color.BLACK);
+                timestampTextView.setTextColor(Color.BLACK);
                 commentsTextView.setTextColor(Color.BLACK);
                 break;
 
@@ -458,7 +465,7 @@ public class PostActivity extends ParentActivity
             //set texts
             textView_username.setText(comment.getUserName());
             textView_commentText.setText(comment.getText());
-            textView_timestamp.setText(comment.getTimeDifference());
+            textView_timestamp.setText(comment.getTimeDifference(this));
 
             textView_username.setOnClickListener(new View.OnClickListener()
             {
