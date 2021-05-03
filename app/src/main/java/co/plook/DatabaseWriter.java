@@ -47,6 +47,7 @@ public class DatabaseWriter
         post.put("channel", channel);
         post.put("description", description);
         post.put("score", 0);
+        post.put("comments", 0);
         post.put("tags", Arrays.asList(tags));
 
         post.put("time", timeNow);
