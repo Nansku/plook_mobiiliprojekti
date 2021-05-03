@@ -5,9 +5,13 @@
     android:layout_height="match_parent"
     android:theme="@style/CustomTheme">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <RelativeLayout
          android:layout_width="match_parent"
-         android:layout_height="match_parent">
+         android:layout_height="wrap_content">
 
 
     <FrameLayout android:id="@+id/frame"
@@ -29,17 +33,19 @@
             android:layout_height="100dp"
             android:src="@drawable/circle"
             android:contentDescription="@string/circle_crop" />
+
     </FrameLayout>
 
          <TextView
              android:id="@+id/userName"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:text="Käyttäjänimi:"
+             android:text="Username:"
              android:layout_below="@id/frame"
              tools:ignore="NotSibling"
              android:layout_marginLeft="10dp"
              android:layout_marginRight="10dp"/>
+
 
          <EditText
              android:id="@+id/editUserName"
@@ -47,7 +53,7 @@
              android:layout_height="wrap_content"
              android:ems="10"
              android:inputType="textPersonName"
-             android:hint="Kirjoita uusi käyttäjänimi"
+             android:hint="New username"
              android:layout_below="@id/userName"
              android:layout_marginTop="10dp"
              android:layout_marginLeft="10dp"
@@ -62,6 +68,7 @@
             android:layout_below="@id/editUserName"
             android:layout_marginTop="10dp"
             android:layout_marginHorizontal="10dp"/>
+            />
 
         <EditText
             android:id="@+id/editBio"
@@ -71,17 +78,18 @@
             android:minLines="5"
             android:maxLines="6"
             android:gravity="top|start"
-            android:hint="Kuvaa itseäsi"
+            android:hint="Describe yourself"
             android:layout_below="@id/textBio"
             android:layout_marginTop="10dp"
             android:layout_marginHorizontal="10dp"
             android:paddingHorizontal="10dp"
             android:maxLength="240"/>
+
         <TextView
             android:id="@+id/textLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Maa:"
+            android:text="Location:"
             android:layout_below="@id/editBio"
             android:layout_marginTop="20dp"
             android:layout_marginHorizontal="10dp"/>
@@ -91,8 +99,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="text"
-            android:hint="Missä olet?"
+            android:hint="Where are you located?"
+            android:inputType="textCapSentences"
             android:layout_below="@id/textLocation"
             android:layout_marginTop="10dp"
             android:layout_marginHorizontal="10dp" />
@@ -101,7 +109,7 @@
             android:id="@+id/updateButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tallenna profiili"
+            android:text="Save profile"
             android:layout_below="@id/editLocation"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp"
@@ -116,13 +124,25 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/updateButton"
             android:layout_marginTop="65dp"
+            android:layout_marginBottom="30dp"
             android:layout_centerHorizontal="true"
             android:onClick="deleteUser"
-            android:text="Poista profiili"
-            android:background="@drawable/buttonmint"
+            android:text="Delete profile"
+            android:background="@drawable/button"
 
             />
 
-
+        <TextView
+            android:id="@+id/updateprofilepic"
+            android:layout_width="160dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:text="Change profile picture:"
+            android:onClick="choosePicture"
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
+
+    </ScrollView>
+
 </RelativeLayout>

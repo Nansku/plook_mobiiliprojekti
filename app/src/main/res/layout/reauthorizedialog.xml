@@ -11,7 +11,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vahvista kirjautumisesi"
+        android:text="Confirm your identity"
         android:layout_marginTop="60sp"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textEmailAddress"
-        android:hint="Sähköpostiosoite"
+        android:hint="Email"
         android:layout_below="@id/textView2"
         android:layout_marginTop="20sp"
         android:layout_centerHorizontal="true"/>
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword"
-        android:hint="Salasana"
+        android:hint="Password"
         android:layout_below="@id/editTextEmailAddress"
         android:layout_marginTop="20sp"
         android:layout_centerHorizontal="true"/>
@@ -59,7 +59,7 @@
             android:id="@+id/buttonCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Peruuta"
+            android:text="Cancel"
             android:layout_marginLeft="20sp"
             android:background="@drawable/buttonmint"
             />

@@ -14,10 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
 
-
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -25,18 +25,17 @@
         <activity android:name=".PostActivity">
             <intent-filter>
                 <action android:name="OPEN_POSTACTIVITY" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".ProfileActivity">
+        <activity android:name=".ProfileActivity">
             <intent-filter>
                 <action android:name="OPEN_PROFILEACTIVITY" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity android:name=".TagActivity" />
         <activity android:name=".ChannelActivity" />
         <activity android:name=".FeedActivity" android:exported="true" />
@@ -50,6 +49,7 @@
         <activity android:name=".WelcomeActivity" android:exported="true" android:screenOrientation="portrait"/>
         <activity android:name=".ProfileEditActivity" android:exported="true" />
         <activity android:name=".SettingsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ConfirmationDialog"/>
 
         <service
             android:name=".MyFirebaseMessagingService"

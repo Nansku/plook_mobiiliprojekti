@@ -62,12 +62,14 @@ public class ChannelActivity extends PostDisplayActivity
                 // Channel follower count
                 List<String> followerIDs = (List<String>) document.get("followers");
                 followerCount = followerIDs == null ? 0 : followerIDs.size();
+
                 TextView textView_channelFollowers = findViewById(R.id.channel_follower_count);
-                textView_channelFollowers.setText(followerCount + " FOLLOWERS");
+                String followerCountString = followerCount + " " + (followerCount == 1 ? getResources().getString(R.string.feed_channel_follower) : getResources().getString(R.string.feed_channel_followers));;
+
+                textView_channelFollowers.setText(followerCountString);
 
                 // Check if already following this channel.
-                isFollowing = followerIDs == null ? false : followerIDs.contains(auth.getUid());
-                System.out.println("MINUN FOLLOW STATE: " + isFollowing);
+                isFollowing = followerIDs != null && followerIDs.contains(auth.getUid());
             }
         });
     }
@@ -80,7 +82,9 @@ public class ChannelActivity extends PostDisplayActivity
         followerCount += isFollowing ? 1 : -1;
 
         TextView textView_channelFollowers = findViewById(R.id.channel_follower_count);
-        textView_channelFollowers.setText(followerCount + " FOLLOWERS");
+        String followerCountString = followerCount + " " + (followerCount == 1 ? getResources().getString(R.string.feed_channel_follower) : getResources().getString(R.string.feed_channel_followers));;
+
+        textView_channelFollowers.setText(followerCountString);
     }
 
     public void setFilterSortingTime(View v)

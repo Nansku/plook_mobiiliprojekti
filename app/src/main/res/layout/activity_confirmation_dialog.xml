@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ConfirmationDialog">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80sp"
+        android:text="Are you sure? This will delete your profile permanently."
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/textView3">
+
+    <Button
+        android:id="@+id/buttonYes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yes"
+        android:background="@drawable/button"
+        />
+
+        <Space
+            android:layout_width="40dp"
+            android:layout_height="match_parent"/>
+
+    <Button
+        android:id="@+id/buttonNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No"
+        android:background="@drawable/button"/>
+
+
+</LinearLayout>
+</RelativeLayout>

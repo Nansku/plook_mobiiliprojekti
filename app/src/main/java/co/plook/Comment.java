@@ -1,11 +1,8 @@
 package co.plook;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 
 import com.google.firebase.Timestamp;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 public class Comment
 {
@@ -50,22 +47,33 @@ public class Comment
     }
 
 
-    //return 'x seconds/minutes/hours/days ago' using this.time and Timestamp.now()
-    public String getTimeDifference()
+    //return 'x seconds/minutes/hours/days ago using this.time and Timestamp.now()
+    public String getTimeDifference(Context c)
     {
         String str = "";
         long difference = Timestamp.now().getSeconds() - time.getSeconds();
 
         if (difference < 60)
-            str = "Less than a minute ago";
+            str = c.getResources().getString(R.string.time_lessThanMinuteAgo);
         else if (difference < 3600)
-            str = difference / 60 + " minutes ago";
+        {
+            long minutes = difference / 60;
+            str = minutes + " " + (minutes == 1 ? c.getResources().getString(R.string.time_minute) : c.getResources().getString(R.string.time_minutes));
+        }
         else if (difference < 86400)
-            str = (difference / 3600) + " hours ago";
+        {
+            long hours = difference / 3600;
+            str = hours + " " + (hours == 1 ? c.getResources().getString(R.string.time_hour) : c.getResources().getString(R.string.time_hours));
+        }
+        else if (difference < 31536000)
+        {
+            long days = difference / 86400;
+            str = days + " " + (days == 1 ? c.getResources().getString(R.string.time_day) : c.getResources().getString(R.string.time_days));
+        }
         else
         {
-            @SuppressLint("SimpleDateFormat") DateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-            str = date.format(time.toDate());
+            long years = difference / 31536000;
+            str = years + " " + (years == 1 ? c.getResources().getString(R.string.time_year) : c.getResources().getString(R.string.time_years));
         }
 
         return str;
