@@ -49,4 +49,5 @@
     <string name="time_days">days ago</string>
     <string name="time_year">year ago</string>
     <string name="time_years">years ago</string>
+    <string name="im_from">I\'m from:</string>
 </resources>
