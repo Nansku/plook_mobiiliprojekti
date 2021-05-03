@@ -75,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:minLines="5"
+            android:minLines="1"
             android:maxLines="6"
             android:gravity="top|start"
             android:hint="Describe yourself"

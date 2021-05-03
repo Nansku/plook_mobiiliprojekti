@@ -40,6 +40,7 @@
     <string name="post_comment">Comment</string>
     <string name="post_writeAComment">Write a comment</string>
 
+
     <string name="time_lessThanMinuteAgo">Less than a minute ago</string>
     <string name="time_minute">minute ago</string>
     <string name="time_minutes">minutes ago</string>
@@ -51,3 +52,4 @@
     <string name="time_years">years ago</string>
     <string name="im_from">I\'m from:</string>
 </resources>
+

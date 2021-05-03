@@ -2,6 +2,7 @@ package co.plook;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 // Parent class for all of the other activities to check if user is logged in on every onCreate()
+// also loads in the left navigation drawer
 public class ParentActivity extends AppCompatActivity
 {
     private DrawerLayout drawerLayout;
@@ -37,6 +39,7 @@ public class ParentActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation_layout);
 
@@ -51,7 +54,7 @@ public class ParentActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close) ;
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
