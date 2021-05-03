@@ -231,7 +231,7 @@ public class PostDisplayActivity extends ParentActivity
             post.setDescription(postDocument.getString("description"));
             post.setImageUrl(postDocument.getString("url"));
             post.setUserID(usernamePairs.get(postDocument.getString("userID")));
-
+            post.setCommentCount(postDocument.getLong("comments"));
             post.setScore(postDocument.getLong("score"));
             post.setMyVote(myVotesPerPost.get(postDocument.getId()));
 
@@ -276,6 +276,7 @@ public class PostDisplayActivity extends ParentActivity
                     post.setDescription(postDocument.getString("description"));
                     post.setImageUrl(postDocument.getString("url"));
                     post.setScore(postDocument.getLong("score"));
+                    post.setCommentCount(postDocument.getLong("comments"));
 
                     // Get user's vote data for this post.
                     Task voteTask = dbReader.findDocumentByID("posts/" + post.getPostID() + "/user_actions", auth.getUid()).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()

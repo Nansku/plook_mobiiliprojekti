@@ -16,8 +16,6 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.Set;
-
 public class MyFirebaseMessagingService extends FirebaseMessagingService
 {
 
@@ -66,8 +64,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_notification)
-                        .setContentTitle(message.getTitle())
-                        .setContentText(message.getBody())
+                        .setContentTitle(notification.getTitle())
+                        .setContentText(notification.getBody())
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);

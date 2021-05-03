@@ -65,6 +65,7 @@
             android:text="Save"
             android:layout_marginTop="200dp"
             android:layout_gravity="center_horizontal"
+            android:background="@drawable/button"
             android:onClick="saveSettings"/>
 
     </LinearLayout>
