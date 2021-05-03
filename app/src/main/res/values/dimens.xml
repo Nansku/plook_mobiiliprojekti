@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="username">18dp</dimen>
+    <dimen name="username">20sp</dimen>
+    <dimen name="country">18sp</dimen>
+    <dimen name="bio">15sp</dimen>
+    <dimen name="fieldCaption">12sp</dimen>
 </resources>

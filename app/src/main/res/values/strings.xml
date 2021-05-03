@@ -16,6 +16,7 @@
     <string name="default_notification_channel_id">Channel ID</string>
     <string name="picture_for_post">picture for post</string>
     <string name="gallery">Gallery</string>
+
     <string name="notif_settings"><u>Notification settings</u></string>
     <string name="settings"><b>Settings</b></string>
 
@@ -47,4 +48,7 @@
     <string name="comment_days">days ago</string>
     <string name="comment_year">year ago</string>
     <string name="comment_years">years ago</string>
+  
+    <string name="olen_kotoisin">Olen kotoisin:</string>
+
 </resources>
