@@ -35,20 +35,18 @@
 
     <string name="post_delete">Delete</string>
     <string name="post_tags">Tags</string>
+    <string name="post_posted">Posted</string>
     <string name="post_comments">Comments</string>
     <string name="post_comment">Comment</string>
     <string name="post_writeAComment">Write a comment</string>
 
     <string name="comment_lessThanMinuteAgo">Less than a minute ago</string>
-    <string name="comment_minute">minute ago</string>
-    <string name="comment_minutes">minutes ago</string>
-    <string name="comment_hour">hour ago</string>
-    <string name="comment_hours">hours ago</string>
-    <string name="comment_day">days ago</string>
-    <string name="comment_days">days ago</string>
-    <string name="comment_year">year ago</string>
-    <string name="comment_years">years ago</string>
-  
-    <string name="im_from">I\'m from:</string>
-
+    <string name="time_minute">minute ago</string>
+    <string name="time_minutes">minutes ago</string>
+    <string name="time_hour">hour ago</string>
+    <string name="time_hours">hours ago</string>
+    <string name="time_day">days ago</string>
+    <string name="time_days">days ago</string>
+    <string name="time_year">year ago</string>
+    <string name="time_years">years ago</string>
 </resources>
