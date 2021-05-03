@@ -91,7 +91,7 @@ public class Post
         long difference = Timestamp.now().getSeconds() - time.getSeconds();
 
         if (difference < 60)
-            str = c.getResources().getString(R.string.comment_lessThanMinuteAgo);
+            str = c.getResources().getString(R.string.time_lessThanMinuteAgo);
         else if (difference < 3600)
         {
             long minutes = difference / 60;
