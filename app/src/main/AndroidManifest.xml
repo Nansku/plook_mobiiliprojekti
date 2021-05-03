@@ -13,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme">
+
         <activity android:name=".ConfirmationDialog"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -21,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".PostActivity">
             <intent-filter>
                 <action android:name="OPEN_POSTACTIVITY" />
@@ -67,6 +69,7 @@
         <activity
             android:name=".ProfileEditActivity"
             android:exported="true" />
+
         <activity android:name=".SettingsActivity" />
 
         <service
