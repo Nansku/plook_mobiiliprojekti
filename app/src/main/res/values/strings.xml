@@ -49,6 +49,6 @@
     <string name="comment_year">year ago</string>
     <string name="comment_years">years ago</string>
   
-    <string name="olen_kotoisin">Olen kotoisin:</string>
+    string name="im_from">I\'m from:</string>
 
 </resources>
