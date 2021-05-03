@@ -1,12 +1,8 @@
 package co.plook;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.google.firebase.Timestamp;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 public class Comment
 {
@@ -51,7 +47,7 @@ public class Comment
     }
 
 
-    //return 'x seconds/minutes/hours/days ago' using this.time and Timestamp.now()
+    //return 'x seconds/minutes/hours/days ago using this.time and Timestamp.now()
     public String getTimeDifference(Context c)
     {
         String str = "";
@@ -62,22 +58,22 @@ public class Comment
         else if (difference < 3600)
         {
             long minutes = difference / 60;
-            str = minutes + " " + (minutes == 1 ? c.getResources().getString(R.string.comment_minute) : c.getResources().getString(R.string.comment_minutes));
+            str = minutes + " " + (minutes == 1 ? c.getResources().getString(R.string.time_minute) : c.getResources().getString(R.string.time_minutes));
         }
         else if (difference < 86400)
         {
             long hours = difference / 3600;
-            str = hours + " " + (hours == 1 ? c.getResources().getString(R.string.comment_hour) : c.getResources().getString(R.string.comment_hours));
+            str = hours + " " + (hours == 1 ? c.getResources().getString(R.string.time_hour) : c.getResources().getString(R.string.time_hours));
         }
         else if (difference < 31536000)
         {
             long days = difference / 86400;
-            str = days + " " + (days == 1 ? c.getResources().getString(R.string.comment_day) : c.getResources().getString(R.string.comment_days));
+            str = days + " " + (days == 1 ? c.getResources().getString(R.string.time_day) : c.getResources().getString(R.string.time_days));
         }
         else
         {
             long years = difference / 31536000;
-            str = years + " " + (years == 1 ? c.getResources().getString(R.string.comment_year) : c.getResources().getString(R.string.comment_years));
+            str = years + " " + (years == 1 ? c.getResources().getString(R.string.time_year) : c.getResources().getString(R.string.time_years));
         }
 
         return str;
