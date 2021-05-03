@@ -40,8 +40,6 @@ public class ProfileActivity extends ParentActivity
     private String location;
     private String bio;
 
-
-
     private ArrayList<Post> userPosts;
     private String userID;
     private boolean isFollowing = false;
@@ -93,6 +91,11 @@ public class ProfileActivity extends ParentActivity
         ((ExpandableHeightGridView) gridView).setExpanded(true);
 
 
+        loadPosts();
+    }
+
+    private void loadPosts()
+    {
         Query q = dbReader.db.collection("posts").whereEqualTo("userID", userID).orderBy("time", Query.Direction.DESCENDING);
 
         // FIND PHOTOS FROM FIREBASE
@@ -129,8 +132,6 @@ public class ProfileActivity extends ParentActivity
                     startActivity(intent);
 
                 }
-
-
             });
         });
 
@@ -194,6 +195,14 @@ public class ProfileActivity extends ParentActivity
                         .load(pictureUrl).into(profileImageView);
             });
         }
+    }
+
+    @Override
+    protected void onRestart()
+    {
+        super.onRestart();
+        userPosts.clear();
+        loadPosts();
     }
 
     private void checkIfFollowing()

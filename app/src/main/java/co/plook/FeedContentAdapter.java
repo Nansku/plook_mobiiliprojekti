@@ -1,8 +1,6 @@
 package co.plook;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +37,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private final TextView textView_username;
         private final TextView textView_score;
         private final ImageView imageView_image;
+        private final TextView textView_commentCount;
 
         private final ImageView imageView_voteUp;
         private final ImageView imageView_voteDown;
@@ -53,6 +52,7 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             textView_username = view.findViewById(R.id.post_username);
             textView_score = view.findViewById(R.id.post_score);
             imageView_image = view.findViewById(R.id.post_image);
+            textView_commentCount = view.findViewById(R.id.post_comment_count);
 
             imageView_voteUp = view.findViewById(R.id.post_voteUp);
             imageView_voteDown = view.findViewById(R.id.post_voteDown);
@@ -69,6 +69,8 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView getTextView_username() { return textView_username; }
 
         public TextView getTextView_score() { return textView_score; }
+
+        public TextView getTextView_commentCount() { return textView_commentCount; }
 
         public ImageView getImageView_image() { return imageView_image; }
 
@@ -134,6 +136,10 @@ public class FeedContentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.getTextView_caption().setText(post.getCaption());
         viewHolder.getTextView_username().setText(post.getUserID());
         viewHolder.getTextView_score().setText(String.valueOf(post.getScore()));
+        if (post.getCommentCount() >= 1)
+            viewHolder.getTextView_commentCount().setText(post.getCommentCount() + " comments");
+        else
+            viewHolder.getTextView_commentCount().setText("");
 
         Glide.with(context).load(post.getImageUrl()).into(viewHolder.getImageView_image());
 
