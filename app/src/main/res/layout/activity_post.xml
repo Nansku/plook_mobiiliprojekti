@@ -295,7 +295,7 @@
                 android:layout_weight="0.95"
                 android:layout_marginHorizontal="0dp"
                 android:textColor="@color/white"
-                android:inputType="textCapSentences"
+                android:inputType="textCapSentences|textMultiLine"
             />
 
             <ImageView
