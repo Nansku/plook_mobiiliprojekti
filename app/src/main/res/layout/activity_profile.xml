@@ -100,7 +100,6 @@
                         android:layout_alignParentStart="true"
                         android:layout_marginStart="1dp"
                         android:gravity="bottom"
-                        android:text="MAA"
                         android:layout_below="@+id/countryTag"
                         android:textSize="@dimen/country"
                         android:textColor="@color/black"/>

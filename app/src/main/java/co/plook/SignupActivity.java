@@ -69,13 +69,13 @@ public class SignupActivity extends AppCompatActivity  {
         confirmpassword = textPassword2.getText().toString();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(this, "Kirjoita sähköposti...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Write your email...", Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Kirjoita salasana", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Write your password...", Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(confirmpassword)) {
-            Toast.makeText(this, "Vahvista salasana", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Confirm your password", Toast.LENGTH_SHORT).show();
         } else if (!password.equals(confirmpassword)) {
-            Toast.makeText(this, "Salasanat eivät vastaa toisiaan", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Passwords don't match", Toast.LENGTH_SHORT).show();
         } else {
             mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -91,12 +91,12 @@ public class SignupActivity extends AppCompatActivity  {
                                 dbWriter.addUser(taskUser.getUid(), username);
                                 UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
                                 mAuth.getCurrentUser().updateProfile(changeRequest);
-                                Toast.makeText(SignupActivity.this, "Olet rekisteröity", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignupActivity.this, "You are registered", Toast.LENGTH_SHORT).show();
                             });
 
                         } else {
                             String message = signupTask.getException().getMessage();
-                            Toast.makeText(SignupActivity.this, "Virhe rekisteröinnissä" + message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignupActivity.this, "Error in registering" + message, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -116,7 +116,7 @@ public class SignupActivity extends AppCompatActivity  {
 
                 if (task.isSuccessful())
                 {
-                    Toast.makeText(SignupActivity.this, "Rekisteröinti onnistui. Vahvista tilisi.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, "Registering was successfull, confirm your email.", Toast.LENGTH_SHORT).show();
                     SendUserToConfirmationActivity();
                     mAuth.signOut();
                 }
@@ -124,7 +124,7 @@ public class SignupActivity extends AppCompatActivity  {
                 else
                 {
                     String error = task.getException().getMessage();
-                    Toast.makeText(SignupActivity.this, "Virhe" + error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, "Error" + error, Toast.LENGTH_SHORT).show();
                     mAuth.signOut();
                 }
             }
