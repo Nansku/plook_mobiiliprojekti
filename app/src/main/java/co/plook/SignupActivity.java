@@ -91,12 +91,12 @@ public class SignupActivity extends AppCompatActivity  {
                                 dbWriter.addUser(taskUser.getUid(), username);
                                 UserProfileChangeRequest changeRequest = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
                                 mAuth.getCurrentUser().updateProfile(changeRequest);
-                                Toast.makeText(SignupActivity.this, "Olet rekisteröity", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignupActivity.this, "You are registered", Toast.LENGTH_SHORT).show();
                             });
 
                         } else {
                             String message = signupTask.getException().getMessage();
-                            Toast.makeText(SignupActivity.this, "Virhe rekisteröinnissä" + message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignupActivity.this, "Error in registering" + message, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
