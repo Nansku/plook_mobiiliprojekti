@@ -16,6 +16,7 @@ public class Post
     private Timestamp time;
     private long score;
     private long myVote;
+    private long commentCount;
 
     public Post()
     {
@@ -28,9 +29,10 @@ public class Post
         tags = new String[0];
         score = 0;
         myVote = 0;
+        commentCount = 0;
     }
 
-    public Post(String caption, String description, String imageUrl, String postID, String userID, String channelID, String[] tags, Timestamp time, int score)
+    public Post(String caption, String description, String imageUrl, String postID, String userID, String channelID, String[] tags, Timestamp time, int score, int commentCount)
     {
         this.caption = caption;
         this.description = description;
@@ -41,6 +43,7 @@ public class Post
         this.tags = tags;
         this.time = time;
         this.score = score;
+        this.commentCount = commentCount;
         myVote = 0;
     }
 
@@ -62,6 +65,8 @@ public class Post
 
     public void setScore(long score) { this.score = score; }
 
+    public void setCommentCount(long commentCount) { this.commentCount = commentCount; }
+
     public void setMyVote(long myVote) { this.myVote = myVote; }
 
     public String getPostID() { return postID; }
@@ -81,6 +86,8 @@ public class Post
     public Timestamp getTime() {return time; }
 
     public long getScore() { return score; }
+
+    public long getCommentCount() { return commentCount; }
 
     public long getMyVote() { return myVote; }
 
