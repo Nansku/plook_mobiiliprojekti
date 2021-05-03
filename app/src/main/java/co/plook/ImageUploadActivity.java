@@ -77,7 +77,7 @@ public class ImageUploadActivity extends ParentActivity {
         setContentView(R.layout.activity_image_upload);
 
         // Hides the footer when typing into editText fields
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         imageUploadActivity = this;
         profilePic = findViewById(R.id.profilePic);
