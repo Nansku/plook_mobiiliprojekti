@@ -18,6 +18,7 @@
         <item name="colorPrimary">@color/forest</item>
         <item name="colorPrimaryVariant">@color/forest</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnSecondary">@color/dark_forest</item>
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
     </style>
 </resources>
