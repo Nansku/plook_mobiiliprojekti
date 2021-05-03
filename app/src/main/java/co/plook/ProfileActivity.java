@@ -44,7 +44,6 @@ public class ProfileActivity extends ParentActivity
     private String userID;
     private boolean isFollowing = false;
 
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -83,19 +82,17 @@ public class ProfileActivity extends ParentActivity
             userID = auth.getUid();
         }
 
-
-
         // GRIDVIEW
         gridView = (ExpandableHeightGridView) findViewById(R.id.postGrid);
         // HACK TO EXPAND GRIDVIEW TO BOTTOM
         ((ExpandableHeightGridView) gridView).setExpanded(true);
-
 
         loadPosts();
     }
 
     private void loadPosts()
     {
+
         Query q = dbReader.db.collection("posts").whereEqualTo("userID", userID).orderBy("time", Query.Direction.DESCENDING);
 
         // FIND PHOTOS FROM FIREBASE
@@ -130,7 +127,6 @@ public class ProfileActivity extends ParentActivity
                     intent.putExtra("bio", bio);
 
                     startActivity(intent);
-
                 }
             });
         });
@@ -250,6 +246,5 @@ public class ProfileActivity extends ParentActivity
         isFollowing = !isFollowing;
         updateFollowButton();
     }
-
 }
 

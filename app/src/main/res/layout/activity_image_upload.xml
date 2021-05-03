@@ -88,6 +88,7 @@
                     android:layout_centerHorizontal="true" />
 
                 <AutoCompleteTextView
+
                     android:id="@+id/tagSuggestions"
                     android:layout_marginTop="30dp"
                     android:hint="#autocomplete_tags"
@@ -105,7 +106,6 @@
                     app:childSpacingX="5dp"
                     app:childSpacingY="5dp"/>
             </RelativeLayout>
-
         </RelativeLayout>
     </ScrollView>
 
@@ -115,7 +115,7 @@
     android:layout_height="?attr/actionBarSize"
     android:background="@color/lighter_forest"
     app:layout_constraintBottom_toBottomOf="parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal" >
 
         <ImageButton
             android:id="@+id/cancel"
