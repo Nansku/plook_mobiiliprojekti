@@ -9,8 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content" >
 
         <FrameLayout android:id="@+id/frame"
             android:layout_marginHorizontal="50dp"
@@ -44,7 +43,9 @@
                 android:layout_height="match_parent"
                 android:hint="Username"
                 android:textAlignment="center"
-                android:textSize="@dimen/username"/>
+                android:textSize="@dimen/username"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
         <RelativeLayout
@@ -52,81 +53,102 @@
             android:id="@+id/bio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/username"
-            android:background="@drawable/bio">
+            android:background="@drawable/bio"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="10dp">
 
             <TextView
                 android:id="@+id/bioTxt"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="BIO"
+                android:layout_height="wrap_content"
                 android:background="@drawable/bio"
-                android:textAlignment="center" />
+                android:textAlignment="textStart"
+                android:textSize="@dimen/bio"
+                android:textColor="@color/black"/>
 
-            <RelativeLayout
-                android:layout_width="fill_parent"
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/bioTxt"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/country"
-
+                <RelativeLayout
+                    android:id="@+id/countryBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:text="LOCATION"
-                    android:layout_alignParentStart="true"
-                    android:gravity="start" />
+                    android:layout_gravity="bottom">
 
-                <Button
-                    android:id="@+id/followButton"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="10dp"
-                    android:onClick="followUser"
-                    android:background="@drawable/circle_button_sm"
-                    app:backgroundTint="@color/lighter_forest2"
-                    android:drawableTop="@drawable/ic_plus"
-                    android:layout_alignParentEnd="true"
-                    android:gravity="center" />
+                    <TextView
+                        android:id="@+id/countryTag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="1dp"
+                        android:gravity="bottom"
+                        android:text="@string/im_from"
+                        android:textSize="@dimen/fieldCaption" />
 
-                <Button
-                    android:id="@+id/unfollowButton"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="10dp"
-                    android:onClick="followUser"
-                    android:background="@drawable/circle_button_sm"
-                    app:backgroundTint="@color/grey_btn"
-                    android:drawableTop="@drawable/ic_check"
-                    android:layout_alignParentEnd="true"
-                    android:gravity="center"/>
+                    <TextView
+                        android:id="@+id/country"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="1dp"
+                        android:gravity="bottom"
+                        android:layout_below="@+id/countryTag"
+                        android:textSize="@dimen/country"
+                        android:textColor="@color/black"/>
+                </RelativeLayout>
 
-                <Button
-                    android:id="@+id/editProfile"
+                <RelativeLayout
+                    android:id="@+id/editBox"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/edit_profile"
-                    android:background="@drawable/button"/>
-            </RelativeLayout>
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/followButton"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:onClick="followUser"
+                        android:background="@drawable/circle_button_sm"
+                        app:backgroundTint="@color/lighter_forest2"
+                        android:drawableTop="@drawable/ic_plus"
+                        android:layout_alignParentEnd="true"
+                        android:gravity="center"/>
+
+                    <Button
+                        android:id="@+id/unfollowButton"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:onClick="followUser"
+                        android:background="@drawable/circle_button_sm"
+                        app:backgroundTint="@color/grey_btn"
+                        android:drawableTop="@drawable/ic_check"
+                        android:layout_alignParentEnd="true"
+                        android:gravity="center"/>
+
+                    <Button
+                        android:id="@+id/editProfile"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/circle_button_sm"
+                        app:backgroundTint="@color/lighter_forest2"
+                        android:drawableTop="@drawable/ic_edit" />
+                </RelativeLayout>
+            </LinearLayout>
         </RelativeLayout>
 
         <co.plook.ExpandableHeightGridView
             android:id="@+id/postGrid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:padding="3dp"
             android:layout_below="@+id/bio"
             android:background="@drawable/bio"
@@ -138,4 +160,3 @@
         </co.plook.ExpandableHeightGridView>
     </RelativeLayout>
 </ScrollView>
-

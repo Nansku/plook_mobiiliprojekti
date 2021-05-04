@@ -68,13 +68,14 @@
             android:layout_below="@id/editUserName"
             android:layout_marginTop="10dp"
             android:layout_marginHorizontal="10dp"/>
+            />
 
         <EditText
             android:id="@+id/editBio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:minLines="5"
+            android:minLines="1"
             android:maxLines="6"
             android:gravity="top|start"
             android:hint="Describe yourself"
@@ -83,6 +84,7 @@
             android:layout_marginHorizontal="10dp"
             android:paddingHorizontal="10dp"
             android:maxLength="240"/>
+
         <TextView
             android:id="@+id/textLocation"
             android:layout_width="wrap_content"
@@ -97,8 +99,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="text"
             android:hint="Where are you located?"
+            android:inputType="textCapSentences"
             android:layout_below="@id/textLocation"
             android:layout_marginTop="10dp"
             android:layout_marginHorizontal="10dp" />
@@ -139,8 +141,6 @@
             android:text="Change profile picture:"
             android:onClick="choosePicture"
             android:layout_centerHorizontal="true"/>
-
-
     </RelativeLayout>
 
     </ScrollView>

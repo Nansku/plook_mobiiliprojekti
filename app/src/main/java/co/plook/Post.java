@@ -1,5 +1,9 @@
 package co.plook;
 
+import android.content.Context;
+
+import com.google.firebase.Timestamp;
+
 public class Post
 {
     private String caption;
@@ -9,8 +13,10 @@ public class Post
     private String userID;
     private String channelID;
     private String[] tags;
+    private Timestamp time;
     private long score;
     private long myVote;
+    private long commentCount;
 
     public Post()
     {
@@ -23,9 +29,10 @@ public class Post
         tags = new String[0];
         score = 0;
         myVote = 0;
+        commentCount = 0;
     }
 
-    public Post(String caption, String description, String imageUrl, String postID, String userID, String channelID, String[] tags, int score)
+    public Post(String caption, String description, String imageUrl, String postID, String userID, String channelID, String[] tags, Timestamp time, int score, int commentCount)
     {
         this.caption = caption;
         this.description = description;
@@ -34,7 +41,9 @@ public class Post
         this.userID = userID;
         this.channelID = channelID;
         this.tags = tags;
+        this.time = time;
         this.score = score;
+        this.commentCount = commentCount;
         myVote = 0;
     }
 
@@ -52,7 +61,11 @@ public class Post
 
     public void setTags(String[] tags) { this.tags = tags; }
 
+    public void setTime(Timestamp time) { this.time = time; }
+
     public void setScore(long score) { this.score = score; }
+
+    public void setCommentCount(long commentCount) { this.commentCount = commentCount; }
 
     public void setMyVote(long myVote) { this.myVote = myVote; }
 
@@ -70,7 +83,43 @@ public class Post
 
     public String[] getTags() { return tags; }
 
+    public Timestamp getTime() {return time; }
+
     public long getScore() { return score; }
 
+    public long getCommentCount() { return commentCount; }
+
     public long getMyVote() { return myVote; }
+
+    //return 'x seconds/minutes/hours/days ago using this.time and Timestamp.now()
+    public String getTimeDifference(Context c)
+    {
+        String str = "";
+        long difference = Timestamp.now().getSeconds() - time.getSeconds();
+
+        if (difference < 60)
+            str = c.getResources().getString(R.string.time_lessThanMinuteAgo);
+        else if (difference < 3600)
+        {
+            long minutes = difference / 60;
+            str = minutes + " " + (minutes == 1 ? c.getResources().getString(R.string.time_minute) : c.getResources().getString(R.string.time_minutes));
+        }
+        else if (difference < 86400)
+        {
+            long hours = difference / 3600;
+            str = hours + " " + (hours == 1 ? c.getResources().getString(R.string.time_hour) : c.getResources().getString(R.string.time_hours));
+        }
+        else if (difference < 31536000)
+        {
+            long days = difference / 86400;
+            str = days + " " + (days == 1 ? c.getResources().getString(R.string.time_day) : c.getResources().getString(R.string.time_days));
+        }
+        else
+        {
+            long years = difference / 31536000;
+            str = years + " " + (years == 1 ? c.getResources().getString(R.string.time_year) : c.getResources().getString(R.string.time_years));
+        }
+
+        return str;
+    }
 }

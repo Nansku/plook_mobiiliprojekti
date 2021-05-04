@@ -7,7 +7,7 @@
     android:layout_marginBottom="2dp"
     android:paddingTop="10dp"
     android:paddingBottom="30dp"
-    android:background="@color/white">
+    android:background="@color/forest">
 
     <TextView
         android:id="@+id/comment_username"

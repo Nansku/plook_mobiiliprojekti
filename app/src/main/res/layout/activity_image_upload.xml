@@ -74,6 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="Image caption"
+                    android:inputType="textCapSentences"
                     android:layout_centerHorizontal="true" />
 
                 <EditText
@@ -82,17 +83,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="Image description"
+                    android:inputType="textCapSentences"
                     android:layout_below="@+id/post_caption"
                     android:layout_centerHorizontal="true" />
 
                 <AutoCompleteTextView
+
                     android:id="@+id/tagSuggestions"
                     android:layout_marginTop="30dp"
                     android:hint="#autocomplete_tags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/post_description"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    android:inputType="textUri"/>
 
                 <co.plook.TagLayout
                     android:id="@+id/tagLayout"
@@ -101,9 +105,7 @@
                     android:layout_below="@+id/tagSuggestions"
                     app:childSpacingX="5dp"
                     app:childSpacingY="5dp"/>
-
             </RelativeLayout>
-
         </RelativeLayout>
     </ScrollView>
 
@@ -113,7 +115,7 @@
     android:layout_height="?attr/actionBarSize"
     android:background="@color/lighter_forest"
     app:layout_constraintBottom_toBottomOf="parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal" >
 
         <ImageButton
             android:id="@+id/cancel"
